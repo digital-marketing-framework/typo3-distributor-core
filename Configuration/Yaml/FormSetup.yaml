@@ -1,0 +1,49 @@
+TYPO3:
+  CMS:
+    Form:
+      prototypes:
+        standard:
+          finishersDefinition:
+            Digitalmarketingframework:
+              FormEngine:
+                label: 'Digital Marketing Framework'
+                elements:
+                  setup:
+                    label: 'Setup'
+                    config:
+                      type: 'text'
+              formEditor:
+                iconIdentifier: 'form-finisher'
+                label: 'Digital Marketing Framework'
+                predefinedDefaults:
+                  options:
+                    setup: ''
+              implementationClassName: 'DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormFinisher'
+          formElementsDefinition:
+            Form:
+              formEditor:
+                editors:
+                  900:
+                    selectOptions:
+                      101:
+                        value: 'Digitalmarketingframework'
+                        label: 'Digital Marketing Framework'
+                propertyCollections:
+                  finishers:
+                    101:
+                      identifier: 'Digitalmarketingframework'
+                      editors:
+                        50:
+                          identifier: 'header'
+                          templateName: 'Inspector-CollectionElementHeaderEditor'
+                          label: 'Digital Marketing Framework'
+                        100:
+                          label: 'Digital Marketing Framework'
+                        200:
+                          identifier: 'setup'
+                          templateName: 'Inspector-TextareaEditor'
+                          label: 'Setup'
+                          propertyPath: 'options.setup'
+                        9999:
+                          identifier: 'removeButton'
+                          templateName: 'Inspector-RemoveElementEditor'

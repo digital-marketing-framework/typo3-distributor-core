@@ -1,0 +1,186 @@
+
+6.0.3
+
+[BUGFIX] fixed index issues for utmz parser
+
+6.0.2
+
+[FEATURE] Use official TYPO3 coding standards
+
+[FEATURE] PHP 8.x support
+
+6.0.1
+
+[BUGFIX] use strict comparison during configuration conversion (MEDO22-51) (#6)
+
+6.0.0
+
+[TASK] Update for TYPO3 11
+
+[TASK] Use the new forms config format
+
+[TASK] Migrate from XML to XLF language format
+
+[TASK] Update to the latest form_fieldnames dependency
+
+[TASK] Drop support for TYPO3 9.5
+
+5.2.2
+
+[BUGFIX] Remove whitespaces from searialized data and increase its maximum size (MEDO-598)
+
+5.2.1
+
+[TASK] improved checks for data encoding
+
+5.2.0
+
+[FEATURE] Job Attributes "skipped" and "hash" (MEDO-566)
+
+[FEATURE] Synchronous Submissions use Storage too (MEDO-570)
+
+5.1.1
+
+[TASK] safeguard implementations for malformed data
+
+5.1.0
+
+[FEATURE] disable fileupload processing option (OWEBSITE-764)
+
+5.0.0
+
+[FEATURE] Asynchronous Submissions
+
+4.3.0
+
+[FEATURE] added headers argument and default headers to request dispatcher
+
+4.2.2
+
+[BUGFIX] fixed form element processor for ignored elements
+
+4.2.1
+
+[BUGFIX] restored compatibility for typo3 9
+
+4.2.0
+
+[FEATURE] extended model UploadFormField to hold more meta data about the uploaded file
+
+[TASK] code improvements
+
+4.1.5
+
+[TASK] code improvements
+
+[TASK] removed option --pageId from cli command formrelay:formsimulator
+
+4.1.4
+
+[BUGFIX] fixed form simulator service
+
+[TASK] code improvements
+
+[BUGFIX] fixed object manager usage for typo3 v10
+
+[BUGFIX] fixed tests
+
+4.1.3
+
+[BUGFIX] fixed arguments in the request dispatcher
+
+4.1.2
+
+[BUGFIX] fixed language code data provider
+
+4.1.1
+
+[BUGFIX] more generic handling of form elements (sysext:form)
+
+[BUGFIX] Fix test running in CI/CD pipline
+
+4.1.0
+
+[BUGFIX] fixed legacy calls to GeneralUtility::devLog
+
+[FEATURE] added typoscript variable "formrelay" as helper for conditions
+
+4.0.0
+
+[TASK] Code Update for TYPO3 v9 and v10 (MEDO-360)
+
+3.0.0
+
+[BUGFIX] Configuration Resolvers now taking MultiValues into Account (MEDO-349)
+
+2.1.0
+
+[FEATURE] New FieldMapper: ValueMapFieldMapper (MEDO-352)
+
+[BUGFIX] fixed distribute field mapper, restored TYPO3 8 compatibility (MEDO-351)
+
+2.0.9
+
+[TASK] updated documentation
+
+2.0.8
+
+[FEATURE] updated logging algorithm
+
+2.0.7
+
+[BUGFIX] distinguished between Date and DatePicker for ext:form elements
+
+2.0.6.2
+
+[BUGFIX] fixed handling of empty upload fields
+
+2.0.6.1
+
+[BUGFIX] fixed formatting of form field datepicker for ext:form
+
+2.0.6
+
+[BUGFIX] fixed value mapper return type and algorithms of raw- and switch-value mappers
+
+2.0.5
+
+[FEATURE] introduced element processors for ext:form finisher (used via signal slot)
+
+2.0.4
+
+[TASK] Update logo
+
+2.0.3
+
+[BUGFIX] fixed configuration resolver (general)
+
+[FEATURE] updated field mappers (split, exists)
+
+2.0.2
+
+[BUGFIX] handling empty (typoscript) settings
+
+2.0.1
+
+[BUGFIX] configuration manager: fixed unset feature (value "__UNSET") in merge mechanics
+
+2.0.0.1
+
+[BUGFIX] fixed build pipeline
+
+2.0.0
+
+[TASK] Added documentation (MEDO-223)
+
+[BUGFIX] Fixed exception handling for TYPO3 9
+
+[FEATURE] Added new configuration resolver type: content resolver (MEDO-241)
+
+[BUGFIX] ConfigurationManager missed some cases of configuration overwrites (MEDO-269)
+
+[FEATURE] Introduced configuration resolver: evaluation, field mapper, value mapper (MEDO-238)
+
+[TASK] Removed bulky features (MEDO-232)
+
+[FEATURE] Reworked data flow, introduced signals (MEDO-230)
