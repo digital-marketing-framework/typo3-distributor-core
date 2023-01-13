@@ -18,6 +18,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         'origUid' => 't3_origuid',
         'searchFields' => 'label,hash,route,pass,created,status,skipped,status_message,changed',
         'iconfile' => 'EXT:digitalmarketingframework_distributor/Resources/Public/Icons/QueueJob.svg',
+        'default_sortby' => 'changed DESC',
     ],
     'interface' => [
         'showRecordFieldList' => 'label,hash,route,pass,created,changed,status,skipped,status_message,serialized_data',
