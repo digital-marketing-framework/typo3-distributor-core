@@ -14,14 +14,11 @@ class QueueProcessorFieldProvider extends QueueFieldProvider
         $additionalFields = [];
 
         if ($task !== null) {
-            $taskInfo['pid'] = $task->getPid();
             $taskInfo['batchSize'] = $task->getBatchSize();
         } else {
-            $taskInfo['pid'] = 0;
             $taskInfo['batchSize'] = QueueProcessorTask::BATCH_SIZE;
         }
 
-        $this->addField($additionalFields, $taskInfo, 'pid', 'ID of the folder that contains the submission jobs.');
         $this->addField($additionalFields, $taskInfo, 'batchSize', 'Batch size of jobs to process per run');
 
         return $additionalFields;
@@ -29,7 +26,6 @@ class QueueProcessorFieldProvider extends QueueFieldProvider
 
     public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $parentObject): bool
     {
-        $submittedData['pid'] = (int)$submittedData['pid'];
         $submittedData['batchSize'] = (int)$submittedData['batchSize'];
         return true;
     }
@@ -39,7 +35,6 @@ class QueueProcessorFieldProvider extends QueueFieldProvider
      */
     public function saveAdditionalFields(array $submittedData, $task): void
     {
-        $task->setPid((int)$submittedData['pid']);
         $task->setBatchSize((int)$submittedData['batchSize']);
     }
 }

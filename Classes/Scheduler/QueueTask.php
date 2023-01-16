@@ -11,8 +11,6 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 abstract class QueueTask extends AbstractTask
 {
-    protected int $pid = 0;
-
     protected RegistryInterface $registry;
 
     protected QueueInterface&JobRepository $queue;
@@ -21,16 +19,5 @@ abstract class QueueTask extends AbstractTask
     {
         $this->registry = GeneralUtility::makeInstance(Registry::class);
         $this->queue = $this->registry->getPersistentQueue();
-        $this->queue->setPid($this->pid);
-    }
-
-    public function getPid(): int
-    {
-        return $this->pid;
-    }
-
-    public function setPid(int $pid): void
-    {
-        $this->pid = $pid;
     }
 }

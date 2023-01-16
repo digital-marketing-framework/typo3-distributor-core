@@ -3,14 +3,14 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Backend\DataHandler;
 
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Factory\QueueDataFactory;
+use DigitalMarketingFramework\Distributor\Core\Factory\QueueDataFactoryInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
 
 class MetaDataHandler implements SingletonInterface
 {
-    protected QueueDataFactory $queueDataFactory;
+    protected QueueDataFactoryInterface $queueDataFactory;
 
     public function __construct(
         protected Registry $registry,

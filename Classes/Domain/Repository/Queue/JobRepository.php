@@ -6,31 +6,34 @@ use DateTime;
 use DigitalMarketingFramework\Core\Model\Queue\JobInterface;
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 class JobRepository extends Repository implements QueueInterface
 {
-    protected $pid = 0;
+    protected int $pid;
 
-    public function setPid(int $pid)
+    protected function getPid(): int
     {
-        $this->pid = $pid;
-    }
-
-    public function getPid(): int
-    {
+        if (!isset($this->pid)) {
+            $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+            try {
+                $this->pid = $extensionConfiguration->get('digitalmarketingframework_distributor')['queue']['pid'] ?? 0;
+            } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
+                $this->pid = 0;
+            }
+        }
         return $this->pid;
     }
 
     protected function fetchWhere(array $status = [], int $limit = 0, int $offset = 0, int $minTimeSinceChangedInSeconds = 0, int $minAgeInSeconds = 0): array
     {
         $query = $this->createQuery();
-        if ($this->pid) {
-            $query->getQuerySettings()->setRespectStoragePage(true);
-            $query->getQuerySettings()->setStoragePageIds([$this->pid]);
-        } else {
-            $query->getQuerySettings()->setRespectStoragePage(false);
-        }
+        $query->getQuerySettings()->setRespectStoragePage(true);
+        $query->getQuerySettings()->setStoragePageIds([$this->getPid()]);
 
         $conditions = [];
         if (count($status) > 0) {
@@ -163,7 +166,7 @@ class JobRepository extends Repository implements QueueInterface
         }
     }
 
-    public function addJob(JobInterface $job): void
+    protected function convertJobForRepository(JobInterface $job): Job
     {
         if (!$job instanceof Job) {
             $newJob = new Job();
@@ -172,10 +175,18 @@ class JobRepository extends Repository implements QueueInterface
             $newJob->setChanged($job->getChanged());
             $newJob->setStatus($job->getStatus());
             $newJob->setStatusMessage($job->getStatusMessage());
+            $newJob->setSkipped($job->getSkipped());
             $newJob->setHash($job->getHash());
             $newJob->setLabel($job->getLabel());
             $job = $newJob;
         }
+        return $job;
+    }
+
+    public function addJob(JobInterface $job): void
+    {
+        $job = $this->convertJobForRepository($job);
+        $job->setPid($this->getPid());
         $this->add($job);
         $this->persistenceManager->persistAll();
     }

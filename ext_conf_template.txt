@@ -1,0 +1,8 @@
+
+queue {
+    # cat=Queue; type=integer; label=Storage Page ID
+    pid = 0
+
+    # cat=Queue; type=integer; label=Expiration Time (days)
+    expirationTime = 30
+}

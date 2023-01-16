@@ -3,23 +3,16 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler;
 
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class QueueCleanupTask extends QueueTask
 {
-    public const MIN_AGE = 3600 * 24 * 30; // 30 days
+    protected const DEFAULT_EXPIRATION_TIME = 30;
 
-    protected int $minAge = self::MIN_AGE;
     protected bool $doneOnly = false;
-
-    public function getMinAge(): int
-    {
-        return $this->minAge;
-    }
-
-    public function setMinAge(int $minAge): void
-    {
-        $this->minAge = $minAge;
-    }
 
     public function getDoneOnly(): bool
     {
@@ -31,11 +24,27 @@ class QueueCleanupTask extends QueueTask
         $this->doneOnly = $doneOnly;
     }
 
+    protected function getExtensionQueueSettings(): array
+    {
+        try {
+            $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+            return $extensionConfiguration->get('digitalmarketingframework_distributor')['queue'] ?? [];
+        } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
+            return static::DEFAULT_EXPIRATION_TIME;
+        }
+    }
+
+    protected function getExpirationTime(): int
+    {
+        $expirationInDays = $this->getExtensionQueueSettings()['expirationTime'] ?? static::DEFAULT_EXPIRATION_TIME;
+        return $expirationInDays * 24 * 3600;
+    }
+
     public function execute(): bool
     {
         $this->prepareTask();
         $this->queue->removeOldJobs(
-            $this->minAge,
+            $this->getExpirationTime(),
             $this->doneOnly ? [QueueInterface::STATUS_DONE] : []
         );
         return true;

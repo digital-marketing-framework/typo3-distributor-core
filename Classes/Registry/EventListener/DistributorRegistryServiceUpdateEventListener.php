@@ -14,11 +14,6 @@ class DistributorRegistryServiceUpdateEventListener
 
     public function __invoke(DistributorRegistryServiceUpdateEvent $event): void
     {
-        $registry = $event->getRegistry();
-
-        $queueDataFactory = $registry->createObject(QueueDataFactory::class, [$registry->getConfigurationDocumentManager()]);
-        $registry->setQueueDataFactory($queueDataFactory);
-
-        $registry->setPersistentQueue($this->queue);
+        $event->getRegistry()->setPersistentQueue($this->queue);
     }
 }
