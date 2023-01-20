@@ -6,3 +6,22 @@ queue {
     # cat=Queue; type=integer; label=Expiration Time (days)
     expirationTime = 30
 }
+
+fileUpload {
+    # cat=File Upload; type=boolean; label=Disable File Processing
+    disableProcessing = 0
+
+    # cat=File Upload; type=string; label=Base Upload Path
+    baseUploadPath = uploads/digital_marketing_framework/form_uploads/
+
+    # cat=File Upload; type=string; label=Prohibited File Extensions
+    prohibitedExtension = php,exe
+}
+
+debug {
+    # cat=Debug; type=boolean; label=Enable Low-Level Debug Log
+    enabled = 0
+
+    # cat=Debug; type=string; label=Debug Log File Name
+    file = ditigal-marketing-framework-distributor-submission.log
+}

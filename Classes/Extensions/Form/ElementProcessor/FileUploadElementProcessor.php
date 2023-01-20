@@ -34,18 +34,18 @@ class FileUploadElementProcessor extends ElementProcessor
 
     protected function disabled(): bool
     {
-        return $this->configuration[Registry::KEY_FILE_UPLOAD][Registry::KEY_FILE_UPLOAD_DISABLE_PROCESSING] ?? Registry::DEFAULT_FILE_UPLOAD_DISABLE_PROCESSING;
+        return $this->configuration['fileUpload']['disableProcessing'] ?? false;
     }
 
     protected function prohibitedFileExtensions(): array
     {
-        $prohibitedExtensions = $this->configuration[Registry::KEY_FILE_UPLOAD][Registry::KEY_FILE_UPLOAD_PROHIBITED_EXTENSION] ?? Registry::DEFAULT_FILE_UPLOAD_PROHIBITED_EXTENSION;
+        $prohibitedExtensions = $this->configuration['fileUpload']['prohibitedExtension'] ?? 'php,exe';
         return $prohibitedExtensions ? explode(',', $prohibitedExtensions) : [];
     }
 
     protected function baseUploadPath(): string
     {
-        return $this->configuration[Registry::KEY_FILE_UPLOAD][Registry::KEY_FILE_UPLOAD_BASE_UPLOAD_PATH] ?? Registry::DEFAULT_FILE_UPLOAD_BASE_UPLOAD_PATH;
+        return $this->configuration['fileUpload']['baseUploadPath'] ?? 'uploads/digital_marketing_framework/form_uploads/';
     }
 
     protected function override(): bool

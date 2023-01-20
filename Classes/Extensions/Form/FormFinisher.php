@@ -60,16 +60,18 @@ class FormFinisher extends AbstractFinisher
 
     protected function executeInternal(): ?string
     {
+        // fetch global configuration
+        $globalConfiguration = $this->registry->getGlobalConfiguration()->get('digitalmarketingframework_distributor') ?? [];
+
         // fetch configuration
         $configurationStack = $this->getConfigurationStack();
-        $configuration = (new SubmissionConfiguration($configurationStack))->getDistributorConfiguration();
 
         // fetch form values
-        $formValues = $this->getFormValues($configuration);
+        $formValues = $this->getFormValues($globalConfiguration);
 
         // low level debug log, if configured
-        if ($configuration[Registry::KEY_DEBUG_LOG] ?? Registry::DEFAULT_DEBUG_LOG) {
-            $file = $configuration[Registry::KEY_DEBUG_LOG_FILE] ?? Registry::DEFAULT_DEBUG_LOG_FILE;
+        if ($globalConfiguration['debug']['enabled'] ?? false) {
+            $file = $globalConfiguration['debug']['file'] ?? 'ditigal-marketing-framework-distributor-submission.log';
             $this->debugLog($file, $formValues);
         }
 
