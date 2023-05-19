@@ -3,6 +3,15 @@ TYPO3:
     Form:
       prototypes:
         standard:
+          formEditor:
+            dynamicRequireJsModules:
+              additionalViewModelModules:
+                1684239317: 'TYPO3/CMS/DigitalmarketingframeworkDistributor/Backend/FormEditor/DmfConfigTextareaEditorViewModel'
+            formEditorFluidConfiguration:
+              partialRootPaths:
+                1684239317: 'EXT:digitalmarketingframework_distributor/Resources/Private/Extensions/form/Backend/Partials/FormEditor/'
+            formEditorPartials:
+              Inspector-DmfConfigTextareaEditor: Inspector/DmfConfigTextareaEditor
           finishersDefinition:
             Digitalmarketingframework:
               FormEngine:
@@ -41,7 +50,7 @@ TYPO3:
                           label: 'Digital Marketing Framework'
                         200:
                           identifier: 'setup'
-                          templateName: 'Inspector-TextareaEditor'
+                          templateName: 'Inspector-DmfConfigTextareaEditor'
                           label: 'Setup'
                           propertyPath: 'options.setup'
                         9999:

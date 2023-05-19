@@ -2,7 +2,6 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Registry;
 
-use DigitalMarketingFramework\Distributor\Core\Model\Configuration\SubmissionConfigurationInterface;
 use DigitalMarketingFramework\Distributor\Core\Registry\Registry as CoreDistributorRegistry;
 use DigitalMarketingFramework\Typo3\Core\Registry\Event\CoreRegistryGlobalConfigurationUpdateEvent;
 use DigitalMarketingFramework\Typo3\Core\Registry\Event\CoreRegistryPluginUpdateEvent;
