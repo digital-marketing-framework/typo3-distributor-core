@@ -10,6 +10,7 @@ TYPO3:
             formEditorFluidConfiguration:
               partialRootPaths:
                 1684239317: 'EXT:digitalmarketingframework_distributor/Resources/Private/Extensions/form/Backend/Partials/FormEditor/'
+                1684773503: 'EXT:digitalmarketingframework/Resources/Private/Backend/Partials/'
             formEditorPartials:
               Inspector-DmfConfigTextareaEditor: Inspector/DmfConfigTextareaEditor
           finishersDefinition:

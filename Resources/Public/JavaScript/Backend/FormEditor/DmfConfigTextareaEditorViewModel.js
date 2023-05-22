@@ -157,7 +157,7 @@ define([
             collectionName
           );
           $('textarea', $(editorHtml))[0].dataset.app="true";
-          document.dispatchEvent(new Event('dmf-start-app'));
+          document.dispatchEvent(new Event('dmf-configuration-editor-init'));
           break;
       }
     }
