@@ -1,8 +1,7 @@
 CREATE TABLE tx_digitalmarketingframeworkdistributor_domain_model_queue_job (
   label text DEFAULT '',
   hash text DEFAULT '',
-  route text DEFAULT '',
-  pass text DEFAULT '',
+  `index` int(11) unsigned DEFAULT 0,
 
   status int(11) unsigned DEFAULT 0,
   skipped tinyint(4) unsigned DEFAULT '0' NOT NULL,

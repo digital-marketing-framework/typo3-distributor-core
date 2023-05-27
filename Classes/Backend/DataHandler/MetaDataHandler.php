@@ -30,8 +30,7 @@ class MetaDataHandler implements SingletonInterface
         $job->setHash($fieldArray['hash'] ?? '');
 
         $fieldArray['serialized_data'] = json_encode(json_decode($job->getSerializedData()));
-        $fieldArray['route'] = $this->queueDataFactory->getJobRoute($job);
-        $fieldArray['pass'] = $this->queueDataFactory->getJobRoutePass($job);
+        $fieldArray['index'] = $this->queueDataFactory->getJobIndex($job);
 
         $job->setHash($this->queueDataFactory->getJobHash($job));
         $fieldArray['hash'] = $job->getHash();

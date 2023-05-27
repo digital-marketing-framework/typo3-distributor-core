@@ -16,20 +16,20 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         'crdate' => 'created',
         'title' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job',
         'origUid' => 't3_origuid',
-        'searchFields' => 'label,hash,route,pass,created,status,skipped,status_message,changed',
+        'searchFields' => 'label,hash,index,created,status,skipped,status_message,changed',
         'iconfile' => 'EXT:digitalmarketingframework_distributor/Resources/Public/Icons/QueueJob.svg',
         'default_sortby' => 'changed DESC',
     ],
     'interface' => [
-        'showRecordFieldList' => 'label,hash,route,pass,created,changed,status,skipped,status_message,serialized_data',
+        'showRecordFieldList' => 'label,hash,index,created,changed,status,skipped,status_message,serialized_data',
     ],
     'types' => [
         '0' => [
-            'showitem' => 'label,hash,route,pass,created,changed,status,skipped,status_message,serialized_data',
+            'showitem' => 'label,hash,index,created,changed,status,skipped,status_message,serialized_data',
         ],
     ],
     'palettes' => [
-        '0' => ['showitem' => 'label,hash,route,pass,created,changed,status,skipped,status_message,serialized_data'],
+        '0' => ['showitem' => 'label,hash,index,created,changed,status,skipped,status_message,serialized_data'],
     ],
     'columns' => [
         'label' => [
@@ -56,17 +56,9 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
                 'readOnly' => true,
             ],
         ],
-        'route' => [
+        'index' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.route',
-            'config' => [
-                'type' => 'input',
-                'readOnly' => true,
-            ],
-        ],
-        'pass' => [
-            'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.pass',
+            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.index',
             'config' => [
                 'type' => 'input',
                 'readOnly' => true,

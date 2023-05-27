@@ -16,8 +16,7 @@ class Job extends AbstractEntity implements JobInterface
         protected bool $skipped = false,
         protected string $statusMessage = '',
         protected string $serializedData = '',
-        protected string $route = '',
-        protected int $pass = 0,
+        protected int $index = 0,
         protected string $label = '',
         protected string $hash = '',
     ) {
@@ -27,11 +26,8 @@ class Job extends AbstractEntity implements JobInterface
     {
         $data = $this->getData();
         if (!empty($data)) {
-            if (isset($data['route'])) {
-                $this->setRoute($data['route']);
-            }
-            if (isset($data['pass'])) {
-                $this->setPass($data['pass']);
+            if (isset($data['index'])) {
+                $this->setIndex($data['index']);
             }
         }
     }
@@ -66,24 +62,14 @@ class Job extends AbstractEntity implements JobInterface
         $this->label = $label;
     }
 
-    public function getRoute(): string
+    public function getIndex(): int
     {
-        return $this->route;
+        return $this->index;
     }
 
-    public function setRoute(string $route): void
+    public function setIndex(int $index): void
     {
-        $this->route = $route;
-    }
-
-    public function getPass(): int
-    {
-        return $this->pass;
-    }
-
-    public function setPass(int $pass): void
-    {
-        $this->pass = $pass;
+        $this->index = $index;
     }
 
     public function getCreated(): DateTime
