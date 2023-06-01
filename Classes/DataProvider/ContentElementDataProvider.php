@@ -2,6 +2,10 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider;
 
+use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\ContainerSchema;
+use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\IntegerSchema;
+use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\SchemaInterface;
+use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\StringSchema;
 use DigitalMarketingFramework\Core\Context\ContextInterface;
 use DigitalMarketingFramework\Distributor\Core\DataProvider\DataProvider;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -65,11 +69,12 @@ class ContentElementDataProvider extends DataProvider
         return trim(strip_tags($content, '<a>'));
     }
 
-    public static function getDefaultConfiguration(): array
+    public static function getSchema(): SchemaInterface
     {
-        return parent::getDefaultConfiguration() + [
-            static::KEY_FIELD => static::DEFAULT_FIELD,
-            static::KEY_CONTENT_ID => static::DEFAULT_CONTENT_ID,
-        ];
+        /** @var ContainerSchema $schema */
+        $schema = parent::getSchema();
+        $schema->addProperty(static::KEY_FIELD, new StringSchema(static::DEFAULT_FIELD));
+        $schema->addProperty(static::KEY_CONTENT_ID, new IntegerSchema(static::DEFAULT_CONTENT_ID));
+        return $schema;
     }
 }

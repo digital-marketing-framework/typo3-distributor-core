@@ -2,6 +2,9 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider;
 
+use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\ContainerSchema;
+use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\SchemaInterface;
+use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\StringSchema;
 use DigitalMarketingFramework\Core\Context\ContextInterface;
 use DigitalMarketingFramework\Distributor\Core\DataProvider\DataProvider;
 
@@ -27,10 +30,11 @@ class LanguageCodeDataProvider extends DataProvider
         }
     }
 
-    public static function getDefaultConfiguration(): array
+    public static function getSchema(): SchemaInterface
     {
-        return parent::getDefaultConfiguration() + [
-            static::KEY_FIELD => static::DEFAULT_FIELD,
-        ];
+        /** @var ContainerSchema $schema */
+        $schema = parent::getSchema();
+        $schema->addProperty(static::KEY_FIELD, new StringSchema(static::DEFAULT_FIELD));
+        return $schema;
     }
 }
