@@ -20,7 +20,8 @@ indent_size = 2
 
 # JSON-Files
 [*.json]
-indent_style = tab
+indent_size = 4
+indent_style = space
 
 # ReST-Files
 [*.{rst,rst.txt}]
@@ -33,7 +34,7 @@ max_line_length = 80
 
 # YAML-Files
 [*.{yaml,yml}]
-indent_size = 2
+indent_size = 4
 
 # NEON-Files
 [*.neon]
@@ -42,6 +43,13 @@ indent_style = tab
 
 # package.json
 [package.json]
+indent_size = 4
+
+# css
+[*.{css,less,sass} ]
+indent_size = 2
+
+[*.js]
 indent_size = 2
 
 # TypoScript

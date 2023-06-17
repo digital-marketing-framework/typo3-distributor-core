@@ -9,7 +9,7 @@ class JsonFieldElement extends TextElement
     /**
      * Render textarea and use whitespaces to format JSON
      */
-    public function render()
+    public function render(): array
     {
         // If value can be decoded into json, we encode it again with JSON_PRETTY_PRINT
         $itemValue = json_decode($this->data['parameterArray']['itemFormElValue']);
