@@ -9,6 +9,7 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
@@ -50,7 +51,12 @@ class JobRepository extends Repository implements QueueInterface
             $conditions[] = $query->lessThan('created', $then);
         }
         if (count($conditions) > 0) {
-            $query->matching($query->logicalAnd($conditions));
+            $typo3Version = new Typo3Version();
+            if ($typo3Version->getMajorVersion() <= 11) {
+                $query->matching($query->logicalAnd($conditions)); // @phpstan-ignore-line TYPO3 version switch
+            } else {
+                $query->matching($query->logicalAnd(...$conditions)); // @phpstan-ignore-line TYPO3 version switch
+            }
         }
         if ($limit > 0) {
             $query->setLimit($limit);
