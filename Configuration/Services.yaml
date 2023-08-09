@@ -16,23 +16,17 @@ services:
         event: DigitalMarketingFramework\Typo3\Core\ConfigurationDocument\Event\ConfigurationDocumentMetaDataUpdateEvent
 
   # registry update listeners
-  DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\CoreRegistryPluginUpdateEventListener:
+  DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\CoreRegistryUpdateEventListener:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/registry-update/core/plugin'
-        event: DigitalMarketingFramework\Typo3\Core\Registry\Event\CoreRegistryPluginUpdateEvent
+        identifier: 'digital-marketing-framework/distributor-core/registry-update/core'
+        event: DigitalMarketingFramework\Typo3\Core\Registry\Event\CoreRegistryUpdateEvent
 
-  DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\DistributorRegistryServiceUpdateEventListener:
+  DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\DistributorRegistryUpdateEventListener:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/registry-update/distributor/service'
-        event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryServiceUpdateEvent
-
-  DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\DistributorRegistryPluginUpdateEventListener:
-    tags:
-      - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/registry-update/distributor/plugin'
-        event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryPluginUpdateEvent
+        identifier: 'digital-marketing-framework/distributor-core/registry-update/distributor'
+        event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryUpdateEvent
 
   # sysext:form element processors
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\AbstractSectionElementProcessor:
