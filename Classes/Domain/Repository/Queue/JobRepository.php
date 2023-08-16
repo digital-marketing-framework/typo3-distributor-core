@@ -189,12 +189,13 @@ class JobRepository extends Repository implements QueueInterface
         return $job;
     }
 
-    public function addJob(JobInterface $job): void
+    public function addJob(JobInterface $job): JobInterface
     {
         $job = $this->convertJobForRepository($job);
         $job->setPid($this->getPid());
         $this->add($job);
         $this->persistenceManager->persistAll();
+        return $job;
     }
 
     public function removeJob(JobInterface $job): void
