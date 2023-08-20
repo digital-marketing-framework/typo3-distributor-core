@@ -12,67 +12,56 @@ services:
   DigitalMarketingFramework\Typo3\Distributor\Core\ConfigurationDocument\EventListener\ConfigurationDocumentMetaDataUpdateEventListener:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/configuration-document-meta-data-update'
         event: DigitalMarketingFramework\Typo3\Core\ConfigurationDocument\Event\ConfigurationDocumentMetaDataUpdateEvent
 
   # registry update listeners
   DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\CoreRegistryUpdateEventListener:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/registry-update/core'
         event: DigitalMarketingFramework\Typo3\Core\Registry\Event\CoreRegistryUpdateEvent
 
   DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\DistributorRegistryUpdateEventListener:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/registry-update/distributor'
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryUpdateEvent
 
   # sysext:form element processors
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\AbstractSectionElementProcessor:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/form-element-processor-update/distributor/abstract-section'
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent
 
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\ContentElementProcessor:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/form-element-processor-update/distributor/content'
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent
 
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\DateElementProcessor:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/form-element-processor-update/distributor/date'
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent
 
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\DatePickerElementProcessor:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/form-element-processor-update/distributor/date-picker'
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent
 
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\FileUploadElementProcessor:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/form-element-processor-update/distributor/file-upload'
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent
 
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\GenericElementProcessor:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/form-element-processor-update/distributor/generic'
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent
 
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\HoneypotElementProcessor:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/form-element-processor-update/distributor/honeypot'
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent
 
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\StaticTextElementProcessor:
     tags:
       - name: event.listener
-        identifier: 'digital-marketing-framework/distributor-core/form-element-processor-update/distributor/static-text'
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent
