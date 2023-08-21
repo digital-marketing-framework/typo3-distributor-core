@@ -30,8 +30,8 @@
       <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.hash" xml:space="preserve">
         <source>Hash</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.index" xml:space="preserve">
-        <source>Index</source>
+      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.route_id" xml:space="preserve">
+        <source>Route ID</source>
       </trans-unit>
     </body>
   </file>

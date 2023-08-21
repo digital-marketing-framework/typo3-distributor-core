@@ -16,20 +16,20 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         'crdate' => 'created',
         'title' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job',
         'origUid' => 't3_origuid',
-        'searchFields' => 'label,hash,index,created,status,skipped,status_message,changed',
+        'searchFields' => 'label,hash,route_id,created,status,skipped,status_message,changed',
         'iconfile' => 'EXT:digitalmarketingframework_distributor/Resources/Public/Icons/QueueJob.svg',
         'default_sortby' => 'changed DESC',
     ],
     'interface' => [
-        'showRecordFieldList' => 'label,hash,index,created,changed,status,skipped,status_message,serialized_data',
+        'showRecordFieldList' => 'label,hash,route_id,created,changed,status,skipped,status_message,serialized_data',
     ],
     'types' => [
         '0' => [
-            'showitem' => 'label,hash,index,created,changed,status,skipped,status_message,serialized_data',
+            'showitem' => 'label,hash,route_id,created,changed,status,skipped,status_message,serialized_data',
         ],
     ],
     'palettes' => [
-        '0' => ['showitem' => 'label,hash,index,created,changed,status,skipped,status_message,serialized_data'],
+        '0' => ['showitem' => 'label,hash,route_id,created,changed,status,skipped,status_message,serialized_data'],
     ],
     'columns' => [
         'label' => [
@@ -56,9 +56,9 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
                 'readOnly' => true,
             ],
         ],
-        'index' => [
+        'route_id' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.index',
+            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.route_id',
             'config' => [
                 'type' => 'input',
                 'readOnly' => true,
