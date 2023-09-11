@@ -1,5 +1,6 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       xmlns:formvh="http://typo3.org/ns/TYPO3/CMS/Form/ViewHelpers"
+      xmlns:d="http://typo3.org/ns/DigitalMarketingFramework/Typo3/Core/ViewHelpers"
       data-namespace-typo3-fluid="true">
     <f:render partial="ConfigurationDocument/ConfigurationEditorAssets" />
     <div class="form-editor">
@@ -9,19 +10,9 @@
                    data-random-id-number="1"><span data-template-property="label"></span></label>
             <div class="t3-form-controls"
                  data-identifier="inspectorEditorControlsWrapper">
-                <textarea class="form-control dmf-configuration-document"
-                          data-random-id
-                          data-random-id-attribute="id"
-                          data-random-id-number="1"
-                          data-template-property="propertyPath"
-                          data-app="false"
-                          data-mode="modal"
-                          data-readonly="false"
-                          data-url-schema="{f:be.uri(route:'ajax_digitalmarketingframework_configuration_schema')}"
-                          data-url-defaults="{f:be.uri(route:'ajax_digitalmarketingframework_configuration_defaults')}"
-                          data-url-merge="{f:be.uri(route:'ajax_digitalmarketingframework_configuration_merge')}"
-                          data-url-split="{f:be.uri(route:'ajax_digitalmarketingframework_configuration_split')}"
-                          data-url-update-includes="{f:be.uri(route:'ajax_digitalmarketingframework_configuration_update_includes')}"></textarea>
+                <d:be.configurationEditor.textArea mode="modal"
+                                                   ready="0"
+                                                   additionalAttributes="{class:'form-control dmf-configuration-document',data-random-id:'',data-random-id-attribute:'id',data-random-id-number:'1',data-template-property:'propertyPath'}" />
             </div>
             <span class="inspector-editor-hint"
                   data-template-property="fieldExplanationText"></span>
