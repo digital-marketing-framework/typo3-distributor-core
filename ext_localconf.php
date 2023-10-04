@@ -1,6 +1,7 @@
 <?php
 
 use DigitalMarketingFramework\Typo3\Distributor\Core\Backend\DataHandler\MetaDataHandler;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Form\Element\ConfigurationEdtiorTextFieldElement;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Form\Element\JsonFieldElement;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueCleanupFieldProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueCleanupTask;
@@ -38,5 +39,11 @@ defined('TYPO3') || die();
         'nodeName' => 'digitalMarketingFrameworkJsonFieldElement',
         'priority' => 40,
         'class' => JsonFieldElement::class,
+    ];
+
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1694775399] = [
+        'nodeName' => 'digitalMarketingFrameworkConfigurationEditorTextFieldElement',
+        'priority' => 40,
+        'class' => ConfigurationEdtiorTextFieldElement::class,
     ];
 })();
