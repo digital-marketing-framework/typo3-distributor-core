@@ -4,13 +4,14 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form;
 
 use DigitalMarketingFramework\Core\Model\Data\Value\ValueInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use TYPO3\CMS\Core\Log\Logger;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManagerInterface;
+use TYPO3\CMS\Form\Domain\Model\Renderable\AbstractRenderable;
 use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
 
 class FormDataProcessor
 {
-    protected Logger $logger;
+    protected LoggerInterface $logger;
 
     public function __construct(
         protected EventDispatcherInterface $eventDispatcher,
@@ -21,8 +22,9 @@ class FormDataProcessor
 
     /**
      * @param array<RenderableInterface> $elements
-     * @param array<mixed> $values
-     * @param array<mixed> $configuration
+     * @param array<string,mixed> $values
+     * @param array<string,mixed> $configuration
+     *
      * @return array<string,string|ValueInterface>
      */
     public function process(array $elements, array $values, array $configuration): array
@@ -39,15 +41,16 @@ class FormDataProcessor
             $this->eventDispatcher->dispatch($event);
             if (!$event->getProcessed()) {
                 $this->logger->error('Ignoring unknown form field type.', [
-                    'form' => $element->getRootForm()->getIdentifier(),
+                    'form' => $element instanceof AbstractRenderable ? $element->getRootForm()->getIdentifier() : 'unknown',
                     'field' => $id,
-                    'class' => get_class($element),
+                    'class' => $element::class,
                     'type' => $type,
                 ]);
             } elseif ($event->getResult() !== null) {
                 $result[$event->getElementName()] = $event->getResult();
             }
         }
+
         return $result;
     }
 }

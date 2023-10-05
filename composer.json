@@ -1,35 +1,36 @@
 {
     "name": "digital-marketing-framework/typo3-distributor-core",
-    "type": "typo3-cms-extension",
     "description": "Digital Marketing Framework - Distributor",
     "license": "GPL-2.0-or-later",
+    "type": "typo3-cms-extension",
     "keywords": [
         "TYPO3",
         "extension",
         "form",
         "formrelay"
     ],
-    "homepage": "https://www.mediatis.de",
     "authors": [
         {
+            "name": "Mediatis AG",
             "email": "info@mediatis.de",
             "homepage": "https://www.mediatis.de",
-            "name": "Mediatis AG",
             "role": "Developer"
         }
     ],
-    "minimum-stability": "dev",
+    "homepage": "https://www.mediatis.de",
     "require": {
         "php": "^8.1",
+        "digital-marketing-framework/distributor-core": "dev-main",
+        "digital-marketing-framework/typo3-core": "dev-main",
+        "mediatis/form_fieldnames": "^3.5 || ^4.0",
         "typo3/cms-core": "^11.5 || ^12.4",
         "typo3/cms-form": "^11.5 || ^12.4",
-        "mediatis/form_fieldnames": "^3.5 || ^4.0",
-        "digital-marketing-framework/typo3-core": "dev-main",
-        "digital-marketing-framework/distributor-core": "dev-main"
+        "typo3/cms-scheduler": "^11.5 || ^12.4"
     },
     "require-dev": {
         "mediatis/typo3-coding-standards": "^1.0"
     },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "DigitalMarketingFramework\\Typo3\\Distributor\\Core\\": "Classes"
@@ -41,19 +42,19 @@
         }
     },
     "config": {
-        "vendor-dir": ".Build/vendor",
-        "bin-dir": ".Build/bin",
         "allow-plugins": {
             "typo3/cms-composer-installers": true,
             "typo3/class-alias-loader": true,
             "phpstan/extension-installer": true,
             "ergebnis/composer-normalize": true
-        }
+        },
+        "bin-dir": ".Build/bin",
+        "vendor-dir": ".Build/vendor"
     },
     "extra": {
         "typo3/cms": {
-            "web-dir": ".Build/Web",
-            "extension-key": "digitalmarketingframework_distributor"
+            "extension-key": "digitalmarketingframework_distributor",
+            "web-dir": ".Build/Web"
         }
     },
     "scripts": {

@@ -3,16 +3,19 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor;
 
 use DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent;
-use TYPO3\CMS\Core\Log\Logger;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManagerInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
 
 abstract class ElementProcessor
 {
-    protected Logger $logger;
+    protected LoggerInterface $logger;
 
-    protected array $configuration;
+    /**
+     * @var array<string,mixed>
+     */
+    protected array $configuration = [];
 
     public function __construct(
         protected ConfigurationManagerInterface $configurationManager,
@@ -38,7 +41,7 @@ abstract class ElementProcessor
         return '';
     }
 
-    protected function match($element, $elementValue): bool
+    protected function match(RenderableInterface $element, mixed $elementValue): bool
     {
         $elementClass = $this->getElementClass();
         $elementType = $this->getElementType();
@@ -46,12 +49,13 @@ abstract class ElementProcessor
 
         $result = false;
         if (
-            ($elementClass && is_a($element, $elementClass))
-            || ($elementType && $element->getType() === $elementType)
-            || ($valueClass && is_a($elementValue, $valueClass))
-         ) {
+            ($elementClass !== '' && $element instanceof $elementClass)
+            || ($elementType !== '' && $element->getType() === $elementType)
+            || ($valueClass !== '' && is_a($elementValue, $valueClass))
+        ) {
             $result = true;
         }
+
         return $result;
     }
 

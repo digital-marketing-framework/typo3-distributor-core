@@ -7,11 +7,15 @@ use DigitalMarketingFramework\Distributor\Core\Service\RelayInterface;
 
 class QueueProcessorTask extends QueueTask
 {
+    /**
+     * @var int
+     */
     public const BATCH_SIZE = 10;
 
     protected int $batchSize = self::BATCH_SIZE;
 
     protected QueueProcessorInterface $queueProcessor;
+
     protected RelayInterface $relay;
 
     protected function prepareTask(): void
@@ -35,6 +39,7 @@ class QueueProcessorTask extends QueueTask
     {
         $this->prepareTask();
         $this->queueProcessor->processBatch($this->batchSize);
+
         return true;
     }
 }
