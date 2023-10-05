@@ -7,7 +7,10 @@ use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
 
 class DateElementProcessor extends ElementProcessor
 {
-    const DATE_FORMAT = 'Y-m-d';
+    /**
+     * @var string
+     */
+    public const DATE_FORMAT = 'Y-m-d';
 
     protected function getElementType(): string
     {
@@ -25,6 +28,7 @@ class DateElementProcessor extends ElementProcessor
         if ($elementValue instanceof DateTime) {
             $value = $elementValue->format(static::DATE_FORMAT);
         }
+
         return $value;
     }
 }

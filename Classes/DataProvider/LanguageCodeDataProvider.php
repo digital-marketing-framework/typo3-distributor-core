@@ -10,8 +10,15 @@ use DigitalMarketingFramework\Distributor\Core\DataProvider\DataProvider;
 
 class LanguageCodeDataProvider extends DataProvider
 {
-    const KEY_FIELD = 'field';
-    const DEFAULT_FIELD = 'language';
+    /**
+     * @var string
+     */
+    public const KEY_FIELD = 'field';
+
+    /**
+     * @var string
+     */
+    public const DEFAULT_FIELD = 'language';
 
     protected function processContext(ContextInterface $context): void
     {
@@ -35,6 +42,7 @@ class LanguageCodeDataProvider extends DataProvider
         /** @var ContainerSchema $schema */
         $schema = parent::getSchema();
         $schema->addProperty(static::KEY_FIELD, new StringSchema(static::DEFAULT_FIELD));
+
         return $schema;
     }
 }

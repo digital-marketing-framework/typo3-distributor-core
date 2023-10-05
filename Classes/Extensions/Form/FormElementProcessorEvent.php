@@ -3,14 +3,20 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form;
 
 use DigitalMarketingFramework\Core\Model\Data\Value\ValueInterface;
+use TYPO3\CMS\Form\Domain\Model\FormElements\FormElementInterface;
 use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
 
 class FormElementProcessorEvent
 {
     protected string|ValueInterface|null $result = null;
+
     protected bool $processed = false;
+
     protected ?string $name = null;
 
+    /**
+     * @param array<string,mixed> $configuration
+     */
     public function __construct(
         protected RenderableInterface $element,
         protected mixed $value,
@@ -25,12 +31,13 @@ class FormElementProcessorEvent
         }
 
         $name = $this->element->getIdentifier();
-        if (method_exists($this->element, 'getProperties')) {
+        if ($this->element instanceof FormElementInterface) {
             $properties = $this->element->getProperties();
             if (isset($properties['fluidAdditionalAttributes']['name'])) {
                 $name = $properties['fluidAdditionalAttributes']['name'];
             }
         }
+
         return $name;
     }
 
@@ -49,6 +56,9 @@ class FormElementProcessorEvent
         return $this->value;
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getConfiguration(): array
     {
         return $this->configuration;

@@ -3,6 +3,7 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor;
 
 use DateTime;
+use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
 use TYPO3\CMS\Form\Domain\Model\FormElements\DatePicker;
 use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
 
@@ -20,6 +21,10 @@ class DatePickerElementProcessor extends ElementProcessor
 
     protected function process(RenderableInterface $element, mixed $elementValue): mixed
     {
+        if (!$element instanceof DatePicker) {
+            throw new DigitalMarketingFrameworkException(sprintf('Field type DatePicker expected, found "%s".', $element::class));
+        }
+
         $value = '';
         $properties = $element->getProperties();
         if ($elementValue instanceof DateTime) {
@@ -31,8 +36,10 @@ class DatePickerElementProcessor extends ElementProcessor
             } else {
                 $dateFormat = DateTime::W3C;
             }
+
             $value = $elementValue->format($dateFormat);
         }
+
         return $value;
     }
 }

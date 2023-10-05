@@ -22,13 +22,11 @@ class Job extends AbstractEntity implements JobInterface
     ) {
     }
 
-    protected function updateMetaData()
+    protected function updateMetaData(): void
     {
         $data = $this->getData();
-        if (!empty($data)) {
-            if (isset($data['routeId'])) {
-                $this->setRouteId($data['routeId']);
-            }
+        if ($data !== [] && isset($data['routeId'])) {
+            $this->setRouteId($data['routeId']);
         }
     }
 
@@ -136,13 +134,15 @@ class Job extends AbstractEntity implements JobInterface
     public function getData(): array
     {
         $data = $this->getSerializedData();
-        if (!$data) {
+        if ($data === '') {
             return [];
         }
-        $data = json_decode($data, true);
-        if (!$data) {
+
+        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        if (!(bool)$data) {
             return [];
         }
+
         return $data;
     }
 
@@ -160,9 +160,11 @@ class Job extends AbstractEntity implements JobInterface
                     // and "data" and "context" are much more important (and usually much smaller)
                     unset($data['submission']['configuration']);
                 }
+
                 $serializedData = print_r($data, true);
             }
         }
+
         $this->setSerializedData($serializedData);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener;
 
-use DigitalMarketingFramework\Core\Initialization;
+use DigitalMarketingFramework\Core\InitializationInterface;
 use DigitalMarketingFramework\Core\Registry\RegistryDomain;
 use DigitalMarketingFramework\Core\Registry\RegistryUpdateType;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
@@ -11,7 +11,7 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorR
 abstract class AbstractDistributorRegistryUpdateEventListener
 {
     public function __construct(
-        protected Initialization $initialization
+        protected InitializationInterface $initialization
     ) {
     }
 

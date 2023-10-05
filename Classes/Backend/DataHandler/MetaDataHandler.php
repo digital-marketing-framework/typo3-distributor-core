@@ -2,8 +2,8 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Backend\DataHandler;
 
-use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
 use DigitalMarketingFramework\Distributor\Core\Factory\QueueDataFactoryInterface;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -18,18 +18,22 @@ class MetaDataHandler implements SingletonInterface
         $this->queueDataFactory = $this->registry->getQueueDataFactory();
     }
 
-    protected function updateJobData(&$fieldArray)
+    /**
+     * @param array<string,mixed> $fieldArray
+     */
+    protected function updateJobData(array &$fieldArray): void
     {
         $job = new Job();
-        $serializedData = json_decode($fieldArray['serialized_data'] ?? '');
-        if (!$serializedData) {
+        $serializedData = json_decode($fieldArray['serialized_data'] ?? '', null, 512, JSON_THROW_ON_ERROR);
+        if (!(bool)$serializedData) {
             $job->setSerializedData('');
         } else {
-            $job->setSerializedData(json_encode($serializedData));
+            $job->setSerializedData(json_encode($serializedData, JSON_THROW_ON_ERROR));
         }
+
         $job->setHash($fieldArray['hash'] ?? '');
 
-        $fieldArray['serialized_data'] = json_encode(json_decode($job->getSerializedData()));
+        $fieldArray['serialized_data'] = json_encode(json_decode($job->getSerializedData(), null, 512, JSON_THROW_ON_ERROR), JSON_THROW_ON_ERROR);
         $fieldArray['route_id'] = $this->queueDataFactory->getJobRouteId($job);
 
         $job->setHash($this->queueDataFactory->getJobHash($job));
@@ -39,7 +43,10 @@ class MetaDataHandler implements SingletonInterface
         $fieldArray['label'] = $job->getLabel();
     }
 
-    public function processDatamap_preProcessFieldArray(&$fieldArray, $table, $id, DataHandler $parentObj)
+    /**
+     * @param array<string,mixed> $fieldArray
+     */
+    public function processDatamap_preProcessFieldArray(array &$fieldArray, string $table, string $id, DataHandler $parentObj): void
     {
         if (($table === 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job') && !$parentObj->isImporting) {
             $this->updateJobData($fieldArray);

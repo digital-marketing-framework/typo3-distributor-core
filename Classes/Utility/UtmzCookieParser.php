@@ -9,26 +9,62 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Utility;
  */
 class UtmzCookieParser
 {
-    public $utmz_source;
-    public $utmz_medium;
-    public $utmz_term;
-    public $utmz_content;
-    public $utmz_campaign;
-    public $utmz_gclid;
-    public $utmz;
-    public $utmz_domainHash;
-    public $utmz_timestamp;
-    public $utmz_sessionNumber;
-    public $utmz_campaignNumber;
+    protected string $utmz_source;
 
-    //Contstructor fires method that parses and assigns property values
+    protected string $utmz_medium;
+
+    protected string $utmz_term;
+
+    protected string $utmz_content;
+
+    protected string $utmz_campaign;
+
+    protected string $utmz_gclid;
+
+    protected string $utmz;
+
+    protected string $utmz_domainHash;
+
+    protected string $utmz_timestamp;
+
+    protected string $utmz_sessionNumber;
+
+    protected string $utmz_campaignNumber;
+
+    /**
+     * Constructor fires method that parses and assigns property values
+     *
+     * @param array<string,string> $cookies
+     */
     public function __construct(array $cookies)
     {
         $this->setUtmz($cookies);
     }
 
-    //Grab utmz cookie if it exists
-    private function setUtmz($cookies)
+    public function getVar(string $name): ?string
+    {
+        return match ($name) {
+            'utmz_source' => $this->utmz_source,
+            'utmz_medium' => $this->utmz_medium,
+            'utmz_term' => $this->utmz_term,
+            'utmz_content' => $this->utmz_content,
+            'utmz_campaign' => $this->utmz_campaign,
+            'utmz_gclid' => $this->utmz_gclid,
+            'utmz' => $this->utmz,
+            'utmz_domainHash' => $this->utmz_domainHash,
+            'utmz_timestamp' => $this->utmz_timestamp,
+            'utmz_sessionNumber' => $this->utmz_sessionNumber,
+            'utmz_campaignNumber' => $this->utmz_campaignNumber,
+            default => null,
+        };
+    }
+
+    /**
+     * Grab utmz cookie if it exists
+     *
+     * @param array<string,string> $cookies
+     */
+    private function setUtmz(array $cookies): void
     {
         if (isset($cookies['__utmz'])) {
             $this->utmz = $cookies['__utmz'];
@@ -36,38 +72,41 @@ class UtmzCookieParser
         }
     }
 
-    //parse utmz cookie into variables
-    private function parseUtmz()
+    /**
+     * parse utmz cookie into variables
+     */
+    private function parseUtmz(): void
     {
-        //Break cookie in half
-        if (strpos($this->utmz, 'u') === 0) {
+        // Break cookie in half
+        if (str_starts_with($this->utmz, 'u')) {
             // starts with a "u" means ther is no first half
             $utmz_a = '';
             $utmz_b = $this->utmz;
         } else {
             $utmz_b = strstr($this->utmz, 'u');
-            $utmz_a = substr($this->utmz, 0, strpos($this->utmz, $utmz_b) - 1);
+            $utmz_a = substr($this->utmz, 0, strpos($this->utmz, (string)$utmz_b) - 1);
         }
 
-        //assign variables to first half of cookie
+        // assign variables to first half of cookie
         $utmz_a_list = explode('.', $utmz_a);
         $this->utmz_domainHash = $utmz_a_list[0] ?? '';
         $this->utmz_timestamp = $utmz_a_list[1] ?? '';
         $this->utmz_sessionNumber = $utmz_a_list[2] ?? '';
         $this->utmz_campaignNumber = $utmz_a_list[3] ?? '';
 
-        //break apart second half of cookie
+        // break apart second half of cookie
         $utmzPairs = [];
-        $z = explode('|', $utmz_b);
+        $z = explode('|', (string)$utmz_b);
         foreach ($z as $value) {
             $v = explode('=', $value);
             $pairKey = $v[0] ?? '';
             $pairValue = $v[1] ?? '';
-            if ($pairKey && $pairValue) {
+            if ($pairKey !== '' && $pairValue !== '') {
                 $utmzPairs[$v[0]] = $v[1];
             }
         }
-        //Variable assignment for second half of cookie
+
+        // Variable assignment for second half of cookie
         foreach ($utmzPairs as $key => $value) {
             switch ($key) {
                 case 'utmcsr':
@@ -89,7 +128,7 @@ class UtmzCookieParser
                     $this->utmz_gclid = $value;
                     break;
                 default:
-                    //do nothing
+                    // do nothing
             }
         }
     }

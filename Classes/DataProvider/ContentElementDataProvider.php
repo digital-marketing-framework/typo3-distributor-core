@@ -7,26 +7,41 @@ use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\I
 use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\SchemaInterface;
 use DigitalMarketingFramework\Core\ConfigurationDocument\SchemaDocument\Schema\StringSchema;
 use DigitalMarketingFramework\Core\Context\ContextInterface;
+use DigitalMarketingFramework\Core\Utility\GeneralUtility as DmfGeneralUtility;
 use DigitalMarketingFramework\Distributor\Core\DataProvider\DataProvider;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\RecordsContentObject;
 
 class ContentElementDataProvider extends DataProvider
 {
+    /**
+     * @var string
+     */
     protected const KEY_FIELD = 'field';
+
+    /**
+     * @var string
+     */
     protected const DEFAULT_FIELD = '';
 
+    /**
+     * @var string
+     */
     protected const KEY_CONTENT_ID = 'ttContentUid';
+
+    /**
+     * @var int
+     */
     protected const DEFAULT_CONTENT_ID = 0;
 
     protected function processContext(ContextInterface $context): void
     {
         $ttContentUid = $this->getConfig(static::KEY_CONTENT_ID);
 
-        $uids = $ttContentUid === '' ? [] : explode(',', $ttContentUid);
+        $uids = DmfGeneralUtility::castValueToArray($ttContentUid);
 
         $content = $this->renderContentElements($uids);
-        if ($content) {
+        if ($content !== '' && $content !== '0') {
             $this->submission->getContext()['content_element'] = $content;
         }
     }
@@ -35,11 +50,14 @@ class ContentElementDataProvider extends DataProvider
     {
         $field = $this->getConfig(static::KEY_FIELD);
         $content = $this->submission->getContext()['content_element'] ?? '';
-        if ($field && $content) {
+        if ($field !== '' && $content !== '') {
             $this->appendToField($field, $content, "\n");
         }
     }
 
+    /**
+     * @param array<string> $uids
+     */
     protected function renderContentElements(array $uids): string
     {
         $content = '';
@@ -56,11 +74,14 @@ class ContentElementDataProvider extends DataProvider
             if ($renderedElement === '') {
                 continue;
             }
+
             if ($content !== '') {
                 $content .= '\n';
             }
+
             $content .= $renderedElement;
         }
+
         return $content;
     }
 
@@ -75,6 +96,7 @@ class ContentElementDataProvider extends DataProvider
         $schema = parent::getSchema();
         $schema->addProperty(static::KEY_FIELD, new StringSchema(static::DEFAULT_FIELD));
         $schema->addProperty(static::KEY_CONTENT_ID, new IntegerSchema(static::DEFAULT_CONTENT_ID));
+
         return $schema;
     }
 }

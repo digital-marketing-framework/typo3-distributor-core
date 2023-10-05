@@ -10,6 +10,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class QueueCleanupTask extends QueueTask
 {
+    /**
+     * @var int
+     */
     protected const DEFAULT_EXPIRATION_TIME = 30;
 
     protected bool $doneOnly = false;
@@ -24,19 +27,24 @@ class QueueCleanupTask extends QueueTask
         $this->doneOnly = $doneOnly;
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     protected function getExtensionQueueSettings(): array
     {
         try {
             $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+
             return $extensionConfiguration->get('digitalmarketingframework_distributor')['queue'] ?? [];
         } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
-            return static::DEFAULT_EXPIRATION_TIME;
+            return [];
         }
     }
 
     protected function getExpirationTime(): int
     {
         $expirationInDays = $this->getExtensionQueueSettings()['expirationTime'] ?? static::DEFAULT_EXPIRATION_TIME;
+
         return $expirationInDays * 24 * 3600;
     }
 
@@ -47,6 +55,7 @@ class QueueCleanupTask extends QueueTask
             $this->getExpirationTime(),
             $this->doneOnly ? [QueueInterface::STATUS_DONE] : []
         );
+
         return true;
     }
 }

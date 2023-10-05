@@ -8,6 +8,9 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\Utility\UtmzCookieParser;
 
 class AdwordsCampaignsDataProvider extends DataProvider
 {
+    /**
+     * @var array<string, string>
+     */
     protected const UTMZ_MAP = [
         'utmz_source' => 'utmz_source',
         'utmz_medium' => 'utmz_medium',
@@ -16,6 +19,9 @@ class AdwordsCampaignsDataProvider extends DataProvider
         'utmz_content' => 'utmz_content',
     ];
 
+    /**
+     * @var array<string, string>
+     */
     protected const UTM_MAP = [
         'ga_utm_source' => 'utm_source',
         'ga_utm_medium' => 'utm_medium',
@@ -37,8 +43,9 @@ class AdwordsCampaignsDataProvider extends DataProvider
         $cookies = $this->submission->getContext()->getCookies();
         $utmz = new UtmzCookieParser($cookies);
         foreach (static::UTMZ_MAP as $member => $field) {
-            if ($utmz->$member) {
-                $this->setField($field, $utmz->$member);
+            $value = $utmz->getVar($member);
+            if ($value !== null) {
+                $this->setField($field, $value);
             }
         }
 
