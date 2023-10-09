@@ -8,7 +8,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class File implements FileInterface
 {
-    /** @var Typo3FileInterface $file */
+    /** @var Typo3FileInterface */
     protected $file;
 
     public function __construct(Typo3FileInterface $file)

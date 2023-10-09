@@ -4,7 +4,7 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form;
 
 use DateTime;
 use DigitalMarketingFramework\Core\ConfigurationDocument\ConfigurationDocumentManagerInterface;
-use DigitalMarketingFramework\Distributor\Core\Model\Configuration\SubmissionConfiguration;
+use DigitalMarketingFramework\Core\Model\Data\Value\ValueInterface;
 use DigitalMarketingFramework\Distributor\Core\Model\DataSet\SubmissionDataSet;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
 use Exception;
@@ -16,7 +16,7 @@ class FormFinisher extends AbstractFinisher
     protected ConfigurationDocumentManagerInterface $configurationDocumentManager;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $defaultOptions = [
         'setup' => '',
@@ -29,6 +29,11 @@ class FormFinisher extends AbstractFinisher
         $this->configurationDocumentManager = $registry->getConfigurationDocumentManager();
     }
 
+    /**
+     * @param array<string,mixed> $configuration
+     *
+     * @return array<string,string|ValueInterface>
+     */
     protected function getFormValues(array $configuration): array
     {
         $elements = $this->finisherContext
@@ -36,15 +41,23 @@ class FormFinisher extends AbstractFinisher
             ->getFormDefinition()
             ->getRenderablesRecursively();
         $elementValues = $this->finisherContext->getFormValues();
+
         return $this->formDataProcessor->process($elements, $elementValues, $configuration);
     }
 
+    /**
+     * @return array<array<string,mixed>>
+     */
     protected function getConfigurationStack(): array
     {
         $configurationDocument = $this->parseOption('setup');
+
         return $this->configurationDocumentManager->getConfigurationStackFromDocument($configurationDocument);
     }
 
+    /**
+     * @param array<mixed> $data
+     */
     protected function debugLog(string $file, array $data): void
     {
         $timestamp = (new DateTime())->format('Y-m-d G:i:s T(P)');
@@ -52,7 +65,7 @@ class FormFinisher extends AbstractFinisher
         try {
             $message = $timestamp . ':' . PHP_EOL . print_r($data, true) . PHP_EOL;
             file_put_contents($path, $message, FILE_APPEND);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $message = $timestamp . ': cannot log data' . PHP_EOL;
             @file_put_contents($path, $message, FILE_APPEND);
         }
@@ -70,7 +83,7 @@ class FormFinisher extends AbstractFinisher
         $formValues = $this->getFormValues($globalConfiguration);
 
         // low level debug log, if configured
-        if ($globalConfiguration['debug']['enabled'] ?? false) {
+        if (isset($globalConfiguration['debug']['enabled']) && (bool)$globalConfiguration['debug']['enabled']) {
             $file = $globalConfiguration['debug']['file'] ?? 'ditigal-marketing-framework-distributor-submission.log';
             $this->debugLog($file, $formValues);
         }

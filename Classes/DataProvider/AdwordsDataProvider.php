@@ -7,8 +7,15 @@ use DigitalMarketingFramework\Distributor\Core\DataProvider\DataProvider;
 
 class AdwordsDataProvider extends DataProvider
 {
-    const COOKIE_KEYWORDS = 'adwords_keywords';
-    const COOKIE_EVENTCODE = 'adwords_eventcode';
+    /**
+     * @var string
+     */
+    public const COOKIE_KEYWORDS = 'adwords_keywords';
+
+    /**
+     * @var string
+     */
+    public const COOKIE_EVENTCODE = 'adwords_eventcode';
 
     protected function processContext(ContextInterface $context): void
     {
@@ -20,13 +27,13 @@ class AdwordsDataProvider extends DataProvider
     {
         // track LMS Keywords
         $keywords = $this->submission->getContext()->getCookie(static::COOKIE_KEYWORDS);
-        if ($keywords) {
+        if ($keywords !== null) {
             $this->setField(static::COOKIE_KEYWORDS, $keywords);
         }
 
         // track LMS Eventcode
         $eventCode = $this->submission->getContext()->getCookie(static::COOKIE_EVENTCODE);
-        if ($eventCode) {
+        if ($eventCode !== null) {
             $this->setField(static::COOKIE_EVENTCODE, $eventCode);
         }
     }

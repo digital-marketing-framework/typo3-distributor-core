@@ -3,6 +3,7 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue;
 
 use DateTime;
+use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
 use DigitalMarketingFramework\Core\Model\Queue\JobInterface;
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
@@ -13,6 +14,9 @@ use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
+/**
+ * @extends Repository<Job>
+ */
 class JobRepository extends Repository implements QueueInterface
 {
     protected int $pid;
@@ -27,9 +31,15 @@ class JobRepository extends Repository implements QueueInterface
                 $this->pid = 0;
             }
         }
+
         return $this->pid;
     }
 
+    /**
+     * @param array<int> $status
+     *
+     * @return array<Job>
+     */
     protected function fetchWhere(array $status = [], int $limit = 0, int $offset = 0, int $minTimeSinceChangedInSeconds = 0, int $minAgeInSeconds = 0): array
     {
         $query = $this->createQuery();
@@ -37,20 +47,23 @@ class JobRepository extends Repository implements QueueInterface
         $query->getQuerySettings()->setStoragePageIds([$this->getPid()]);
 
         $conditions = [];
-        if (count($status) > 0) {
+        if ($status !== []) {
             $conditions[] = $query->in('status', $status);
         }
+
         if ($minTimeSinceChangedInSeconds > 0) {
             $then = new DateTime();
             $then->modify('- ' . $minTimeSinceChangedInSeconds . ' seconds');
             $conditions[] = $query->lessThan('changed', $then);
         }
+
         if ($minAgeInSeconds > 0) {
             $then = new DateTime();
             $then->modify('- ' . $minAgeInSeconds . ' seconds');
             $conditions[] = $query->lessThan('created', $then);
         }
-        if (count($conditions) > 0) {
+
+        if ($conditions !== []) {
             $typo3Version = new Typo3Version();
             if ($typo3Version->getMajorVersion() <= 11) {
                 $query->matching($query->logicalAnd($conditions)); // @phpstan-ignore-line TYPO3 version switch
@@ -58,12 +71,15 @@ class JobRepository extends Repository implements QueueInterface
                 $query->matching($query->logicalAnd(...$conditions)); // @phpstan-ignore-line TYPO3 version switch
             }
         }
+
         if ($limit > 0) {
             $query->setLimit($limit);
         }
+
         if ($offset > 0) {
             $query->setOffset($offset);
         }
+
         return $query->execute()->toArray();
     }
 
@@ -104,6 +120,10 @@ class JobRepository extends Repository implements QueueInterface
 
     public function markAs(JobInterface $job, int $status, string $message = '', bool $skipped = false): void
     {
+        if (!$job instanceof Job) {
+            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be updated in this queue.', $job::class));
+        }
+
         $job->setStatus($status);
         $job->setChanged(new DateTime());
         $job->setStatusMessage($message);
@@ -186,6 +206,7 @@ class JobRepository extends Repository implements QueueInterface
             $newJob->setLabel($job->getLabel());
             $job = $newJob;
         }
+
         return $job;
     }
 
@@ -195,16 +216,18 @@ class JobRepository extends Repository implements QueueInterface
         $job->setPid($this->getPid());
         $this->add($job);
         $this->persistenceManager->persistAll();
+
         return $job;
     }
 
     public function removeJob(JobInterface $job): void
     {
-        $realJob = $this->findByUid($job->getId());
-        if ($realJob) {
-            $this->remove($realJob);
-            $this->persistenceManager->persistAll();
+        if (!$job instanceof Job) {
+            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be removed from this queue.', $job::class));
         }
+
+        $this->remove($job);
+        $this->persistenceManager->persistAll();
     }
 
     public function removeOldJobs(int $minAgeInSeconds, array $status = []): void
@@ -213,6 +236,7 @@ class JobRepository extends Repository implements QueueInterface
         foreach ($jobs as $job) {
             $this->remove($job);
         }
+
         $this->persistenceManager->persistAll();
     }
 }

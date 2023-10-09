@@ -15,9 +15,10 @@ class GenericElementProcessor extends ElementProcessor
 
     protected function process(RenderableInterface $element, mixed $elementValue): mixed
     {
-        if ($element->getType() === 'Checkbox' && !$elementValue) {
+        if ($element->getType() === 'Checkbox' && !(bool)$elementValue) {
             $elementValue = 0;
         }
+
         return is_array($elementValue) ? new MultiValue($elementValue) : $elementValue;
     }
 }

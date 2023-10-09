@@ -2,8 +2,8 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event;
 
-use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
 use DigitalMarketingFramework\Core\Registry\RegistryUpdateType;
+use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
 
 class DistributorRegistryUpdateEvent
 {

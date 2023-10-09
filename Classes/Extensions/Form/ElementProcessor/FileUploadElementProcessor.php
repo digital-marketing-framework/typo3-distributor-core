@@ -2,10 +2,10 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor;
 
+use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
 use DigitalMarketingFramework\Core\Model\Data\Value\FileValue;
+use DigitalMarketingFramework\Core\Utility\GeneralUtility as DmfGeneralUtility;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\File\File;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
 use Exception;
 use TYPO3\CMS\Core\Log\LogManagerInterface;
 use TYPO3\CMS\Core\Resource\FileInterface;
@@ -37,10 +37,12 @@ class FileUploadElementProcessor extends ElementProcessor
         return $this->configuration['fileUpload']['disableProcessing'] ?? false;
     }
 
+    /**
+     * @return array<string>
+     */
     protected function prohibitedFileExtensions(): array
     {
-        $prohibitedExtensions = $this->configuration['fileUpload']['prohibitedExtension'] ?? 'php,exe';
-        return $prohibitedExtensions ? explode(',', $prohibitedExtensions) : [];
+        return DmfGeneralUtility::castValueToArray(strtolower($this->configuration['fileUpload']['prohibitedExtension'] ?? 'php,exe'));
     }
 
     protected function baseUploadPath(): string
@@ -64,6 +66,10 @@ class FileUploadElementProcessor extends ElementProcessor
             return null;
         }
 
+        if (!$element instanceof FileUpload) {
+            throw new DigitalMarketingFrameworkException(sprintf('Field type FileUpload expected, found "%s".', $element::class));
+        }
+
         if ($elementValue instanceof ExtbaseFileReference) {
             $elementValue = $elementValue->getOriginalResource();
         }
@@ -72,15 +78,15 @@ class FileUploadElementProcessor extends ElementProcessor
             $elementValue = $elementValue->getOriginalFile();
         }
 
-        if (!empty($this->prohibitedFileExtensions())) {
-            if (in_array($elementValue->getExtension(), $this->prohibitedFileExtensions())) {
-                $this->logger->error(
-                    'Uploaded file did not pass safety checks, discarded',
-                    ['extension' => $elementValue->getExtension()]
-                );
-                return null;
-            }
+        if ($this->prohibitedFileExtensions() !== [] && in_array(strtolower((string)$elementValue->getExtension()), $this->prohibitedFileExtensions(), true)) {
+            $this->logger->error(
+                'Uploaded file did not pass safety checks, discarded',
+                ['extension' => $elementValue->getExtension()]
+            );
+
+            return null;
         }
+
         $defaultStorage = $this->resourceFactory->getDefaultStorage();
 
         $baseUploadPath = rtrim($this->baseUploadPath(), '/')
@@ -95,14 +101,15 @@ class FileUploadElementProcessor extends ElementProcessor
 
         try {
             $folder = $defaultStorage->getFolder($folderObject->getIdentifier());
-        } catch (Exception $e) {
+        } catch (Exception) {
             try {
                 $folder = $defaultStorage->createFolder($folderObject->getIdentifier());
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $this->logger->error(
                     'UploadFormField folder for this form can not be created',
                     ['baseUploadPath' => $baseUploadPath]
                 );
+
                 return null;
             }
         }
@@ -118,6 +125,7 @@ class FileUploadElementProcessor extends ElementProcessor
                 /** @var FileValue $uploadField */
                 $uploadField = GeneralUtility::makeInstance(FileValue::class, $file);
                 $uploadField->setFileName($fileName);
+
                 return $uploadField;
             }
         } else {
@@ -129,6 +137,7 @@ class FileUploadElementProcessor extends ElementProcessor
                 ]
             );
         }
+
         return null;
     }
 }

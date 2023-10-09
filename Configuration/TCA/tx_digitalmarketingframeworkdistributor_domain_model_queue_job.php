@@ -1,8 +1,8 @@
 <?php
 
-if (!defined('TYPO3')) {
-    die('Access denied.');
-}
+use DigitalMarketingFramework\Core\Queue\QueueInterface;
+
+defined('TYPO3') || exit;
 
 $ll = 'LLL:EXT:digitalmarketingframework_distributor/Resources/Private/Language/locallang_db.xlf:';
 $readOnly = false;
@@ -91,11 +91,11 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Queued', \DigitalMarketingFramework\Core\Queue\QueueInterface::STATUS_QUEUED],
-                    ['Pending', \DigitalMarketingFramework\Core\Queue\QueueInterface::STATUS_PENDING],
-                    ['Running', \DigitalMarketingFramework\Core\Queue\QueueInterface::STATUS_RUNNING],
-                    ['Done', \DigitalMarketingFramework\Core\Queue\QueueInterface::STATUS_DONE],
-                    ['Failed', \DigitalMarketingFramework\Core\Queue\QueueInterface::STATUS_FAILED],
+                    ['Queued', QueueInterface::STATUS_QUEUED],
+                    ['Pending', QueueInterface::STATUS_PENDING],
+                    ['Running', QueueInterface::STATUS_RUNNING],
+                    ['Done', QueueInterface::STATUS_DONE],
+                    ['Failed', QueueInterface::STATUS_FAILED],
                 ],
                 'readOnly' => $readOnly,
             ],
