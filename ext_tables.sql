@@ -1,4 +1,4 @@
-CREATE TABLE tx_digitalmarketingframeworkdistributor_domain_model_queue_job (
+CREATE TABLE tx_dmfdistributorcore_domain_model_queue_job (
   label text DEFAULT '',
   hash text DEFAULT '',
   route_id varchar(64) DEFAULT '',

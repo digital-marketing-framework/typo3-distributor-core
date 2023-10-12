@@ -48,7 +48,7 @@ class MetaDataHandler implements SingletonInterface
      */
     public function processDatamap_preProcessFieldArray(array &$fieldArray, string $table, string $id, DataHandler $parentObj): void
     {
-        if (($table === 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job') && !$parentObj->isImporting) {
+        if (($table === 'tx_dmfdistributorcore_domain_model_queue_job') && !$parentObj->isImporting) {
             $this->updateJobData($fieldArray);
         }
     }

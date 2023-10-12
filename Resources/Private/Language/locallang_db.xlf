@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-  <file datatype="plaintext" date="2021-12-01T09:11:39Z" original="messages" product-name="digitalmarketingframework_distributor" source-language="en">
+  <file datatype="plaintext" date="2021-12-01T09:11:39Z" original="messages" product-name="dmf_distributor_core" source-language="en">
     <header/>
     <body>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job" xml:space="preserve">
         <source>Digital Marketing Framework - Distributor - Queue Job</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.created" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.created" xml:space="preserve">
         <source>Created</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.changed" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.changed" xml:space="preserve">
         <source>Changed</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.status" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.status" xml:space="preserve">
         <source>Status</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.skipped" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.skipped" xml:space="preserve">
         <source>Skipped</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.status_message" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.status_message" xml:space="preserve">
         <source>Status Message</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.serialized_data" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.serialized_data" xml:space="preserve">
         <source>Data</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.label" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.label" xml:space="preserve">
         <source>Label</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.hash" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.hash" xml:space="preserve">
         <source>Hash</source>
       </trans-unit>
-      <trans-unit id="tx_digitalmarketingframeworkdistributor_domain_model_queue_job.route_id" xml:space="preserve">
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.route_id" xml:space="preserve">
         <source>Route ID</source>
       </trans-unit>
     </body>

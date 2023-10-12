@@ -35,7 +35,7 @@ class QueueCleanupTask extends QueueTask
         try {
             $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
 
-            return $extensionConfiguration->get('digitalmarketingframework_distributor')['queue'] ?? [];
+            return $extensionConfiguration->get('dmf_distributor_core')['queue'] ?? [];
         } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
             return [];
         }
