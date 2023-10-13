@@ -26,7 +26,7 @@ class JobRepository extends Repository implements QueueInterface
         if (!isset($this->pid)) {
             $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
             try {
-                $this->pid = $extensionConfiguration->get('digitalmarketingframework_distributor')['queue']['pid'] ?? 0;
+                $this->pid = $extensionConfiguration->get('dmf_distributor_core')['queue']['pid'] ?? 0;
             } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
                 $this->pid = 0;
             }

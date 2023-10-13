@@ -12,18 +12,18 @@ defined('TYPO3') || die();
 
 (static function () {
     $typoScripts = [
-        'plugin.tx_form.settings.yamlConfigurations.1673273385 = EXT:digitalmarketingframework_distributor/Configuration/Yaml/FormSetup.yaml',
-        'module.tx_form.settings.yamlConfigurations.1673273385 = EXT:digitalmarketingframework_distributor/Configuration/Yaml/FormSetup.yaml',
+        'plugin.tx_form.settings.yamlConfigurations.1673273385 = EXT:dmf_distributor_core/Configuration/Yaml/FormSetup.yaml',
+        'module.tx_form.settings.yamlConfigurations.1673273385 = EXT:dmf_distributor_core/Configuration/Yaml/FormSetup.yaml',
     ];
     ExtensionManagementUtility::addTypoScriptSetup(implode(PHP_EOL, $typoScripts));
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][QueueProcessorTask::class] = [
-        'extension' => 'digitalmarketingframework_distributor',
+        'extension' => 'dmf_distributor_core',
         'title' => 'Digital Marketing Framework - Distributor - Queue Worker',
         'description' => 'Processes the next batch of form submissions using the digital-marketing-framework/distributor',
         'additionalFields' => QueueProcessorFieldProvider::class,
     ];
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][QueueCleanupTask::class] = [
-        'extension' => 'digitalmarketingframework_distributor',
+        'extension' => 'dmf_distributor_core',
         'title' => 'Digital Marketing Framework - Distributor - Queue Cleanup',
         'description' => 'Removes old submissions from the database to be compliant with data protection regulations',
         'additionalFields' => QueueCleanupFieldProvider::class,

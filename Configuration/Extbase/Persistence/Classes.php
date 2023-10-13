@@ -6,6 +6,6 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
 
 return [
     Job::class => [
-        'tableName' => 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job',
+        'tableName' => 'tx_dmfdistributorcore_domain_model_queue_job',
     ],
 ];

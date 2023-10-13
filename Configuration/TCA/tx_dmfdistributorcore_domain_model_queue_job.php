@@ -4,20 +4,20 @@ use DigitalMarketingFramework\Core\Queue\QueueInterface;
 
 defined('TYPO3') || exit;
 
-$ll = 'LLL:EXT:digitalmarketingframework_distributor/Resources/Private/Language/locallang_db.xlf:';
+$ll = 'LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang_db.xlf:';
 $readOnly = false;
 
-$GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'] = [
+$GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
     'ctrl' => [
         'label' => 'created',
         'label_alt' => 'label',
         'label_alt_force' => 1,
         'tstamp' => 'changed',
         'crdate' => 'created',
-        'title' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job',
+        'title' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job',
         'origUid' => 't3_origuid',
         'searchFields' => 'label,hash,route_id,created,status,skipped,status_message,changed',
-        'iconfile' => 'EXT:digitalmarketingframework_distributor/Resources/Public/Icons/QueueJob.svg',
+        'iconfile' => 'EXT:dmf_distributor_core/Resources/Public/Icons/QueueJob.svg',
         'default_sortby' => 'changed DESC',
     ],
     'interface' => [
@@ -34,7 +34,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
     'columns' => [
         'label' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.label',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.label',
             'config' => [
                 'type' => 'input',
                 'readOnly' => true,
@@ -42,7 +42,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         ],
         'skipped' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.skipped',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.skipped',
             'config' => [
                 'type' => 'check',
                 'readOnly' => $readOnly,
@@ -50,7 +50,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         ],
         'hash' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.hash',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.hash',
             'config' => [
                 'type' => 'input',
                 'readOnly' => true,
@@ -58,7 +58,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         ],
         'route_id' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.route_id',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.route_id',
             'config' => [
                 'type' => 'input',
                 'readOnly' => true,
@@ -66,7 +66,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         ],
         'created' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.created',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.created',
             'config' => [
                 'type' => 'input',
                 'renderType' => 'inputDateTime',
@@ -76,7 +76,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         ],
         'changed' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.changed',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.changed',
             'config' => [
                 'type' => 'input',
                 'renderType' => 'inputDateTime',
@@ -86,7 +86,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         ],
         'status' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.status',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.status',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -102,7 +102,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         ],
         'status_message' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.status_message',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.status_message',
             'config' => [
                 'type' => 'text',
                 'cols' => 40,
@@ -112,7 +112,7 @@ $GLOBALS['TCA']['tx_digitalmarketingframeworkdistributor_domain_model_queue_job'
         ],
         'serialized_data' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_digitalmarketingframeworkdistributor_domain_model_queue_job.serialized_data',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.serialized_data',
             'config' => [
                 'type' => 'user',
                 'renderType' => 'digitalMarketingFrameworkJsonFieldElement',

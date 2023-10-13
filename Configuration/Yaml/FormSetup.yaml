@@ -6,11 +6,11 @@ TYPO3:
           formEditor:
             dynamicRequireJsModules:
               additionalViewModelModules:
-                1684239317: 'TYPO3/CMS/DigitalmarketingframeworkDistributor/Backend/FormEditor/DmfConfigTextareaEditorViewModel'
+                1684239317: 'TYPO3/CMS/DmfDistributorCore/Backend/FormEditor/DmfConfigTextareaEditorViewModel'
             formEditorFluidConfiguration:
               partialRootPaths:
-                1684239317: 'EXT:digitalmarketingframework_distributor/Resources/Private/Extensions/form/Backend/Partials/FormEditor/'
-                1684773503: 'EXT:digitalmarketingframework/Resources/Private/Backend/Partials/'
+                1684239317: 'EXT:dmf_distributor_core/Resources/Private/Extensions/form/Backend/Partials/FormEditor/'
+                1684773503: 'EXT:dmf_core/Resources/Private/Backend/Partials/'
             formEditorPartials:
               Inspector-DmfConfigTextareaEditor: Inspector/DmfConfigTextareaEditor
           finishersDefinition:

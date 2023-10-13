@@ -74,7 +74,7 @@ class FormFinisher extends AbstractFinisher
     protected function executeInternal(): ?string
     {
         // fetch global configuration
-        $globalConfiguration = $this->registry->getGlobalConfiguration()->get('digitalmarketingframework_distributor') ?? [];
+        $globalConfiguration = $this->registry->getGlobalConfiguration()->get('dmf_distributor_core') ?? [];
 
         // fetch configuration
         $configurationStack = $this->getConfigurationStack();
