@@ -15,7 +15,7 @@ class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistry
     public function __construct(
         protected JobRepository $queue,
     ) {
-        parent::__construct(new DistributorCoreInitialization());
+        parent::__construct(new DistributorCoreInitialization('dmf_distributor_core'));
     }
 
     protected function initServices(RegistryInterface $registry): void
