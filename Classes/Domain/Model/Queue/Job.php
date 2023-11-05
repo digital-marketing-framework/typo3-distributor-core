@@ -16,28 +16,10 @@ class Job extends AbstractEntity implements JobInterface
         protected bool $skipped = false,
         protected string $statusMessage = '',
         protected string $serializedData = '',
-        protected string $routeId = '',
         protected string $label = '',
+        protected string $type = '',
         protected string $hash = '',
     ) {
-    }
-
-    protected function updateMetaData(): void
-    {
-        $data = $this->getData();
-        if ($data !== [] && isset($data['routeId'])) {
-            $this->setRouteId($data['routeId']);
-        }
-    }
-
-    public function getId(): int
-    {
-        return $this->uid;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->uid = $id;
     }
 
     public function getHash(): string
@@ -58,16 +40,21 @@ class Job extends AbstractEntity implements JobInterface
     public function setLabel(string $label): void
     {
         $this->label = $label;
+        $labelParts = explode('#', $label);
+        if (count($labelParts) > 1) {
+            array_shift($labelParts);
+            $this->setType(implode('#', $labelParts));
+        }
     }
 
-    public function getRouteId(): string
+    public function getType(): string
     {
-        return $this->routeId;
+        return $this->type;
     }
 
-    public function setRouteId(string $routeId): void
+    public function setType(string $type): void
     {
-        $this->routeId = $routeId;
+        $this->type = $type;
     }
 
     public function getCreated(): DateTime
@@ -128,7 +115,6 @@ class Job extends AbstractEntity implements JobInterface
     public function setSerializedData(string $serializedData): void
     {
         $this->serializedData = $serializedData;
-        $this->updateMetaData();
     }
 
     public function getData(): array

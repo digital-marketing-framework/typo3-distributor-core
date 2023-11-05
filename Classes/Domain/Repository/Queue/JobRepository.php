@@ -11,7 +11,6 @@ use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotCon
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
@@ -21,12 +20,17 @@ class JobRepository extends Repository implements QueueInterface
 {
     protected int $pid;
 
+    public function __construct(
+        protected ExtensionConfiguration $extensionConfiguration,
+    ) {
+        parent::__construct();
+    }
+
     protected function getPid(): int
     {
         if (!isset($this->pid)) {
-            $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
             try {
-                $this->pid = $extensionConfiguration->get('dmf_distributor_core')['queue']['pid'] ?? 0;
+                $this->pid = $this->extensionConfiguration->get('dmf_distributor_core')['queue']['pid'] ?? 0;
             } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
                 $this->pid = 0;
             }

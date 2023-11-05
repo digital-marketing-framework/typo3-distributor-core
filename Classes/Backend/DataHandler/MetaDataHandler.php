@@ -34,13 +34,13 @@ class MetaDataHandler implements SingletonInterface
         $job->setHash($fieldArray['hash'] ?? '');
 
         $fieldArray['serialized_data'] = json_encode(json_decode($job->getSerializedData(), null, 512, JSON_THROW_ON_ERROR), JSON_THROW_ON_ERROR);
-        $fieldArray['route_id'] = $this->queueDataFactory->getJobRouteId($job);
 
         $job->setHash($this->queueDataFactory->getJobHash($job));
         $fieldArray['hash'] = $job->getHash();
 
         $job->setLabel($this->queueDataFactory->getJobLabel($job));
         $fieldArray['label'] = $job->getLabel();
+        $fieldArray['type'] = $job->getType();
     }
 
     /**
