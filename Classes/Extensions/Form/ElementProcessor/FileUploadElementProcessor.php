@@ -87,23 +87,32 @@ class FileUploadElementProcessor extends ElementProcessor
             return null;
         }
 
-        $defaultStorage = $this->resourceFactory->getDefaultStorage();
+        $baseUploadPath = $this->baseUploadPath();
 
-        $baseUploadPath = rtrim($this->baseUploadPath(), '/')
+        $identifierParts = explode(':', $baseUploadPath);
+        if (count($identifierParts) > 1) {
+            $storageUid = (int)array_shift($identifierParts);
+            $storage = $this->resourceFactory->getStorageObject($storageUid);
+        } else {
+            $storage = $this->resourceFactory->getDefaultStorage();
+        }
+        $baseUploadPath = implode(':', $identifierParts);
+
+        $baseUploadPath = rtrim($baseUploadPath, '/')
             . '/' . $element->getRootForm()->getIdentifier() . '/';
         $folderName = $elementValue->getSha1() . random_int(10000, 99999) . '/';
 
         $folderObject = $this->resourceFactory->createFolderObject(
-            $defaultStorage,
+            $storage,
             $baseUploadPath . $folderName,
             $folderName
         );
 
         try {
-            $folder = $defaultStorage->getFolder($folderObject->getIdentifier());
+            $folder = $storage->getFolder($folderObject->getIdentifier());
         } catch (Exception) {
             try {
-                $folder = $defaultStorage->createFolder($folderObject->getIdentifier());
+                $folder = $storage->createFolder($folderObject->getIdentifier());
             } catch (Exception) {
                 $this->logger->error(
                     'UploadFormField folder for this form can not be created',
