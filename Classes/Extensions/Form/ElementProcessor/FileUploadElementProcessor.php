@@ -88,7 +88,6 @@ class FileUploadElementProcessor extends ElementProcessor
         }
 
         $baseUploadPath = $this->baseUploadPath();
-
         $identifierParts = explode(':', $baseUploadPath);
         if (count($identifierParts) > 1) {
             $storageUid = (int)array_shift($identifierParts);
@@ -96,8 +95,8 @@ class FileUploadElementProcessor extends ElementProcessor
         } else {
             $storage = $this->resourceFactory->getDefaultStorage();
         }
-        $baseUploadPath = implode(':', $identifierParts);
 
+        $baseUploadPath = implode(':', $identifierParts);
         $baseUploadPath = rtrim($baseUploadPath, '/')
             . '/' . $element->getRootForm()->getIdentifier() . '/';
         $folderName = $elementValue->getSha1() . random_int(10000, 99999) . '/';
