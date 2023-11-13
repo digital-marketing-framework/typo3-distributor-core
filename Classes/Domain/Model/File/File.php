@@ -25,12 +25,12 @@ class File implements FileInterface
     {
         return trim(GeneralUtility::getIndpEnv('TYPO3_SITE_URL'), '/')
             . '/'
-            . $this->getRelativePath();
+            . $this->file->getPublicUrl();
     }
 
     public function getRelativePath(): string
     {
-        return $this->file->getPublicUrl();
+        return $this->file->getStorage()->getUid() . ':' . $this->file->getIdentifier();
     }
 
     public function getMimeType(): string
