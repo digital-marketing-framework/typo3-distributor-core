@@ -1,0 +1,16 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+    <div class="form-row justify-content-between">
+        <div class="form-group">
+            <div class="input-group">
+                <label for="itemsPerPage" class="btn btn-default disabled" style="min-width: 8rem">items per page</label>
+                <f:form.select id="itemsPerPage"
+                    name="navigation[itemsPerPage]"
+                    value="{navigation.itemsPerPage}"
+                    class="form-select"
+                    options="{0:'all',5:'5',10:10,20:20,50:50,100:100}" />
+            </div>
+        </div>
+    </div>
+</html>

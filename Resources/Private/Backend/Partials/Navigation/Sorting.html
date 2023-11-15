@@ -1,0 +1,39 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+    <div class="form-row justify-content-between">
+        <div class="form-group">
+            <div class="input-group" data-movable-list="true">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="btn btn-default disabled" style="min-width:8rem">sorting</span>
+                    </div>
+                </div>
+                <f:for each="{navigation.sorting}" as="sortingValue" key="attribute" iteration="iterator">
+                    <div class="form-group mx-2" data-movable-item="{iterator.index}">
+                        <div class="input-group">
+                            <button type="button" class="btn btn-default" data-move="up">
+                                <core:icon identifier="actions-move-left" size="small" />
+                            </button>
+                            <span class="btn btn-default disabled">
+                                <f:translate key="LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang.xlf:sort.{attribute}" default="{attribute}" />
+                            </span>
+                            <select class="form-select" name="navigation[sorting][{attribute}]">
+                                <f:for each="{navigationBounds.sortDirection}"
+                                        as="sortDirection">
+                                    <option value="{sortDirection}" {f:if(condition:'{sortingValue} == {sortDirection}',then:'selected="selected"')}>
+                                        <f:translate key="LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang.xlf:sortDirection.{sortDirection}" default="{sortDirection}" />
+                                    </option>
+                                </f:for>
+                            </select>
+                            <button type="button" class="btn btn-default" data-move="down">
+                                <core:icon identifier="actions-move-right" size="small" />
+                            </button>
+                        </div>
+                    </div>
+                </f:for>
+            </div>
+        </div>
+    </div>
+</html>

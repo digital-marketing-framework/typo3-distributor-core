@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+  <file datatype="plaintext" date="2021-12-01T09:11:39Z" original="messages" product-name="dmf_distributor_core" source-language="en">
+    <header/>
+    <body>
+	  <trans-unit id="status.id.0" xml:space="preserve">
+        <source>Queued</source>
+      </trans-unit>
+	  <trans-unit id="status.id.1" xml:space="preserve">
+        <source>Pending</source>
+      </trans-unit>
+	  <trans-unit id="status.id.2" xml:space="preserve">
+        <source>Running</source>
+      </trans-unit>
+	  <trans-unit id="status.id.3" xml:space="preserve">
+        <source>Done</source>
+      </trans-unit>
+	  <trans-unit id="status.id.4" xml:space="preserve">
+        <source>Failed</source>
+      </trans-unit>
+
+	  <trans-unit id="tag.status.id.0" xml:space="preserve">
+        <source>queued</source>
+      </trans-unit>
+	  <trans-unit id="tag.status.id.1" xml:space="preserve">
+        <source>pending</source>
+      </trans-unit>
+	  <trans-unit id="tag.status.id.2" xml:space="preserve">
+        <source>running</source>
+      </trans-unit>
+	  <trans-unit id="tag.status.id.3" xml:space="preserve">
+        <source>done</source>
+      </trans-unit>
+	  <trans-unit id="tag.status.id.4" xml:space="preserve">
+        <source>failed</source>
+      </trans-unit>
+	  <trans-unit id="tag.skipped" xml:space="preserve">
+        <source>skipped</source>
+      </trans-unit>
+	  <trans-unit id="tag.processed" xml:space="preserve">
+        <source>processed</source>
+      </trans-unit>
+	  <trans-unit id="tag.stuck" xml:space="preserve">
+        <source>stuck</source>
+      </trans-unit>
+	  <trans-unit id="tag.expired" xml:space="preserve">
+        <source>expired</source>
+      </trans-unit>
+
+	  <trans-unit id="status.key.queued" xml:space="preserve">
+        <source>Queued</source>
+      </trans-unit>
+	  <trans-unit id="status.key.pending" xml:space="preserve">
+        <source>Pending</source>
+      </trans-unit>
+	  <trans-unit id="status.key.running" xml:space="preserve">
+        <source>Running</source>
+      </trans-unit>
+	  <trans-unit id="status.key.done" xml:space="preserve">
+        <source>Done</source>
+      </trans-unit>
+	  <trans-unit id="status.key.doneNotSkipped" xml:space="preserve">
+        <source>Done (processed)</source>
+      </trans-unit>
+	  <trans-unit id="status.key.doneSkipped" xml:space="preserve">
+        <source>Done (skipped)</source>
+      </trans-unit>
+	  <trans-unit id="status.key.failed" xml:space="preserve">
+        <source>Failed</source>
+      </trans-unit>
+
+	  <trans-unit id="sort.changed" xml:space="preserve">
+        <source>Changed</source>
+      </trans-unit>
+	  <trans-unit id="sort.created" xml:space="preserve">
+        <source>Created</source>
+      </trans-unit>
+	  <trans-unit id="sort.type" xml:space="preserve">
+        <source>Type</source>
+      </trans-unit>
+	  <trans-unit id="sort.status" xml:space="preserve">
+        <source>Status</source>
+      </trans-unit>
+	  <trans-unit id="sort.count" xml:space="preserve">
+        <source>Count</source>
+      </trans-unit>
+	  <trans-unit id="sort.firstSeen" xml:space="preserve">
+        <source>First seen</source>
+      </trans-unit>
+	  <trans-unit id="sort.lastSeen" xml:space="preserve">
+        <source>Last seen</source>
+      </trans-unit>
+
+	  <trans-unit id="sortDirection.ASC" xml:space="preserve">
+        <source>Ascending</source>
+      </trans-unit>
+	  <trans-unit id="sortDirection.DESC" xml:space="preserve">
+        <source>Descending</source>
+      </trans-unit>
+	  <trans-unit id="sortDirection." xml:space="preserve">
+        <source>None</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,57 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:section name="ProgressBar">
+        <div class="progress-bar {class}"
+             role="progressbar"
+             aria-valuenow="{value}"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             style="width: {value / total * 100}%;"
+             title="{label} {value}/{total}">{label}</div>
+    </f:section>
+
+    <f:section name="Main">
+        <div class="progress">
+            <!-- <div class="progress-bar bg-info"
+                 role="progressbar"
+                 aria-valuenow="40"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 style="width: 40%;"
+                 title="Queued 40/100">Queued</div> -->
+            <f:if condition="{statistics.queued}">
+                <f:render section="ProgressBar"
+                          arguments="{label:'Queued',value:statistics.queued,total:statistics.all,class:'bg-info'}" />
+            </f:if>
+            <f:if condition="{statistics.pending}">
+                <f:render section="ProgressBar"
+                          arguments="{label:'Pending',value:statistics.pending,total:statistics.all,class:''}" />
+            </f:if>
+            <f:if condition="{statistics.running}">
+                <f:render section="ProgressBar"
+                          arguments="{label:'Running',value:statistics.running,total:statistics.all,class:'progress-bar-striped progress-bar-animated'}" />
+            </f:if>
+            <f:if condition="{statistics.done}">
+                <f:render section="ProgressBar"
+                          arguments="{label:'Done',value:statistics.done,total:statistics.all,class:'bg-success'}" />
+            </f:if>
+            <f:if condition="{statistics.failed}">
+                <f:render section="ProgressBar"
+                          arguments="{label:'Failed',value:statistics.failed,total:statistics.all,class:'bg-danger'}" />
+            </f:if>
+            <!--
+                progress-bar-striped
+                progress-bar
+                bg-warning
+                bg-success
+                bg-alert
+                bg-black
+                bg-white
+                bg-info
+            -->
+        </div>
+    </f:section>
+
+</html>
