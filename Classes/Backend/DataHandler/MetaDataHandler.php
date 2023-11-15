@@ -38,9 +38,14 @@ class MetaDataHandler implements SingletonInterface
         $job->setHash($this->queueDataFactory->getJobHash($job));
         $fieldArray['hash'] = $job->getHash();
 
-        $job->setLabel($this->queueDataFactory->getJobLabel($job));
-        $fieldArray['label'] = $job->getLabel();
-        $fieldArray['type'] = $job->getType();
+        $label = $this->queueDataFactory->getJobLabel($job);
+        $job->setLabel($label);
+        if ($label !== 'undefined' || !(bool)$fieldArray['label']) {
+            $fieldArray['label'] = $job->getLabel();
+        }
+        if ($label !== 'undefined' || !(bool)$fieldArray['type']) {
+            $fieldArray['type'] = $job->getType();
+        }
     }
 
     /**
