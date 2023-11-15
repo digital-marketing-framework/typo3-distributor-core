@@ -39,7 +39,9 @@ class DistributorListController extends AbstractDistributorController
     }
 
     /**
-     * @param array{minCreated:int,maxCreated:int,minChanged:int,maxChanged:int,type:array<string>,status:array<int>,skipped:?bool} $filters
+     * @param array{search:string,advancedSearch:bool,searchExactMatch:bool,minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime,type:array<string>,status:array<int>,skipped:?bool} $filters
+     *
+     * @return array<string,int>
      */
     protected function getTypeFilterBounds(array $filters): array
     {
@@ -57,7 +59,9 @@ class DistributorListController extends AbstractDistributorController
     }
 
     /**
-     * @param array{minCreated:int,maxCreated:int,minChanged:int,maxChanged:int,type:array<string>,status:array<int>,skipped:?bool} $filters
+     * @param array{search:string,advancedSearch:bool,searchExactMatch:bool,minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime,type:array<string>,status:array<int>,skipped:?bool} $filters
+     *
+     * @return array<string,int>
      */
     protected function getStatusFilterBounds(array $filters): array
     {
@@ -99,7 +103,7 @@ class DistributorListController extends AbstractDistributorController
     }
 
     /**
-     * @param array{minCreated:int,maxCreated:int,minChanged:int,maxChanged:int,type:array<string>,status:array<int>,skipped:?bool} $filters
+     * @param array{search:string,advancedSearch:bool,searchExactMatch:bool,minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime,type:array<string>,status:array<int>,skipped:?bool} $filters
      *
      * @return array{type:array<string,int>,status:array<string,int>,typeCountNotEmpty:int,typeSelected:bool,statusCountNotEmpty:int,statusSelected:bool}
      */
@@ -129,8 +133,8 @@ class DistributorListController extends AbstractDistributorController
     }
 
     /**
-     * @param array{minCreated:int,maxCreated:int,minChanged:int,maxChanged:int,type:array<string>,status:array<int>,skipped:?bool} $filters
-     * @param array{page?:int,itemsPerPage?:int,sorting?:array<string,string>} $navigation
+     * @param array{search:string,advancedSearch:bool,searchExactMatch:bool,minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime,type:array<string>,status:array<int>,skipped:?bool} $filters
+     * @param array{page:int,itemsPerPage:int,sorting:array<string,string>} $navigation
      *
      * @return array{numberOfPages:int,pages:array<int>,sort:array<string>,sortDirection:array<string>}
      */

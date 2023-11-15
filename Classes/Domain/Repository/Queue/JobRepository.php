@@ -158,7 +158,7 @@ class JobRepository extends Repository implements QueueInterface
                     $result['done'] += $count;
                     $result['groupedByType'][$type]['done'] += $count;
 
-                    $group = $row['skipped'] ? 'doneSkipped' : 'doneNotSkipped';
+                    $group = (bool)$row['skipped'] ? 'doneSkipped' : 'doneNotSkipped';
                     $result[$group] += $count;
                     $result['groupedByType'][$type][$group] += $count;
                     break;
@@ -195,7 +195,7 @@ class JobRepository extends Repository implements QueueInterface
      * @param array{minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime} $filters
      * @param array{sorting:array<string,string>} $navigation
      *
-     * @return array<array{type:string,message:string,count:int,lastSeen:Job,firstSeen:Job}>
+     * @return array<array{message:string,count:int,lastSeen:Job,firstSeen:Job,types:array<string,int>}>
      */
     public function getErrorMessages(array $filters, array $navigation): array
     {
@@ -213,7 +213,9 @@ class JobRepository extends Repository implements QueueInterface
 
         $result = [];
         while ($row = $queryResult->fetchAssociative()) {
+            /** @var string */
             $message = $row['status_message'];
+            /** @var int */
             $count = $row['COUNT(*)'];
             $result[$message] ??= [
                 'message' => $message,
@@ -226,8 +228,19 @@ class JobRepository extends Repository implements QueueInterface
 
         $messages = array_keys($result);
         foreach ($messages as $message) {
-            $result[$message]['lastSeen'] = $this->findOneByErrorMessage($message, lastSeen: true, filters: $filters);
-            $result[$message]['firstSeen'] = $this->findOneByErrorMessage($message, lastSeen: false, filters: $filters);
+            $lastSeen = $this->findOneByErrorMessage($message, lastSeen: true, filters: $filters);
+            if (!$lastSeen instanceof Job) {
+                throw new DigitalMarketingFrameworkException('cannot load job "lastSeen" for error statistics');
+            }
+
+            $result[$message]['lastSeen'] = $lastSeen;
+
+            $firstSeen = $this->findOneByErrorMessage($message, lastSeen: false, filters: $filters);
+            if (!$firstSeen instanceof Job) {
+                throw new DigitalMarketingFrameworkException('cannot load job "firstSeen" for error statistics');
+            }
+
+            $result[$message]['firstSeen'] = $firstSeen;
         }
 
         $result = array_values($result);
@@ -245,11 +258,13 @@ class JobRepository extends Repository implements QueueInterface
                     'count' => $row1['count'],
                     'lastSeen' => $row1['lastSeen']->getChanged()->getTimestamp(),
                     'firstSeen' => $row1['firstSeen']->getChanged()->getTimestamp(),
+                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort))
                 };
                 $value2 = match ($sort) {
                     'count' => $row2['count'],
                     'lastSeen' => $row2['lastSeen']->getChanged()->getTimestamp(),
                     'firstSeen' => $row2['firstSeen']->getChanged()->getTimestamp(),
+                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort))
                 };
                 if ($value1 !== $value2) {
                     break;
@@ -266,7 +281,7 @@ class JobRepository extends Repository implements QueueInterface
     // the rest of the query methods will use standard extbase queries again
 
     /**
-     * @param array{search:string,advancedSearch:bool,searchExactMatch:bool,minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime,type:array<string>,status:array<int>,skipped:?bool} $filters
+     * @param array{minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime} $filters
      */
     public function findOneByErrorMessage(string $message, bool $lastSeen, array $filters): ?Job
     {
@@ -278,6 +293,8 @@ class JobRepository extends Repository implements QueueInterface
         $filters['searchExactMatch'] = true;
         $filters['advancedSearch'] = false;
         $filters['status'] = [QueueInterface::STATUS_FAILED];
+        $filters['type'] = [];
+        $filters['skipped'] = null;
         $this->applyFilters($query, $filters, ['status_message']);
 
         $navigation = [
@@ -327,6 +344,7 @@ class JobRepository extends Repository implements QueueInterface
     }
 
     /**
+     * @param QueryInterface<Job> $query
      * @param array<ConstraintInterface> $conditions
      */
     protected function getLogicalOr(QueryInterface $query, array $conditions): OrInterface
@@ -340,6 +358,7 @@ class JobRepository extends Repository implements QueueInterface
     }
 
     /**
+     * @param QueryInterface<Job> $query
      * @param array<ConstraintInterface> $conditions
      */
     protected function getLogicalAnd(QueryInterface $query, array $conditions): AndInterface
@@ -353,7 +372,9 @@ class JobRepository extends Repository implements QueueInterface
     }
 
     /**
+     * @param QueryInterface<Job> $query
      * @param array{search:string,advancedSearch:bool,searchExactMatch:bool,minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime,type:array<string>,status:array<int>,skipped:?bool} $filters
+     * @param array<string> $searchFields
      */
     protected function applyFilters(QueryInterface $query, array $filters, array $searchFields = ['label', 'type', 'hash', 'status_message']): void
     {
@@ -425,6 +446,7 @@ class JobRepository extends Repository implements QueueInterface
     }
 
     /**
+     * @param QueryInterface<Job> $query
      * @param array{page:int,itemsPerPage:int,sorting:array<string,string>} $navigation
      */
     protected function applyNavigation(QueryInterface $query, array $navigation): void
@@ -443,6 +465,7 @@ class JobRepository extends Repository implements QueueInterface
                     return match ($direction) {
                         'ASC' => QueryInterface::ORDER_ASCENDING,
                         'DESC' => QueryInterface::ORDER_DESCENDING,
+                        default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort direction "%s"', $direction))
                     };
                 }, $sorting)
             );

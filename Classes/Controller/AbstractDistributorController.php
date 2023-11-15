@@ -34,13 +34,13 @@ abstract class AbstractDistributorController extends AbstractBackendController
             'maxCreated' => isset($filters['maxCreated']) && $filters['maxCreated'] !== '' ? new DateTime($filters['maxCreated']) : null,
             'minChanged' => isset($filters['minChanged']) && $filters['minChanged'] !== '' ? new DateTime($filters['minChanged']) : null,
             'maxChanged' => isset($filters['maxChanged']) && $filters['maxChanged'] !== '' ? new DateTime($filters['maxChanged']) : null,
-            'type' => is_array($filters['type']) ? array_keys(array_filter($filters['type'])) : [],
+            'type' => isset($filters['type']) ? array_keys(array_filter($filters['type'])) : [],
         ];
 
         $result['status'] = [];
         $result['skipped'] = null;
 
-        $inputStatus = is_array($filters['status']) ? array_keys(array_filter($filters['status'])) : [];
+        $inputStatus = isset($filters['status']) ? array_keys(array_filter($filters['status'])) : [];
         $skippedFound = false;
         $notSkippedFound = false;
         foreach ($inputStatus as $status) {
@@ -79,8 +79,9 @@ abstract class AbstractDistributorController extends AbstractBackendController
 
     /**
      * @param array{page?:int|string,itemsPerPage?:int|string,sorting?:array<string,string>} $navigation
+     * @param array<string,string> $defaultSorting
      *
-     * @return array{page?:int,itemsPerPage?:int,sorting?:array<string,string>}
+     * @return array{page:int,itemsPerPage:int,sorting:array<string,string>}
      */
     protected function transformInputNavigation(array $navigation, array $defaultSorting): array
     {
