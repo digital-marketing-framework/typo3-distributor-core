@@ -12,21 +12,20 @@ class DistributorStatisticsController extends AbstractDistributorController
      */
     public function showErrorsAction(array $filters = [], array $navigation = []): ResponseInterface
     {
-        $this->view->assign('current', 'showErrors');
         $transformedFilters = $this->transformInputFilters($filters);
-        $this->view->assign('filters', $filters);
-
-        $navigation['sorting'] ??= ['count' => 'DESC', 'lastSeen' => 'DESC', 'firstSeen' => ''];
-        $this->view->assign('navigation', $navigation);
+        $transformedNavigation = $this->transformInputNavigation($navigation, defaultSorting: ['count' => 'DESC', 'lastSeen' => 'DESC', 'firstSeen' => '']);
 
         $navigationBounds = [
             'sort' => ['count', 'firstSeen', 'lastSeen'],
             'sortDirection' => ['', 'ASC', 'DESC'],
         ];
+
+        $this->view->assign('current', 'showErrors');
+        $this->view->assign('filters', $filters);
+        $this->view->assign('navigation', $transformedNavigation);
         $this->view->assign('navigationBounds', $navigationBounds);
 
-        $errors = $this->queue->getErrorMessages($transformedFilters, $navigation);
-
+        $errors = $this->queue->getErrorMessages($transformedFilters, $transformedNavigation);
         $this->view->assign('errors', $errors);
 
         return $this->backendHtmlResponse();
@@ -37,10 +36,11 @@ class DistributorStatisticsController extends AbstractDistributorController
      */
     public function showStatisticsAction(array $filters = []): ResponseInterface
     {
-        $this->view->assign('current', 'showStatistics');
         $transformedFilters = $this->transformInputFilters($filters);
-        $this->view->assign('filters', $filters);
         $statistics = $this->queue->getStatistics($transformedFilters);
+
+        $this->view->assign('current', 'showStatistics');
+        $this->view->assign('filters', $filters);
         $this->view->assign('statistics', $statistics);
 
         return $this->backendHtmlResponse();

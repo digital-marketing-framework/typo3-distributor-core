@@ -239,6 +239,7 @@ class JobRepository extends Repository implements QueueInterface
                 if ($direction === '') {
                     continue;
                 }
+
                 $sortDirection = $direction;
                 $value1 = match ($sort) {
                     'count' => $row1['count'],
@@ -290,7 +291,7 @@ class JobRepository extends Repository implements QueueInterface
 
         $results = $query->execute()->toArray();
 
-        return count($results) > 0 ? reset($results) : null;
+        return $results !== [] ? reset($results) : null;
     }
 
     /**
@@ -366,6 +367,7 @@ class JobRepository extends Repository implements QueueInterface
             if ($filters['advancedSearch']) {
                 $fields[] = 'serialized_data';
             }
+
             $subConditions = [];
             foreach ($fields as $field) {
                 $searchCondition = $filters['searchExactMatch']
@@ -381,6 +383,7 @@ class JobRepository extends Repository implements QueueInterface
                     ]);
                 }
             }
+
             $conditions[] = $this->getLogicalOr($query, $subConditions);
         }
 
@@ -427,9 +430,9 @@ class JobRepository extends Repository implements QueueInterface
     protected function applyNavigation(QueryInterface $query, array $navigation): void
     {
         if ($navigation['itemsPerPage'] > 0) {
-            $query->setLimit((int)$navigation['itemsPerPage']);
+            $query->setLimit($navigation['itemsPerPage']);
             if ($navigation['page'] > 0) {
-                $query->setOffset((int)($navigation['itemsPerPage'] * $navigation['page']));
+                $query->setOffset($navigation['itemsPerPage'] * $navigation['page']);
             }
         }
 

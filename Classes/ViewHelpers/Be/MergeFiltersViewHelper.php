@@ -8,6 +8,9 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 class MergeFiltersViewHelper extends AbstractViewHelper
 {
+    /**
+     * @var string[]
+     */
     protected const FILTER_ATTRIBUTES = ['status', 'type'];
 
     public function initializeArguments(): void
@@ -19,6 +22,11 @@ class MergeFiltersViewHelper extends AbstractViewHelper
         $this->registerArgument('additionalFilters', 'array', 'additional filters to merge', false, []);
     }
 
+    /**
+     * @phpstan-ignore-next-line TYPO3's AbstractViewHelper::renderStatic(), which returns `mixed`, conflicts with its ViewHelperInterface::renderStatic() which returns `string`.
+     *
+     * @return array<string,mixed>
+     */
     public static function renderStatic(
         array $arguments,
         Closure $renderChildrenClosure,
@@ -36,6 +44,7 @@ class MergeFiltersViewHelper extends AbstractViewHelper
                 }
             }
         }
+
         foreach ($arguments['additionalFilters'] as $key => $value) {
             $filters[$key] = $value;
         }

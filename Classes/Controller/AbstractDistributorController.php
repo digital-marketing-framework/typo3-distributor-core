@@ -78,92 +78,16 @@ abstract class AbstractDistributorController extends AbstractBackendController
     }
 
     /**
-     * @param array{minCreated:int,maxCreated:int,minChanged:int,maxChanged:int,type:array<string>,status:array<int>,skipped:?bool} $filters
-     */
-    protected function getTypeFilterBounds(array $filters): array
-    {
-        $types = [];
-        $allTypes = $this->queue->getJobTypes();
-        $allTypes = array_merge($allTypes, $filters['type']);
-        foreach ($allTypes as $type) {
-            $typeFilters = $filters;
-            $typeFilters['type'] = [$type];
-            $count = $this->queue->countFiltered($typeFilters);
-            $types[$type] = $count;
-        }
-
-        return $types;
-    }
-
-    /**
-     * @param array{minCreated:int,maxCreated:int,minChanged:int,maxChanged:int,type:array<string>,status:array<int>,skipped:?bool} $filters
-     */
-    protected function getStatusFilterBounds(array $filters): array
-    {
-        $statusValues = [];
-        foreach (['queued', 'pending', 'running', 'doneNotSkipped', 'doneSkipped', 'failed'] as $status) {
-            $statusFilters = $filters;
-            switch ($status) {
-                case 'queued':
-                    $statusFilters['status'] = [QueueInterface::STATUS_QUEUED];
-                    $statusFilters['skipped'] = null;
-                    break;
-                case 'pending':
-                    $statusFilters['status'] = [QueueInterface::STATUS_PENDING];
-                    $statusFilters['skipped'] = null;
-                    break;
-                case 'running':
-                    $statusFilters['status'] = [QueueInterface::STATUS_RUNNING];
-                    $statusFilters['skipped'] = null;
-                    break;
-                case 'doneNotSkipped':
-                    $statusFilters['status'] = [QueueInterface::STATUS_DONE];
-                    $statusFilters['skipped'] = false;
-                    break;
-                case 'doneSkipped':
-                    $statusFilters['status'] = [QueueInterface::STATUS_DONE];
-                    $statusFilters['skipped'] = true;
-                    break;
-                case 'failed':
-                    $statusFilters['status'] = [QueueInterface::STATUS_FAILED];
-                    $statusFilters['skipped'] = null;
-                    break;
-            }
-
-            $count = $this->queue->countFiltered($statusFilters);
-            $statusValues[$status] = $count;
-        }
-
-        return $statusValues;
-    }
-
-    /**
-     * @param array{minCreated:int,maxCreated:int,minChanged:int,maxChanged:int,type:array<string>,status:array<int>,skipped:?bool} $filters
+     * @param array{page?:int|string,itemsPerPage?:int|string,sorting?:array<string,string>} $navigation
      *
-     * @return array{type:array<string,int>,status:array<string,int>,typeCountNotEmpty:int,typeSelected:bool,statusCountNotEmpty:int,statusSelected:bool}
+     * @return array{page?:int,itemsPerPage?:int,sorting?:array<string,string>}
      */
-    protected function getFilterBounds(array $filters): array
+    protected function transformInputNavigation(array $navigation, array $defaultSorting): array
     {
-        $types = $this->getTypeFilterBounds($filters);
-        $status = $this->getStatusFilterBounds($filters);
-
-        $typeCountNotEmpty = count(array_filter($types, function (int $count) {
-            return $count > 0;
-        }));
-        $typeSelected = $filters['type'] !== [];
-
-        $statusCountNotEmpty = count(array_filter($status, function (int $count) {
-            return $count > 0;
-        }));
-        $statusSelected = $filters['status'] !== [];
-
         return [
-            'type' => $types,
-            'typeCountNotEmpty' => $typeCountNotEmpty,
-            'typeSelected' => $typeSelected,
-            'status' => $status,
-            'statusCountNotEmpty' => $statusCountNotEmpty,
-            'statusSelected' => $statusSelected,
+            'page' => (int)($navigation['page'] ?? 0),
+            'itemsPerPage' => (int)($navigation['itemsPerPage'] ?? 0),
+            'sorting' => $navigation['sorting'] ?? $defaultSorting,
         ];
     }
 }
