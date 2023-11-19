@@ -1,0 +1,28 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+    <f:if condition="{filterBounds.statusCountNotEmpty} > 1 || {filterBounds.statusSelected}">
+        <div class="form-row justify-content-between">
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="btn btn-default disabled" style="min-width: 8rem">status</span>
+
+                    <f:for each="{filterBounds.status}" as="count" key="option">
+                        <f:if condition="{count} > 0 || {filters.status.{option}}">
+                            <label class="form-control btn btn-default" style="width:auto">
+                                <span class="form-check form-check-type-toggle">
+                                    <f:form.checkbox name="filters[status][{option}]"
+                                            value="1"
+                                            checked="{filters.status.{option}}"
+                                            class="form-check-input" />
+                                </span>
+                                <f:translate key="LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang.xlf:status.key.{option}" default="{option}"/>
+                                ({count})
+                            </label>
+                        </f:if>
+                    </f:for>
+                </div>
+            </div>
+        </div>
+    </f:if>
+</html>

@@ -1,0 +1,40 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      <div class="my-4">
+        <f:link.action action="showStatistics"
+                        controller="DistributorStatistics"
+                        class="btn btn-default {f:if(condition:'{current} == showStatistics',then:'active')}">
+            Statistics
+        </f:link.action>
+        <f:link.action action="showErrors"
+                        controller="DistributorStatistics"
+                        class="btn btn-default {f:if(condition:'{current} == showErrors',then:'active')}">
+            Errors
+        </f:link.action>
+        <f:link.action action="list"
+                        controller="DistributorList"
+                        class="btn btn-default {f:if(condition:'{current} == list',then:'active')}">
+            List
+        </f:link.action>
+        <f:link.action action="listFailed"
+                        controller="DistributorList"
+                        class="btn btn-default {f:if(condition:'{current} == listFailed',then:'active')}">
+            <core:icon identifier="actions-link" size="small" />
+            List failed
+        </f:link.action>
+        <f:link.action action="listStuck"
+                        controller="DistributorList"
+                        class="btn btn-default {f:if(condition:'{current} == listStuck',then:'active')}">
+            <core:icon identifier="actions-link" size="small" />
+            List stuck
+        </f:link.action>
+        <f:link.action action="listExpired"
+                        controller="DistributorList"
+                        class="btn btn-default {f:if(condition:'{current} == listExpired',then:'active')}">
+            <core:icon identifier="actions-link" size="small" />
+            List expired
+        </f:link.action>
+    </div>
+</html>

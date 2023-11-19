@@ -1,0 +1,77 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      xmlns:d="http://typo3.org/ns/DigitalMarketingFramework/Typo3/Distributor/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:layout name="Default" />
+
+    <f:section name="Buttons"></f:section>
+
+    <f:section name="Content">
+        <f:asset.script identifier="dmf-distributor-backend-list" src="EXT:dmf_distributor_core/Resources/Public/JavaScript/Backend/DistributorList/distributor-list.js" defer="1" />
+        <div class="container">
+            <h1>Distributor</h1>
+
+            <f:render partial="Tabs" arguments="{current:current}" />
+
+            <h2>Errors</h2>
+
+            <f:form action="showErrors" additionalAttributes="{data-module:'dmf-distributor-backend',data-form-type:'showErrors'}">
+                <f:render partial="Filters/TimingFilters" arguments="{filters:filters,filterBounds:filterBounds}" />
+                <f:render partial="Navigation/Sorting" arguments="{navigation:navigation,navigationBounds:navigationBounds}" />
+                <f:render partial="UpdateView" arguments="{current:current,filters:filters,navigation:navigation}" />
+            </f:form>
+
+            <f:if condition="{errors}">
+                <f:then>
+                    <div class="table-fit">
+                        <table id="distributor-jobs-errors" class="table table-striped table-hover">
+                            <tr>
+                                <th>Error</th>
+                                <th>Count</th>
+                                <th>First seen</th>
+                                <th>Last seen</th>
+                                <th>Route(s)</th>
+                            </tr>
+                            <f:for each="{errors}"
+                                as="error">
+                                <tr>
+                                    <td>
+                                        <f:variable name="linkFilters" value="{d:be.mergeFilters(filters:filters,status:{0:'failed'},additionalFilters:{search:error.message,searchExactMatch:1})}" />
+                                        <f:link.action controller="DistributorList" action="list" arguments="{filters:linkFilters}">
+                                            {error.message}
+                                        </f:link.action>
+                                    </td>
+                                    <td>{error.count}</td>
+                                    <td>
+                                        <be:link.editRecord uid="{error.firstSeen.uid}" table="tx_dmfdistributorcore_domain_model_queue_job" returnUrl="{f:uri.action(action:'showErrors',arguments:'{filters:filters,navigation:navigation}')}" title="{error.firstSeen.label}">
+                                            <f:format.date format="Y-m-d H:i:s">{error.firstSeen.changed}</f:format.date>
+                                        </be:link.editRecord>
+                                    </td>
+                                    <td>
+                                        <be:link.editRecord uid="{error.lastSeen.uid}" table="tx_dmfdistributorcore_domain_model_queue_job" returnUrl="{f:uri.action(action:'showErrors',arguments:'{filters:filters,navigation:navigation}')}" title="{error.lastSeen.label}">
+                                            <f:format.date format="Y-m-d H:i:s">{error.lastSeen.changed}</f:format.date>
+                                        </be:link.editRecord>
+                                    </td>
+                                    <td>
+                                        <f:for each="{error.types}" as="countPerType" key="type" iteration="iterator">
+                                            <f:variable name="linkFilters" value="{d:be.mergeFilters(filters:filters,type:{0:type},status:{0:'failed'},additionalFilters:{search:error.message,searchExactMatch:1})}" />
+                                            <f:link.action controller="DistributorList" action="list" arguments="{filters:linkFilters}">
+                                                {type} ({countPerType})
+                                            </f:link.action>
+                                            <f:if condition="!{iterator.isLast}"><br/></f:if>
+                                        </f:for>
+                                    </td>
+                                </tr>
+                            </f:for>
+                        </table>
+                    </div>
+                </f:then>
+                <f:else>
+                    <p>No errors found. Well done.</p>
+                </f:else>
+            </f:if>
+        </div>
+    </f:section>
+
+</html>

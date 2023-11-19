@@ -1,0 +1,19 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+    <div class="my-4">
+        <f:form.button name="action" value="{current}" class="btn btn-primary">
+            <core:icon identifier="actions-refresh" size="small" />
+            update view
+        </f:form.button>
+        <f:link.action action="{current}" class="btn btn-default">
+            <core:icon identifier="actions-edit-undo" size="small" />
+            reset view
+        </f:link.action>
+        <f:link.action action="{current}" arguments="{filters:filters,navigation:navigation}" class="btn btn-default">
+            <core:icon identifier="actions-link" size="small" />
+            perma-link to this view
+        </f:link.action>
+    </div>
+</html>

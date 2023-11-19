@@ -35,4 +35,17 @@ defined('TYPO3') || die();
         'priority' => 40,
         'class' => JsonFieldElement::class,
     ];
+
+    // backend module configuration
+    $extensionKey = 'dmf_distributor_core';
+    ExtensionManagementUtility::addTypoScript(
+        $extensionKey,
+        'constants',
+        "@import 'EXT:dmf_distributor_core/Configuration/TypoScript/constants.typoscript'"
+    );
+    ExtensionManagementUtility::addTypoScript(
+        $extensionKey,
+        'setup',
+        "@import 'EXT:dmf_distributor_core/Configuration/TypoScript/setup.typoscript'"
+    );
 })();
