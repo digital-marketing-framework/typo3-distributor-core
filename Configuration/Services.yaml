@@ -31,6 +31,12 @@ services:
       - name: event.listener
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryUpdateEvent
 
+  # frontend scripts updates
+  DigitalMarketingFramework\Typo3\Distributor\Core\Controller\EventListener\FrontendJavaScriptUpdateEventListener:
+    tags:
+      - name: event.listener
+        event: DigitalMarketingFramework\Typo3\Core\Controller\Event\FrontendJavaScriptUpdateEvent
+
   # sysext:form element processors
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\AbstractSectionElementProcessor:
     tags:
