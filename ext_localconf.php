@@ -30,17 +30,5 @@ defined('TYPO3') || die();
         'additionalFields' => QueueCleanupFieldProvider::class,
     ];
 
-    // backend module configuration
-    $extensionKey = 'dmf_distributor_core';
-    ExtensionManagementUtility::addTypoScript(
-        $extensionKey,
-        'constants',
-        "@import 'EXT:dmf_distributor_core/Configuration/TypoScript/constants.typoscript'"
-    );
-    ExtensionManagementUtility::addTypoScript(
-        $extensionKey,
-        'setup',
-        "@import 'EXT:dmf_distributor_core/Configuration/TypoScript/setup.typoscript'"
-    );
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = MetaDataHandler::class;
 })();
