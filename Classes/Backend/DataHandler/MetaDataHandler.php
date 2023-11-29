@@ -5,7 +5,6 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Backend\DataHandler;
 use DigitalMarketingFramework\Distributor\Core\Factory\QueueDataFactoryInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
-use JsonException;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
 

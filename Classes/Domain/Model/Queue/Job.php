@@ -124,6 +124,7 @@ class Job extends AbstractEntity implements JobInterface
         if ($data === '') {
             return [];
         }
+
         try {
             return json_decode($data, associative: true, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException) {
@@ -139,11 +140,12 @@ class Job extends AbstractEntity implements JobInterface
             $this->setStatus(QueueInterface::STATUS_FAILED);
             $this->setStatusMessage(sprintf('data encoding failed [%d]: "%s"', $e->getCode(), $e->getMessage()));
             try {
-                $serializedData = json_encode($data, flags: JSON_INVALID_UTF8_SUBSTITUTE|JSON_THROW_ON_ERROR);
-            } catch (JsonException $e) {
+                $serializedData = json_encode($data, flags: JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR);
+            } catch (JsonException) {
                 $serializedData = print_r($data, true);
             }
         }
+
         $this->setSerializedData($serializedData);
     }
 }
