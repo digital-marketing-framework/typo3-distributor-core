@@ -87,7 +87,7 @@ abstract class AbstractDistributorController extends AbstractBackendController
     {
         return [
             'page' => (int)($navigation['page'] ?? 0),
-            'itemsPerPage' => (int)($navigation['itemsPerPage'] ?? 0),
+            'itemsPerPage' => (int)($navigation['itemsPerPage'] ?? 20),
             'sorting' => $navigation['sorting'] ?? $defaultSorting,
         ];
     }
