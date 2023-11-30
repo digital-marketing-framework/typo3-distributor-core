@@ -3,28 +3,25 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor;
 
 use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
-use DigitalMarketingFramework\Core\Model\Data\Value\FileValue;
+use DigitalMarketingFramework\Core\FileStorage\FileStorageInterface;
 use DigitalMarketingFramework\Core\Utility\GeneralUtility as DmfGeneralUtility;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\File\File;
-use Exception;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
 use TYPO3\CMS\Core\Log\LogManagerInterface;
-use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference as ExtbaseFileReference;
 use TYPO3\CMS\Form\Domain\Model\FormElements\FileUpload;
 use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
 
 class FileUploadElementProcessor extends ElementProcessor
 {
+    protected FileStorageInterface $fileStorage;
+
     public function __construct(
-        ConfigurationManagerInterface $configurationManager,
         LogManagerInterface $logManager,
-        protected ResourceFactory $resourceFactory,
+        Registry $registry
     ) {
-        parent::__construct($configurationManager, $logManager);
+        parent::__construct($logManager);
+        $this->fileStorage = $registry->getFileStorage();
     }
 
     protected function getElementClass(): string
@@ -88,64 +85,34 @@ class FileUploadElementProcessor extends ElementProcessor
         }
 
         $baseUploadPath = $this->baseUploadPath();
-        $identifierParts = explode(':', $baseUploadPath);
-        if (count($identifierParts) > 1) {
-            $storageUid = (int)array_shift($identifierParts);
-            $storage = $this->resourceFactory->getStorageObject($storageUid);
-        } else {
-            $storage = $this->resourceFactory->getDefaultStorage();
-        }
-
-        $baseUploadPath = implode(':', $identifierParts);
-        $baseUploadPath = rtrim($baseUploadPath, '/')
-            . '/' . $element->getRootForm()->getIdentifier() . '/';
-        $folderName = $elementValue->getSha1() . random_int(10000, 99999) . '/';
-
-        $folderObject = $this->resourceFactory->createFolderObject(
-            $storage,
-            $baseUploadPath . $folderName,
-            $folderName
-        );
-
+        $folderIdentifier = rtrim($baseUploadPath, '/')
+                . '/' . $element->getRootForm()->getIdentifier() . '/'
+                . $elementValue->getSha1() . random_int(10000, 99999) . '/';
+        $fileIdentifier = $elementValue->getCombinedIdentifier();
         try {
-            $folder = $storage->getFolder($folderObject->getIdentifier());
-        } catch (Exception) {
-            try {
-                $folder = $storage->createFolder($folderObject->getIdentifier());
-            } catch (Exception) {
-                $this->logger->error(
-                    'UploadFormField folder for this form can not be created',
-                    ['baseUploadPath' => $baseUploadPath]
-                );
-
-                return null;
+            if (!$this->fileStorage->folderExists($folderIdentifier)) {
+                $this->fileStorage->createFolder($folderIdentifier);
             }
-        }
 
-        $fileName = $elementValue->getName();
-        $copiedFile = $elementValue->copyTo($folder);
+            $copiedFileIdentifier = $this->fileStorage->copyFileToFolder(
+                $fileIdentifier,
+                $folderIdentifier
+            );
 
-        if ($copiedFile) {
-            if ($copiedFile instanceof FileInterface) {
-                /** @var File $file */
-                $file = GeneralUtility::makeInstance(File::class, $copiedFile);
+            $fileValue = $this->fileStorage->getFileValue($copiedFileIdentifier);
+            $fileValue->setFileName($elementValue->getName());
 
-                /** @var FileValue $uploadField */
-                $uploadField = GeneralUtility::makeInstance(FileValue::class, $file);
-                $uploadField->setFileName($fileName);
-
-                return $uploadField;
-            }
-        } else {
+            return $fileValue;
+        } catch (DigitalMarketingFrameworkException $e) {
             $this->logger->error(
-                'Failed to copy uploaded file "' . $fileName . '" to destination "' . $folder->getIdentifier() . '"!',
+                'Failed to copy uploaded file: "' . $e->getMessage() . '"',
                 [
-                    'fileName' => $fileName,
-                    'destination' => $folder->getIdentifier(),
+                    'file' => $fileIdentifier,
+                    'folder' => $folderIdentifier,
                 ]
             );
-        }
 
-        return null;
+            return null;
+        }
     }
 }

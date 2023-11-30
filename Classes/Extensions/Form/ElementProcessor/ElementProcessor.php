@@ -5,7 +5,6 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\Eleme
 use DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManagerInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
 
 abstract class ElementProcessor
@@ -17,10 +16,8 @@ abstract class ElementProcessor
      */
     protected array $configuration = [];
 
-    public function __construct(
-        protected ConfigurationManagerInterface $configurationManager,
-        LogManagerInterface $logManager,
-    ) {
+    public function __construct(LogManagerInterface $logManager)
+    {
         $this->logger = $logManager->getLogger(static::class);
     }
 
