@@ -24,27 +24,21 @@ class MetaDataHandler implements SingletonInterface
     protected function updateJobData(array &$fieldArray): void
     {
         $job = new Job();
-        $serializedData = json_decode($fieldArray['serialized_data'] ?? '', null, 512, JSON_THROW_ON_ERROR);
-        if (!(bool)$serializedData) {
-            $job->setSerializedData('');
-        } else {
-            $job->setSerializedData(json_encode($serializedData, JSON_THROW_ON_ERROR));
+        $job->setSerializedData($fieldArray['serialized_data']);
+
+        $hash = $this->queueDataFactory->getJobHash($job);
+        $job->setHash($hash);
+        if ($hash !== 'undefined') {
+            $fieldArray['hash'] = $job->getHash();
         }
-
-        $job->setHash($fieldArray['hash'] ?? '');
-
-        $fieldArray['serialized_data'] = json_encode(json_decode($job->getSerializedData(), null, 512, JSON_THROW_ON_ERROR), JSON_THROW_ON_ERROR);
-
-        $job->setHash($this->queueDataFactory->getJobHash($job));
-        $fieldArray['hash'] = $job->getHash();
 
         $label = $this->queueDataFactory->getJobLabel($job);
         $job->setLabel($label);
-        if ($label !== 'undefined' || !(bool)$fieldArray['label']) {
+        if ($label !== 'undefined') {
             $fieldArray['label'] = $job->getLabel();
         }
 
-        if ($label !== 'undefined' || !(bool)$fieldArray['type']) {
+        if ($label !== 'undefined') {
             $fieldArray['type'] = $job->getType();
         }
     }

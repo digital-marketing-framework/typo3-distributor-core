@@ -1,21 +1,21 @@
 
 module.tx_dmfcore_web_dmfcoremanager {
-    view {
-        templateRootPaths.2 = EXT:dmf_distributor_core/Resources/Private/Backend/Templates/
-        partialRootPaths.2 = EXT:dmf_distributor_core/Resources/Private/Backend/Partials/
-        layoutRootPaths.2 = EXT:dmf_distributor_core/Resources/Private/Backend/Layouts/
-    }
-    settings {
-      sections {
-        distributor {
-          title = Distributor
-          subtitle = DISTRIBUTOR
-          controller = DistributorStatistics
-          action = showStatistics
-          actionLabel = Show
-          description = Distributor Job Management
-          icon =
-        }
+  view {
+      templateRootPaths.2 = EXT:dmf_distributor_core/Resources/Private/Backend/Templates/
+      partialRootPaths.2 = EXT:dmf_distributor_core/Resources/Private/Backend/Partials/
+      layoutRootPaths.2 = EXT:dmf_distributor_core/Resources/Private/Backend/Layouts/
+  }
+  settings {
+    sections {
+      distributor {
+        title = Distributor
+        subtitle = DISTRIBUTOR
+        controller = DistributorStatistics
+        action = showStatistics
+        actionLabel = Show
+        description = Distributor Job Management
+        icon =
       }
     }
+  }
 }

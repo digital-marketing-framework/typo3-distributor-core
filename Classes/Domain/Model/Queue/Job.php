@@ -5,6 +5,7 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue;
 use DateTime;
 use DigitalMarketingFramework\Core\Model\Queue\JobInterface;
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
+use JsonException;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 class Job extends AbstractEntity implements JobInterface
@@ -124,29 +125,23 @@ class Job extends AbstractEntity implements JobInterface
             return [];
         }
 
-        $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-        if (!(bool)$data) {
+        try {
+            return json_decode($data, associative: true, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
             return [];
         }
-
-        return $data;
     }
 
     public function setData(array $data): void
     {
-        $serializedData = json_encode($data);
-        if ($serializedData === false) {
+        try {
+            $serializedData = json_encode($data, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
             $this->setStatus(QueueInterface::STATUS_FAILED);
-            $this->setStatusMessage('data encoding failed [' . json_last_error() . ']: "' . json_last_error_msg() . '"');
-
-            $serializedData = json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE);
-            if ($serializedData === false) {
-                if (isset($data['submission']['configuration'])) {
-                    // remove "configuration" since print_r is not able to print big data sets completely
-                    // and "data" and "context" are much more important (and usually much smaller)
-                    unset($data['submission']['configuration']);
-                }
-
+            $this->setStatusMessage(sprintf('data encoding failed [%d]: "%s"', $e->getCode(), $e->getMessage()));
+            try {
+                $serializedData = json_encode($data, flags: JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR);
+            } catch (JsonException) {
                 $serializedData = print_r($data, true);
             }
         }
