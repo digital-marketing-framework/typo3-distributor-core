@@ -14,6 +14,8 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\AndInterface;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\ConstraintInterface;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\OrInterface;
@@ -31,7 +33,13 @@ class JobRepository extends Repository implements QueueInterface
         protected ExtensionConfiguration $extensionConfiguration,
         protected ConnectionPool $connectionPool,
     ) {
-        parent::__construct();
+        $typo3Version = new Typo3Version();
+        if ($typo3Version->getMajorVersion() <= 11) {
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class); // @phpstan-ignore-line TYPO3 version switch
+            parent::__construct($objectManager); // @phpstan-ignore-line TYPO3 version switch
+        } else {
+            parent::__construct(); // @phpstan-ignore-line TYPO3 version switch
+        }
     }
 
     protected function getPid(): int
