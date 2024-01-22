@@ -16,9 +16,7 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\Qom\AndInterface;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\ConstraintInterface;
-use TYPO3\CMS\Extbase\Persistence\Generic\Qom\OrInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
@@ -355,7 +353,7 @@ class JobRepository extends Repository implements QueueInterface
      * @param QueryInterface<Job> $query
      * @param array<ConstraintInterface> $conditions
      */
-    protected function getLogicalOr(QueryInterface $query, array $conditions): OrInterface
+    protected function getLogicalOr(QueryInterface $query, array $conditions) // @phpstan-ignore-line TYPO3 v11 and v12 using different return types
     {
         $typo3Version = new Typo3Version();
         if ($typo3Version->getMajorVersion() <= 11) {
@@ -369,7 +367,7 @@ class JobRepository extends Repository implements QueueInterface
      * @param QueryInterface<Job> $query
      * @param array<ConstraintInterface> $conditions
      */
-    protected function getLogicalAnd(QueryInterface $query, array $conditions): AndInterface
+    protected function getLogicalAnd(QueryInterface $query, array $conditions) // @phpstan-ignore-line TYPO3 v11 and v12 using different return types
     {
         $typo3Version = new Typo3Version();
         if ($typo3Version->getMajorVersion() <= 11) {
