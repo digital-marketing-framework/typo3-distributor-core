@@ -9,27 +9,27 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Utility;
  */
 class UtmzCookieParser
 {
-    protected string $utmz_source;
+    protected ?string $utmz_source = null;
 
-    protected string $utmz_medium;
+    protected ?string $utmz_medium = null;
 
-    protected string $utmz_term;
+    protected ?string $utmz_term = null;
 
-    protected string $utmz_content;
+    protected ?string $utmz_content = null;
 
-    protected string $utmz_campaign;
+    protected ?string $utmz_campaign = null;
 
-    protected string $utmz_gclid;
+    protected ?string $utmz_gclid = null;
 
-    protected string $utmz;
+    protected ?string $utmz = null;
 
-    protected string $utmz_domainHash;
+    protected ?string $utmz_domainHash = null;
 
-    protected string $utmz_timestamp;
+    protected ?string $utmz_timestamp = null;
 
-    protected string $utmz_sessionNumber;
+    protected ?string $utmz_sessionNumber = null;
 
-    protected string $utmz_campaignNumber;
+    protected ?string $utmz_campaignNumber = null;
 
     /**
      * Constructor fires method that parses and assigns property values
