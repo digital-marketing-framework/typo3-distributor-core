@@ -90,7 +90,7 @@ class FormFinisher extends AbstractFinisher
 
         // build and process submission
         $submission = new SubmissionDataSet($formValues, $configurationStack);
-        $relay = $this->registry->getRelay();
+        $relay = $this->registry->getDistributor();
         $relay->process($submission);
 
         return null;
