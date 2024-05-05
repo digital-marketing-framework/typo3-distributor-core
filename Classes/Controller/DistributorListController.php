@@ -189,7 +189,7 @@ class DistributorListController extends AbstractDistributorController
             $jobs = $this->queue->findByUidList($uidList);
             $worker = $this->registry->getQueueProcessor(
                 $this->queue,
-                $this->registry->getRelay()
+                $this->registry->getDistributor()
             );
             $worker->processJobs($jobs);
         }

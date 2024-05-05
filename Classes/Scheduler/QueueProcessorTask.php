@@ -3,7 +3,7 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler;
 
 use DigitalMarketingFramework\Core\Queue\QueueProcessorInterface;
-use DigitalMarketingFramework\Distributor\Core\Service\RelayInterface;
+use DigitalMarketingFramework\Distributor\Core\Service\DistributorInterface;
 
 class QueueProcessorTask extends QueueTask
 {
@@ -16,12 +16,12 @@ class QueueProcessorTask extends QueueTask
 
     protected QueueProcessorInterface $queueProcessor;
 
-    protected RelayInterface $relay;
+    protected DistributorInterface $relay;
 
     protected function prepareTask(): void
     {
         parent::prepareTask();
-        $this->relay = $this->registry->getRelay();
+        $this->relay = $this->registry->getDistributor();
         $this->queueProcessor = $this->registry->getQueueProcessor($this->queue, $this->relay);
     }
 
