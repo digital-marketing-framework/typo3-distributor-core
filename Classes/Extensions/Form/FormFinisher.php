@@ -22,6 +22,8 @@ class FormFinisher extends AbstractFinisher
         'setup' => '',
     ];
 
+    // TODO remove the ignore annotation when we drop TYPO3 11 support
+    // @phpstan-ignore-next-line TYPO3 11 has an empty parent constructor function for downwards compatibility reasons
     public function __construct(
         protected Registry $registry,
         protected FormDataProcessor $formDataProcessor,
