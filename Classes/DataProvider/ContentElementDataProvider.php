@@ -2,11 +2,11 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider;
 
+use DigitalMarketingFramework\Core\Context\ContextInterface;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\ContainerSchema;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\IntegerSchema;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\SchemaInterface;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\StringSchema;
-use DigitalMarketingFramework\Core\Context\ContextInterface;
 use DigitalMarketingFramework\Core\Utility\GeneralUtility as DmfGeneralUtility;
 use DigitalMarketingFramework\Distributor\Core\DataProvider\DataProvider;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
