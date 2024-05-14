@@ -11,3 +11,8 @@ CREATE TABLE tx_dmfdistributorcore_domain_model_queue_job (
   changed int(11) unsigned DEFAULT '0' NOT NULL,
   created int(11) unsigned DEFAULT '0' NOT NULL
 );
+
+CREATE TABLE tx_dmfdistributorcore_domain_model_api_endpoint (
+	path_segment varchar(64) DEFAULT '',
+	configuration_document text DEFAULT '',
+);

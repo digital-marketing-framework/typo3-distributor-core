@@ -86,7 +86,7 @@ class FormFinisher extends AbstractFinisher
 
         // low level debug log, if configured
         if (isset($globalConfiguration['debug']['enabled']) && (bool)$globalConfiguration['debug']['enabled']) {
-            $file = $globalConfiguration['debug']['file'] ?? 'ditigal-marketing-framework-distributor-submission.log';
+            $file = $globalConfiguration['debug']['file'] ?? 'digital-marketing-framework-distributor-submission.log';
             $this->debugLog($file, $formValues);
         }
 

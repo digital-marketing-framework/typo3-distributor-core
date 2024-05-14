@@ -8,12 +8,14 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\AdwordsCampaig
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\AdwordsDataProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\ContentElementDataProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\LanguageCodeDataProvider;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Api\EndPointRepository;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue\JobRepository;
 
 class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistryUpdateEventListener
 {
     public function __construct(
         protected JobRepository $queue,
+        protected EndPointRepository $endPointStorage,
     ) {
         parent::__construct(new DistributorCoreInitialization('dmf_distributor_core'));
     }
@@ -22,6 +24,7 @@ class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistry
     {
         parent::initServices($registry);
         $registry->setPersistentQueue($this->queue);
+        $registry->setEndPointStorage($this->endPointStorage);
     }
 
     protected function initPlugins(RegistryInterface $registry): void
