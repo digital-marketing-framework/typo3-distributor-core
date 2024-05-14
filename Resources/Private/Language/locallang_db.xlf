@@ -37,8 +37,17 @@
       <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint" xml:space="preserve">
 		<source>Digital Marketing Framework - Distributor - API EndPoint</source>
 	  </trans-unit>
-	  <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint.path_segment" xml:space="preserve">
-	    <source>Path Segment</source>
+	  <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint.name" xml:space="preserve">
+	    <source>Name</source>
+	  </trans-unit>
+	  <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint.enabled" xml:space="preserve">
+	    <source>Enabled</source>
+	  </trans-unit>
+	  <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint.disable_context" xml:space="preserve">
+	    <source>Disable Context Processing</source>
+	  </trans-unit>
+	  <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint.allow_context_override" xml:space="preserve">
+	    <source>Allow Client to override Context</source>
 	  </trans-unit>
 	  <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint.configuration_document" xml:space="preserve">
 	    <source>Configuration Document</source>

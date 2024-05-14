@@ -54,13 +54,13 @@ class EndPointRepository extends Repository implements EndPointStorageInterface
         return $query->execute()->toArray();
     }
 
-    public function getEndPointFromSegment(string $segment): ?EndPointInterface
+    public function getEndPointByName(string $name): ?EndPointInterface
     {
         $query = $this->createQuery();
         $query->getQuerySettings()->setRespectStoragePage(true);
         $query->getQuerySettings()->setStoragePageIds([$this->getPid()]);
 
-        $query->matching($query->equals('pathSegment', $segment));
+        $query->matching($query->equals('name', $name));
         $query->setLimit(1);
 
         $result = $query->execute()->toArray();

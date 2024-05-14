@@ -8,7 +8,7 @@ $ll = 'LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang_db.xlf:
 
 $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_api_endpoint'] = [
     'ctrl' => [
-        'label' => 'path_segment',
+        'label' => 'name',
         'tstamp' => 'changed',
         'crdate' => 'created',
         'title' => $ll . 'tx_dmfdistributorcore_domain_model_api_endpoint',
@@ -18,22 +18,43 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_api_endpoint'] = [
         'default_sortby' => 'changed DESC',
     ],
     'interface' => [
-        'showRecordFieldList' => 'path_segment,configuration_document',
+        'showRecordFieldList' => 'name,enabled,disable_context,allow_context_override,configuration_document',
     ],
     'types' => [
         '0' => [
-            'showitem' => 'path_segment,configuration_document',
+            'showitem' => 'name,enabled,disable_context,allow_context_override,,configuration_document',
         ],
     ],
     'palettes' => [
-        '0' => ['showitem' => 'path_segment,configuration_document'],
+        '0' => ['showitem' => 'name,enabled,disable_context,allow_context_override,,configuration_document'],
     ],
     'columns' => [
-        'path_segment' => [
+        'name' => [
             'exclude' => 1,
-            'label' => $ll . 'tx_dmfdistributorcore_domain_model_api_endpoint.path_segment',
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_api_endpoint.name',
             'config' => [
                 'type' => 'input',
+            ],
+        ],
+        'enabled' => [
+            'exclude' => 1,
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_api_endpoint.enabled',
+            'config' => [
+                'type' => 'check',
+            ],
+        ],
+        'disable_context' => [
+            'exclude' => 1,
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_api_endpoint.disable_context',
+            'config' => [
+                'type' => 'check',
+            ],
+        ],
+        'allow_context_override' => [
+            'exclude' => 1,
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_api_endpoint.allow_context_override',
+            'config' => [
+                'type' => 'check',
             ],
         ],
         'configuration_document' => [

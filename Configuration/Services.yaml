@@ -8,23 +8,17 @@ services:
     resource: '../Classes/*'
     exclude: '../Classes/Domain/Model/*'
 
-  # REST API
-  DigitalMarketingFramework\Typo3\Distributor\Core\Api\EventListener\ApiRouteResolversUpdateEventListener:
-      tags:
-          - name: event.listener
-            event: DigitalMarketingFramework\Typo3\Core\Api\Event\ApiRouteResolversUpdateEvent
+  # registry collection
+  DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\RegistryCollectionEventListener:
+    tags:
+      - name: event.listener
+        event: DigitalMarketingFramework\Core\Registry\RegistryCollection
 
   # backend module controllers
   DigitalMarketingFramework\Typo3\Distributor\Core\Controller\EventListener\BackendControllerUpdateEventListener:
     tags:
       - name: event.listener
         event: DigitalMarketingFramework\Typo3\Core\Controller\Event\BackendControllerUpdateEvent
-
-  # configuration document meta data update listeners
-  DigitalMarketingFramework\Typo3\Distributor\Core\ConfigurationDocument\EventListener\ConfigurationDocumentMetaDataUpdateEventListener:
-    tags:
-      - name: event.listener
-        event: DigitalMarketingFramework\Typo3\Core\ConfigurationDocument\Event\ConfigurationDocumentMetaDataUpdateEvent
 
   # registry update listeners
   DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\CoreRegistryUpdateEventListener:
@@ -36,18 +30,6 @@ services:
     tags:
       - name: event.listener
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryUpdateEvent
-
-  # frontend scripts updates
-  DigitalMarketingFramework\Typo3\Distributor\Core\Api\EventListener\FrontendJavaScriptUpdateEventListener:
-    tags:
-      - name: event.listener
-        event: DigitalMarketingFramework\Typo3\Core\Api\Event\FrontendJavaScriptUpdateEvent
-
-  # frontend js settings build listeners
-  DigitalMarketingFramework\Typo3\Distributor\Core\Api\EventListener\FrontendJavaScriptSettingsUpdateEventListener:
-    tags:
-      - name: event.listener
-        event: DigitalMarketingFramework\Typo3\Core\Api\Event\FrontendJavaScriptSettingsUpdateEvent
 
   # sysext:form element processors
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\AbstractSectionElementProcessor:
