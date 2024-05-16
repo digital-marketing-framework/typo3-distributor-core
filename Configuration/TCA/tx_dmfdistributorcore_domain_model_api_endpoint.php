@@ -18,15 +18,15 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_api_endpoint'] = [
         'default_sortby' => 'changed DESC',
     ],
     'interface' => [
-        'showRecordFieldList' => 'name,enabled,disable_context,allow_context_override,configuration_document',
+        'showRecordFieldList' => 'name,enabled,expose_to_frontend,disable_context,allow_context_override,configuration_document',
     ],
     'types' => [
         '0' => [
-            'showitem' => 'name,enabled,disable_context,allow_context_override,,configuration_document',
+            'showitem' => 'name,enabled,expose_to_frontend,disable_context,allow_context_override,configuration_document',
         ],
     ],
     'palettes' => [
-        '0' => ['showitem' => 'name,enabled,disable_context,allow_context_override,,configuration_document'],
+        '0' => ['showitem' => 'name,enabled,expose_to_frontend,disable_context,allow_context_override,configuration_document'],
     ],
     'columns' => [
         'name' => [
@@ -53,6 +53,13 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_api_endpoint'] = [
         'allow_context_override' => [
             'exclude' => 1,
             'label' => $ll . 'tx_dmfdistributorcore_domain_model_api_endpoint.allow_context_override',
+            'config' => [
+                'type' => 'check',
+            ],
+        ],
+        'expose_to_frontend' => [
+            'exclude' => 1,
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_api_endpoint.expose_to_frontend',
             'config' => [
                 'type' => 'check',
             ],

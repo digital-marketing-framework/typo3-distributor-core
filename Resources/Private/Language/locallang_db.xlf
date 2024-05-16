@@ -49,6 +49,9 @@
 	  <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint.allow_context_override" xml:space="preserve">
 	    <source>Allow Client to override Context</source>
 	  </trans-unit>
+	  <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint.expose_to_frontend" xml:space="preserve">
+	    <source>Expose End Point to Frontend</source>
+	  </trans-unit>
 	  <trans-unit id="tx_dmfdistributorcore_domain_model_api_endpoint.configuration_document" xml:space="preserve">
 	    <source>Configuration Document</source>
 	  </trans-unit>

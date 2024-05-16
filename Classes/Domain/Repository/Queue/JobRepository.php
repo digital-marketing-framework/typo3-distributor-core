@@ -521,6 +521,11 @@ class JobRepository extends Repository implements QueueInterface
         $query->getQuerySettings()->setRespectStoragePage(true);
         $query->getQuerySettings()->setStoragePageIds([$this->getPid()]);
 
+        $query->setOrderings([
+            'created' => QueryInterface::ORDER_ASCENDING,
+            'uid' => QueryInterface::ORDER_ASCENDING,
+        ]);
+
         $conditions = [];
         if ($status !== []) {
             $conditions[] = $query->in('status', $status);

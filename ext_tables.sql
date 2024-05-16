@@ -17,5 +17,6 @@ CREATE TABLE tx_dmfdistributorcore_domain_model_api_endpoint (
 	enabled tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	disable_context tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	allow_context_override tinyint(4) unsigned DEFAULT '0' NOT NULL,
+	expose_to_frontend tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	configuration_document text DEFAULT '',
 );

@@ -16,6 +16,7 @@ class EndPoint extends AbstractEntity implements EndPointInterface
         protected bool $enabled = false,
         protected bool $disableContext = false,
         protected bool $allowContextOverride = false,
+        protected bool $exposeToFrontend = false,
         protected string $configurationDocument = '',
     ) {
     }
@@ -58,6 +59,16 @@ class EndPoint extends AbstractEntity implements EndPointInterface
     public function setAllowContextOverride(bool $allowContextOverride): void
     {
         $this->allowContextOverride = $allowContextOverride;
+    }
+
+    public function getExposeToFrontend(): bool
+    {
+        return $this->exposeToFrontend;
+    }
+
+    public function setExposeToFrontend(bool $exposeToFrontend): void
+    {
+        $this->exposeToFrontend = $exposeToFrontend;
     }
 
     public function getConfigurationDocument(): string
