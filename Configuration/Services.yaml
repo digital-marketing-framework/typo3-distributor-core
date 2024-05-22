@@ -31,6 +31,13 @@ services:
       - name: event.listener
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryUpdateEvent
 
+  # sysext:form events
+  DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\EventListener\DataStructureIdentifierListener:
+    tags:
+      - name: event.listener
+        after: 'form-framework/modify-data-structure'
+        method: 'modifyDataStructure'
+
   # sysext:form element processors
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\AbstractSectionElementProcessor:
     tags:
