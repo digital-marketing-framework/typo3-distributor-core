@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Configuration\Event\AfterFlexFormDataStructureParsedEvent;
  * * Adds configuration editor functionality for DMF finisher
  *
  * Scope: backend
+ *
  * @internal
  */
 class DataStructureIdentifierListener
@@ -27,6 +28,7 @@ class DataStructureIdentifierListener
             if ($sheetKey === 'sDEF') {
                 continue;
             }
+
             if (isset($sheet['ROOT']['el']['settings.finishers.Digitalmarketingframework.setup'])) {
                 $dataStructure['sheets'][$sheetKey]['ROOT']['el']['settings.finishers.Digitalmarketingframework.setup']['config']['renderType'] = ConfigurationEditorTextFieldElement::RENDER_TYPE;
             }

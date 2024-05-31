@@ -36,8 +36,7 @@ class MetaDataHandler implements SingletonInterface
             $fieldArray['hash'] = $job->getHash();
         }
 
-        $schemaDocument = $this->registryCollection->getConfigurationSchemaDocument();
-        $label = $this->queueDataFactory->getJobLabel($job, $schemaDocument);
+        $label = $this->queueDataFactory->getJobLabel($job);
         $job->setLabel($label);
         if ($label !== 'undefined') {
             $fieldArray['label'] = $job->getLabel();

@@ -15,6 +15,9 @@ class LanguageCodeDataProvider extends DataProvider
      */
     public const KEY_FIELD = 'field';
 
+    /**
+     * @var string
+     */
     public const KEY_DEFAULT_LANGUAGE = 'defaultLanguage';
 
     /**
