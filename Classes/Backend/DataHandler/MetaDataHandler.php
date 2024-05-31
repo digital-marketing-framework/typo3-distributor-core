@@ -3,18 +3,22 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Backend\DataHandler;
 
 use DigitalMarketingFramework\Distributor\Core\Factory\QueueDataFactoryInterface;
+use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
+use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
 
 class MetaDataHandler implements SingletonInterface
 {
+    protected RegistryInterface $registry;
+
     protected QueueDataFactoryInterface $queueDataFactory;
 
     public function __construct(
-        protected Registry $registry,
+        protected RegistryCollection $registryCollection,
     ) {
+        $this->registry = $this->registryCollection->getRegistryByClass(RegistryInterface::class);
         $this->queueDataFactory = $this->registry->getQueueDataFactory();
     }
 
@@ -32,7 +36,8 @@ class MetaDataHandler implements SingletonInterface
             $fieldArray['hash'] = $job->getHash();
         }
 
-        $label = $this->queueDataFactory->getJobLabel($job);
+        $schemaDocument = $this->registryCollection->getConfigurationSchemaDocument();
+        $label = $this->queueDataFactory->getJobLabel($job, $schemaDocument);
         $job->setLabel($label);
         if ($label !== 'undefined') {
             $fieldArray['label'] = $job->getLabel();

@@ -12,15 +12,9 @@ services:
   DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\RegistryCollectionEventListener:
     tags:
       - name: event.listener
-        event: DigitalMarketingFramework\Core\Registry\RegistryCollection
+        event: DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection
 
-  # backend module controllers
-  DigitalMarketingFramework\Typo3\Distributor\Core\Controller\EventListener\BackendControllerUpdateEventListener:
-    tags:
-      - name: event.listener
-        event: DigitalMarketingFramework\Typo3\Core\Controller\Event\BackendControllerUpdateEvent
-
-  # registry update listeners
+  # registry
   DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\CoreRegistryUpdateEventListener:
     tags:
       - name: event.listener
@@ -30,6 +24,12 @@ services:
     tags:
       - name: event.listener
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryUpdateEvent
+
+  # backend module controllers
+  DigitalMarketingFramework\Typo3\Distributor\Core\Controller\EventListener\BackendControllerUpdateEventListener:
+    tags:
+      - name: event.listener
+        event: DigitalMarketingFramework\Typo3\Core\Controller\Event\BackendControllerUpdateEvent
 
   # sysext:form events
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\EventListener\DataStructureIdentifierListener:

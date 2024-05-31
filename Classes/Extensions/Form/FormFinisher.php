@@ -6,13 +6,16 @@ use DateTime;
 use DigitalMarketingFramework\Core\ConfigurationDocument\ConfigurationDocumentManagerInterface;
 use DigitalMarketingFramework\Core\Model\Data\Value\ValueInterface;
 use DigitalMarketingFramework\Distributor\Core\Model\DataSet\SubmissionDataSet;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
+use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
+use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use Exception;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Form\Domain\Finishers\AbstractFinisher;
 
 class FormFinisher extends AbstractFinisher
 {
+    protected RegistryInterface $registry;
+
     protected ConfigurationDocumentManagerInterface $configurationDocumentManager;
 
     /**
@@ -25,10 +28,11 @@ class FormFinisher extends AbstractFinisher
     // TODO remove the ignore annotation when we drop TYPO3 11 support
     // @phpstan-ignore-next-line TYPO3 11 has an empty parent constructor function for downwards compatibility reasons
     public function __construct(
-        protected Registry $registry,
+        RegistryCollection $registryCollection,
         protected FormDataProcessor $formDataProcessor,
     ) {
-        $this->configurationDocumentManager = $registry->getConfigurationDocumentManager();
+        $this->registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
+        $this->configurationDocumentManager = $this->registry->getConfigurationDocumentManager();
     }
 
     /**
