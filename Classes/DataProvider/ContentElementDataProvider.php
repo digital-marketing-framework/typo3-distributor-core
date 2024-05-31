@@ -2,7 +2,7 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider;
 
-use DigitalMarketingFramework\Core\Context\ContextInterface;
+use DigitalMarketingFramework\Core\Context\WriteableContextInterface;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\ContainerSchema;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\IntegerSchema;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\SchemaInterface;
@@ -34,7 +34,7 @@ class ContentElementDataProvider extends DataProvider
      */
     protected const DEFAULT_CONTENT_ID = 0;
 
-    protected function processContext(ContextInterface $context): void
+    protected function processContext(WriteableContextInterface $context): void
     {
         $ttContentUid = $this->getConfig(static::KEY_CONTENT_ID);
 
@@ -42,14 +42,14 @@ class ContentElementDataProvider extends DataProvider
 
         $content = $this->renderContentElements($uids);
         if ($content !== '' && $content !== '0') {
-            $this->submission->getContext()['content_element'] = $content;
+            $context['content_element'] = $content;
         }
     }
 
     protected function process(): void
     {
         $field = $this->getConfig(static::KEY_FIELD);
-        $content = $this->submission->getContext()['content_element'] ?? '';
+        $content = $this->context['content_element'] ?? '';
         if ($field !== '' && $content !== '') {
             $this->appendToField($field, $content, "\n");
         }

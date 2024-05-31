@@ -15,6 +15,7 @@ module.tx_dmfcore_web_dmfcoremanager {
         actionLabel = Show
         description = Distributor Job Management
         icon =
+        weight = 150
       }
     }
   }

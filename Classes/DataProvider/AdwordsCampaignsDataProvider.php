@@ -2,7 +2,7 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider;
 
-use DigitalMarketingFramework\Core\Context\ContextInterface;
+use DigitalMarketingFramework\Core\Context\WriteableContextInterface;
 use DigitalMarketingFramework\Distributor\Core\DataProvider\DataProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Utility\UtmzCookieParser;
 
@@ -30,17 +30,17 @@ class AdwordsCampaignsDataProvider extends DataProvider
         'ga_utm_content' => 'utm_content',
     ];
 
-    protected function processContext(ContextInterface $context): void
+    protected function processContext(WriteableContextInterface $context): void
     {
-        $this->submission->getContext()->copyCookieFromContext($context, '__utmz');
+        $context->copyCookieFromContext($this->context, '__utmz');
         foreach (array_keys(static::UTM_MAP) as $cookie) {
-            $this->submission->getContext()->copyCookieFromContext($context, $cookie);
+            $context->copyCookieFromContext($this->context, $cookie);
         }
     }
 
     protected function process(): void
     {
-        $cookies = $this->submission->getContext()->getCookies();
+        $cookies = $this->context->getCookies();
         $utmz = new UtmzCookieParser($cookies);
         foreach (static::UTMZ_MAP as $member => $field) {
             $value = $utmz->getVar($member);
