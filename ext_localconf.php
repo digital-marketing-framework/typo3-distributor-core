@@ -1,10 +1,12 @@
 <?php
 
 use DigitalMarketingFramework\Typo3\Distributor\Core\Backend\DataHandler\MetaDataHandler;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Hooks\FlexFormHook;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueCleanupFieldProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueCleanupTask;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueProcessorFieldProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueProcessorTask;
+use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 defined('TYPO3') || die();
@@ -31,4 +33,7 @@ defined('TYPO3') || die();
     ];
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = MetaDataHandler::class;
+
+    // TODO remove this hook once support for TYPO3 11 is dropped
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][FlexFormTools::class]['flexParsing'][] = FlexFormHook::class;
 })();
