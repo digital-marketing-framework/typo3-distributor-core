@@ -1,6 +1,6 @@
 includes:
 	- .Build/vendor/mediatis/typo3-coding-standards/phpstan.neon
 parameters:
-	excludePaths:
-		# TODO Event that is listened to does not exist in TYPO3 11 but in TYPO3 12
-		- Classes/Extensions/Form/EventListener/DataStructureIdentifierListener.php
+	ignoreErrors:
+		# TODO event AfterFlexFormDataStructureParsedEvent exists in TYPO3 12 but not in TYPO3 11
+		- '#TYPO3\\CMS\\Core\\Configuration\\Event\\AfterFlexFormDataStructureParsedEvent#'
