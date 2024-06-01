@@ -16,9 +16,6 @@ use TYPO3\CMS\Core\Configuration\Event\AfterFlexFormDataStructureParsedEvent;
  */
 class DataStructureIdentifierListener
 {
-    /**
-     * @phpstan-ignore-next-line AfterFlexFormDataStructureParsedEvent does not exist in TYPO3 11, but in TYPO3 12
-     */
     public function modifyDataStructure(AfterFlexFormDataStructureParsedEvent $event): void
     {
         $identifier = $event->getIdentifier();
