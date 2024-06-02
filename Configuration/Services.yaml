@@ -8,19 +8,13 @@ services:
     resource: '../Classes/*'
     exclude: '../Classes/Domain/Model/*'
 
-  # backend module controllers
-  DigitalMarketingFramework\Typo3\Distributor\Core\Controller\EventListener\BackendControllerUpdateEventListener:
+  # registry collection
+  DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\RegistryCollectionEventListener:
     tags:
       - name: event.listener
-        event: DigitalMarketingFramework\Typo3\Core\Controller\Event\BackendControllerUpdateEvent
+        event: DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection
 
-  # configuration document meta data update listeners
-  DigitalMarketingFramework\Typo3\Distributor\Core\ConfigurationDocument\EventListener\ConfigurationDocumentMetaDataUpdateEventListener:
-    tags:
-      - name: event.listener
-        event: DigitalMarketingFramework\Typo3\Core\ConfigurationDocument\Event\ConfigurationDocumentMetaDataUpdateEvent
-
-  # registry update listeners
+  # registry
   DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\CoreRegistryUpdateEventListener:
     tags:
       - name: event.listener
@@ -31,11 +25,18 @@ services:
       - name: event.listener
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryUpdateEvent
 
-  # frontend scripts updates
-  DigitalMarketingFramework\Typo3\Distributor\Core\Controller\EventListener\FrontendJavaScriptUpdateEventListener:
+  # backend module controllers
+  DigitalMarketingFramework\Typo3\Distributor\Core\Controller\EventListener\BackendControllerUpdateEventListener:
     tags:
       - name: event.listener
-        event: DigitalMarketingFramework\Typo3\Core\Controller\Event\FrontendJavaScriptUpdateEvent
+        event: DigitalMarketingFramework\Typo3\Core\Controller\Event\BackendControllerUpdateEvent
+
+  # sysext:form events
+  DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\EventListener\DataStructureIdentifierListener:
+    tags:
+      - name: event.listener
+        after: 'form-framework/modify-data-structure'
+        method: 'modifyDataStructure'
 
   # sysext:form element processors
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor\AbstractSectionElementProcessor:

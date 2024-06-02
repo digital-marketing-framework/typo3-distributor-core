@@ -4,20 +4,24 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Controller;
 
 use DateTime;
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
+use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
+use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue\JobRepository;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 
 class DistributorListController extends AbstractDistributorController
 {
+    protected RegistryInterface $registry;
+
     public function __construct(
         ModuleTemplateFactory $moduleTemplateFactory,
         IconFactory $iconFactory,
         JobRepository $queue,
-        protected Registry $registry,
+        RegistryCollection $registryCollection,
     ) {
+        $this->registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
         parent::__construct($moduleTemplateFactory, $iconFactory, $queue);
     }
 

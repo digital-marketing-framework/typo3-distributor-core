@@ -4,7 +4,7 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler;
 
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
+use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
@@ -16,7 +16,8 @@ abstract class QueueTask extends AbstractTask
 
     protected function prepareTask(): void
     {
-        $this->registry = GeneralUtility::makeInstance(Registry::class);
+        $registryCollection = GeneralUtility::makeInstance(RegistryCollection::class);
+        $this->registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
         $this->queue = $this->registry->getPersistentQueue();
     }
 }

@@ -4,8 +4,9 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\Eleme
 
 use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
 use DigitalMarketingFramework\Core\FileStorage\FileStorageInterface;
+use DigitalMarketingFramework\Core\Registry\RegistryInterface;
 use DigitalMarketingFramework\Core\Utility\GeneralUtility as DmfGeneralUtility;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
+use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use TYPO3\CMS\Core\Log\LogManagerInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference as ExtbaseFileReference;
@@ -18,9 +19,10 @@ class FileUploadElementProcessor extends ElementProcessor
 
     public function __construct(
         LogManagerInterface $logManager,
-        Registry $registry
+        RegistryCollection $registryCollection,
     ) {
         parent::__construct($logManager);
+        $registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
         $this->fileStorage = $registry->getFileStorage();
     }
 

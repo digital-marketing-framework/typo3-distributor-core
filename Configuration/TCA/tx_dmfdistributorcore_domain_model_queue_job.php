@@ -1,6 +1,7 @@
 <?php
 
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
+use DigitalMarketingFramework\Typo3\Core\Form\Element\JsonFieldElement;
 
 defined('TYPO3') || exit;
 
@@ -115,7 +116,7 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
             'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.serialized_data',
             'config' => [
                 'type' => 'user',
-                'renderType' => 'digitalMarketingFrameworkJsonFieldElement',
+                'renderType' => JsonFieldElement::RENDER_TYPE,
                 'cols' => 40,
                 'rows' => 15,
                 'readOnly' => $readOnly,
