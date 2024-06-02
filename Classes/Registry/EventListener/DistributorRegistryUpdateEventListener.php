@@ -9,13 +9,16 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\AdwordsDataPro
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\ContentElementDataProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\LanguageCodeDataProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue\JobRepository;
+use DigitalMarketingFramework\Typo3\Distributor\Core\GlobalConfiguration\Schema\DistributorCoreGlobalConfigurationSchema;
 
 class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistryUpdateEventListener
 {
     public function __construct(
         protected JobRepository $queue,
     ) {
-        parent::__construct(new DistributorCoreInitialization('dmf_distributor_core'));
+        $initialization = new DistributorCoreInitialization('dmf_distributor_core');
+        $initialization->setGlobalConfigurationSchema(new DistributorCoreGlobalConfigurationSchema());
+        parent::__construct($initialization);
     }
 
     protected function initServices(RegistryInterface $registry): void
