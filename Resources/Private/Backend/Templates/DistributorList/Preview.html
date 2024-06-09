@@ -1,0 +1,19 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Default" />
+
+<f:section name="Buttons"></f:section>
+
+<f:section name="Content">
+    <f:link.action action="list" controller="DistributorList" arguments="{backParameters}" class="btn btn-primary">Back</f:link.action>
+
+    <f:for each="{records}" as="record">
+        <div class="container">
+            <h2>Preview: {record.job.label} ({record.job.uid})</h2>
+            <f:format.raw>{record.preview}</f:format.raw>
+        </div>
+    </f:for>
+</f:section>
+</html>

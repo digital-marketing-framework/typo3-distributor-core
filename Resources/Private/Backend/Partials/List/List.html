@@ -108,6 +108,9 @@
                                 <be:link.editRecord uid="{job.uid}" title="edit" table="tx_dmfdistributorcore_domain_model_queue_job" returnUrl="{f:uri.action(action:'list',arguments:'{filters:filters,navigation:navigation}')}" class="btn btn-default">
                                     <core:icon identifier="actions-open" size="small" />
                                 </be:link.editRecord>
+                                <f:link.action action="preview" title="preview" arguments="{list:{'{job.uid}':'{job.uid}'},filters:filters,navigation:navigation}" class="btn btn-default">
+                                    <core:icon identifier="actions-document-view" size="small" />
+                                </f:link.action>
                                 <f:link.action action="queue" title="queue" arguments="{list:{'{job.uid}':'{job.uid}'},filters:filters,navigation:navigation}" class="btn btn-default {f:if(condition:'{job.status} == 0',then:'disabled')}" additionalAttributes="{data-confirm:'Do you want to queue this job?'}">
                                     <core:icon identifier="actions-clock" size="small" />
                                 </f:link.action>

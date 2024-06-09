@@ -205,6 +205,31 @@ class DistributorListController extends AbstractDistributorController
         ]);
     }
 
+    public function previewAction(array $list = [], array $filters = [], array $navigation = []): ResponseInterface
+    {
+        $records = [];
+        $uidList = array_values(array_filter($list));
+        if ($uidList !== []) {
+            $jobs = $this->queue->findByUidList($uidList);
+            $distributor = $this->registry->getDistributor();
+            foreach ($jobs as $job) {
+                $records[] = [
+                    'job' => $job,
+                    'preview' => $distributor->previewJobProcess($job),
+                ];
+            }
+        }
+        $this->view->assign('records', $records);
+
+        $this->view->assign('backParameters', [
+            'list' => $list,
+            'filters' => $filters,
+            'navigation' => $navigation,
+        ]);
+
+        return $this->backendHtmlResponse();
+    }
+
     /**
      * @param array<string,string> $list
      * @param array{search?:string,advancedSearch?:bool,searchExactMatch?:bool,minCreated?:string,maxCreated?:string,minChanged?:string,maxChanged?:string,type?:array<string,string>,status?:array<string>} $filters
