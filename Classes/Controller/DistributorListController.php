@@ -205,6 +205,11 @@ class DistributorListController extends AbstractDistributorController
         ]);
     }
 
+    /**
+     * @param array<string,string> $list
+     * @param array{search?:string,advancedSearch?:bool,searchExactMatch?:bool,minCreated?:string,maxCreated?:string,minChanged?:string,maxChanged?:string,type?:array<string,string>,status?:array<string>} $filters
+     * @param array{page?:int|string,itemsPerPage?:int|string,sorting?:array<string,string>} $navigation
+     */
     public function previewAction(array $list = [], array $filters = [], array $navigation = []): ResponseInterface
     {
         $records = [];
@@ -219,6 +224,7 @@ class DistributorListController extends AbstractDistributorController
                 ];
             }
         }
+
         $this->view->assign('records', $records);
 
         $this->view->assign('backParameters', [
