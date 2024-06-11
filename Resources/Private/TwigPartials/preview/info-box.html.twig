@@ -1,0 +1,7 @@
+<div class="note">
+    {% if preformatted %}
+        <pre class="note-body">{{ info|raw }}</pre>
+    {% else %}
+        <div class="note-body">{{ info|raw }}</div>
+    {% endif %}
+</div>
