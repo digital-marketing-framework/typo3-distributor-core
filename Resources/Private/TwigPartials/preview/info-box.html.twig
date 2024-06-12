@@ -1,4 +1,12 @@
-<div class="note">
+{% set noteClass = '' %}
+{% if infoType == 'warning' or infoType == 'error' %}
+    {% set noteClass = 'note-category-2' %}
+{% elseif infoType == 'success' %}
+    {% set noteClass = 'note-category-4' %}
+{% elseif infoType == 'info' %}
+    {% set noteClass = 'note-category-1' %}
+{% endif %}
+<div class="note {{ noteClass }}">
     {% if preformatted %}
         <pre class="note-body">{{ info|raw }}</pre>
     {% else %}

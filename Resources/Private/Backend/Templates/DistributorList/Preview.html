@@ -9,6 +9,16 @@
 <f:section name="Content">
     <f:link.action action="list" controller="DistributorList" arguments="{backParameters}" class="btn btn-primary">Back</f:link.action>
 
+    <div class="container">
+        <div class="note note-category-1">
+            <div class="note-body">
+                <p>This is a job preview, not a review. It shows what will happen if a job was processed right now, but not necessarily what had happened when the job was last processed.</p>
+
+                <p>If the job was processed in the past, the associated configuration might have been different which could have changed the specifics of the process.</p>
+            </div>
+        </div>
+    </div>
+
     <f:for each="{records}" as="record">
         <div class="container">
             <h2>Preview: {record.job.label} ({record.job.uid})</h2>
