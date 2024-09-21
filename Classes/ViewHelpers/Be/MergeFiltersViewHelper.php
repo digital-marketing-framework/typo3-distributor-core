@@ -30,7 +30,7 @@ class MergeFiltersViewHelper extends AbstractViewHelper
     public static function renderStatic(
         array $arguments,
         Closure $renderChildrenClosure,
-        RenderingContextInterface $renderingContext
+        RenderingContextInterface $renderingContext,
     ): array {
         $filters = $arguments['filters'];
         foreach (static::FILTER_ATTRIBUTES as $attribute) {

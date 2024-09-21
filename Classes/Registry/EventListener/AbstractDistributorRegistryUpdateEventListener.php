@@ -11,7 +11,7 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorR
 abstract class AbstractDistributorRegistryUpdateEventListener
 {
     public function __construct(
-        protected InitializationInterface $initialization
+        protected InitializationInterface $initialization,
     ) {
     }
 
