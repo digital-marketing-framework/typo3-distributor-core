@@ -264,13 +264,13 @@ class JobRepository extends Repository implements QueueInterface
                     'count' => $row1['count'],
                     'lastSeen' => $row1['lastSeen']->getChanged()->getTimestamp(),
                     'firstSeen' => $row1['firstSeen']->getChanged()->getTimestamp(),
-                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort))
+                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort)),
                 };
                 $value2 = match ($sort) {
                     'count' => $row2['count'],
                     'lastSeen' => $row2['lastSeen']->getChanged()->getTimestamp(),
                     'firstSeen' => $row2['firstSeen']->getChanged()->getTimestamp(),
-                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort))
+                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort)),
                 };
                 if ($value1 !== $value2) {
                     break;
@@ -471,7 +471,7 @@ class JobRepository extends Repository implements QueueInterface
                     return match ($direction) {
                         'ASC' => QueryInterface::ORDER_ASCENDING,
                         'DESC' => QueryInterface::ORDER_DESCENDING,
-                        default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort direction "%s"', $direction))
+                        default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort direction "%s"', $direction)),
                     };
                 }, $sorting)
             );
