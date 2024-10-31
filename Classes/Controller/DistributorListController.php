@@ -275,6 +275,37 @@ class DistributorListController extends AbstractDistributorController
             $transformedNavigation['page'] = $navigationBounds['numberOfPages'] - 1;
         }
 
+        // Limit Pagination to max. 13 pages: first three, three on each side of current page and last three
+        $numPagesAround = 3;
+        $currentPage = $transformedNavigation['page'];
+        $numPages = $navigationBounds['numberOfPages'];
+        if($navigationBounds['numberOfPages'] > (4 * $numPagesAround + 1)) {
+
+            // First $numPagesAround pages
+            $pages = array_keys(array_fill(0, $numPagesAround, 1));
+
+            // $numPagesAround before current page
+            $startPage = $currentPage - $numPagesAround;
+            $pages = array_merge($pages, array_keys(array_fill($startPage < $numPagesAround ? $numPagesAround : $startPage, $numPagesAround, 1)));
+
+            // Current page
+            $pages[] = $currentPage;
+
+            // $numPagesAround after current page
+            $pagesAfter = $numPagesAround;
+            if($currentPage + $pagesAfter >= $numPages) {
+                $pagesAfter = $numPages - $currentPage - 1;
+            }
+            $pages = array_merge($pages, array_keys(array_fill($currentPage + 1, $pagesAfter, 1)));
+
+            // Last $numPagesAround pages
+            if($currentPage < $numPages - $numPagesAround) {
+                $pages = array_merge($pages, array_keys(array_fill($numPages - $numPagesAround, $numPagesAround, 1)));
+            }
+
+            $navigationBounds['pages'] = array_unique($pages);
+        }
+
         $this->view->assign('current', $currentAction);
         $this->view->assign('expirationDate', $this->getExpirationDate());
         $this->view->assign('stuckDate', $this->getStuckDate());
