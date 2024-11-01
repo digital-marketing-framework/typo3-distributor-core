@@ -275,35 +275,42 @@ class DistributorListController extends AbstractDistributorController
             $transformedNavigation['page'] = $navigationBounds['numberOfPages'] - 1;
         }
 
-        // Limit Pagination to max. 13 pages: first three, three on each side of current page and last three
-        $numPagesAround = 3;
+
+        // Limit Pagination page links
+        $eachSide = 3;
         $currentPage = $transformedNavigation['page'];
-        $numPages = $navigationBounds['numberOfPages'];
-        if($navigationBounds['numberOfPages'] > (4 * $numPagesAround + 1)) {
+        $totalPages = $navigationBounds['numberOfPages'];
+        if($totalPages > (2 * $eachSide + 5)) {
 
-            // First $numPagesAround pages
-            $pages = array_keys(array_fill(0, $numPagesAround, 1));
+            $pages = [];
+            $startPage = $currentPage - $eachSide;
+            $endPage = $currentPage + $eachSide;
 
-            // $numPagesAround before current page
-            $startPage = $currentPage - $numPagesAround;
-            $pages = array_merge($pages, array_keys(array_fill($startPage < $numPagesAround ? $numPagesAround : $startPage, $numPagesAround, 1)));
-
-            // Current page
-            $pages[] = $currentPage;
-
-            // $numPagesAround after current page
-            $pagesAfter = $numPagesAround;
-            if($currentPage + $pagesAfter >= $numPages) {
-                $pagesAfter = $numPages - $currentPage - 1;
-            }
-            $pages = array_merge($pages, array_keys(array_fill($currentPage + 1, $pagesAfter, 1)));
-
-            // Last $numPagesAround pages
-            if($currentPage < $numPages - $numPagesAround) {
-                $pages = array_merge($pages, array_keys(array_fill($numPages - $numPagesAround, $numPagesAround, 1)));
+            if($currentPage <= $eachSide + 3) {
+                // Current page close to beginning
+                $startPage = 1;
+                $endPage = (2 * $eachSide) + 3;
+            } else if($currentPage >= $totalPages - ($eachSide + 2)) {
+                // Current page close to end
+                $startPage = $totalPages - (2 * $eachSide) - 2;
+                $endPage = $totalPages;
             }
 
-            $navigationBounds['pages'] = array_unique($pages);
+            if($startPage > 1) {
+                $pages[] = 1;
+            }
+            if($startPage > 2) {
+                $pages[] = "...";
+            }
+            $pages = array_merge($pages, array_keys(array_fill($startPage, $endPage - $startPage, 1)));
+            if($endPage < $totalPages - 1) {
+                $pages[] = "...";
+            }
+            if($endPage < $totalPages) {
+                $pages[] = $totalPages;
+            }
+
+            $navigationBounds['pages'] = $pages;
         }
 
         $this->view->assign('current', $currentAction);
