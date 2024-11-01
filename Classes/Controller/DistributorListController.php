@@ -288,7 +288,7 @@ class DistributorListController extends AbstractDistributorController
 
             if($currentPage <= $eachSide + 3) {
                 // Current page close to beginning
-                $startPage = 1;
+                $startPage = 0;
                 $endPage = (2 * $eachSide) + 3;
             } else if($currentPage >= $totalPages - ($eachSide + 2)) {
                 // Current page close to end
@@ -296,18 +296,18 @@ class DistributorListController extends AbstractDistributorController
                 $endPage = $totalPages;
             }
 
-            if($startPage > 1) {
-                $pages[] = 1;
+            if($startPage > 0) {
+                $pages[] = 0;
             }
             if($startPage > 2) {
                 $pages[] = "...";
             }
-            $pages = array_merge($pages, array_keys(array_fill($startPage, $endPage - $startPage, 1)));
+            $pages = array_merge($pages, array_keys(array_fill($startPage, $endPage - $startPage + 1, 1)));
             if($endPage < $totalPages - 1) {
                 $pages[] = "...";
             }
             if($endPage < $totalPages) {
-                $pages[] = $totalPages;
+                $pages[] = $totalPages - 1;
             }
 
             $navigationBounds['pages'] = $pages;
