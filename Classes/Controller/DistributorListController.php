@@ -280,34 +280,34 @@ class DistributorListController extends AbstractDistributorController
         $eachSide = 3;
         $currentPage = $transformedNavigation['page'];
         $totalPages = $navigationBounds['numberOfPages'];
-        if($totalPages > (2 * $eachSide + 5)) {
+        if($totalPages > (4 * $eachSide + 3)) {
 
             $pages = [];
             $startPage = $currentPage - $eachSide;
             $endPage = $currentPage + $eachSide;
 
-            if($currentPage <= $eachSide + 3) {
+            if($currentPage <= 2 * $eachSide + 1) {
                 // Current page close to beginning
                 $startPage = 0;
-                $endPage = (2 * $eachSide) + 3;
-            } else if($currentPage >= $totalPages - ($eachSide + 2)) {
+                $endPage = (3 * $eachSide) + 1;
+            } else if($currentPage >= $totalPages - (2 * $eachSide + 2)) {
                 // Current page close to end
-                $startPage = $totalPages - (2 * $eachSide) - 2;
-                $endPage = $totalPages;
+                $startPage = $totalPages - (3 * $eachSide) - 2;
+                $endPage = $totalPages - 1;
             }
 
             if($startPage > 0) {
-                $pages[] = 0;
+                $pages = array_keys(array_fill(0, $eachSide, 1));
             }
-            if($startPage > 2) {
+            if($startPage > 1) {
                 $pages[] = "...";
             }
-            $pages = array_merge($pages, array_keys(array_fill($startPage, $endPage - 1 - $startPage + 1, 1)));
+            $pages = array_merge($pages, array_keys(array_fill($startPage, $endPage - $startPage + 1, 1)));
+            if($endPage < $totalPages - $eachSide) {
+                $pages[] = "...";
+            }
             if($endPage < $totalPages - 1) {
-                $pages[] = "...";
-            }
-            if($endPage < $totalPages) {
-                $pages[] = $totalPages - 1;
+                $pages = array_merge($pages, array_keys(array_fill($totalPages - $eachSide, $eachSide, 1)));
             }
 
             $navigationBounds['pages'] = $pages;
