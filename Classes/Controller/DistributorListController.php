@@ -302,7 +302,7 @@ class DistributorListController extends AbstractDistributorController
             if($startPage > 2) {
                 $pages[] = "...";
             }
-            $pages = array_merge($pages, array_keys(array_fill($startPage, $endPage - $startPage + 1, 1)));
+            $pages = array_merge($pages, array_keys(array_fill($startPage, $endPage - 1 - $startPage + 1, 1)));
             if($endPage < $totalPages - 1) {
                 $pages[] = "...";
             }
