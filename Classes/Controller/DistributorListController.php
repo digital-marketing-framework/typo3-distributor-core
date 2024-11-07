@@ -334,7 +334,12 @@ class DistributorListController extends AbstractDistributorController
         ]);
     }
 
-    protected function getPagesForPagination($pages, $currentPage, $totalPages): array
+    /**
+     * @param array<int> $pages
+     *
+     * @return array<string,int>
+     */
+    protected function getPagesForPagination(array $pages, int $currentPage, int $totalPages): array
     {
         // Limit Pagination page links
         if ($totalPages > (4 * static::PAGINATION_ITEMS_EACH_SIDE + 3)) {
