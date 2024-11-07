@@ -13,6 +13,11 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 
 class DistributorListController extends AbstractDistributorController
 {
+    /**
+     * @var int
+     */
+    protected const PAGINATION_ITEMS_EACH_SIDE = 3;
+
     protected RegistryInterface $registry;
 
     public function __construct(
@@ -272,42 +277,44 @@ class DistributorListController extends AbstractDistributorController
         }
 
         if ($transformedNavigation['page'] >= $navigationBounds['numberOfPages']) {
-            $transformedNavigation['page'] = $navigationBounds['numberOfPages'] - 1;
+            //$transformedNavigation['page'] = $navigationBounds['numberOfPages'] - 1;
         }
 
+        $navigationBounds['numberOfPages'] = 99;
 
         // Limit Pagination page links
-        $eachSide = 3;
         $currentPage = $transformedNavigation['page'];
         $totalPages = $navigationBounds['numberOfPages'];
-        if($totalPages > (4 * $eachSide + 3)) {
-
+        if ($totalPages > (4 * static::PAGINATION_ITEMS_EACH_SIDE + 3)) {
             $pages = [];
-            $startPage = $currentPage - $eachSide;
-            $endPage = $currentPage + $eachSide;
+            $startPage = $currentPage - static::PAGINATION_ITEMS_EACH_SIDE;
+            $endPage = $currentPage + static::PAGINATION_ITEMS_EACH_SIDE;
 
-            if($currentPage <= 2 * $eachSide + 1) {
+            if ($currentPage <= 2 * static::PAGINATION_ITEMS_EACH_SIDE + 1) {
                 // Current page close to beginning
                 $startPage = 0;
-                $endPage = (3 * $eachSide) + 1;
-            } else if($currentPage >= $totalPages - (2 * $eachSide + 2)) {
+                $endPage = (3 * static::PAGINATION_ITEMS_EACH_SIDE) + 1;
+            } elseif ($currentPage >= $totalPages - (2 * static::PAGINATION_ITEMS_EACH_SIDE + 2)) {
                 // Current page close to end
-                $startPage = $totalPages - (3 * $eachSide) - 2;
+                $startPage = $totalPages - (3 * static::PAGINATION_ITEMS_EACH_SIDE) - 2;
                 $endPage = $totalPages - 1;
             }
 
-            if($startPage > 0) {
-                $pages = array_keys(array_fill(0, $eachSide, 1));
+            if ($startPage > 0) {
+                $pages = array_keys(array_fill(0, static::PAGINATION_ITEMS_EACH_SIDE, 1));
             }
-            if($startPage > 1) {
-                $pages[] = "...";
+
+            if ($startPage > 1) {
+                $pages[] = '...';
             }
-            $pages = array_merge($pages, array_keys(array_fill($startPage, $endPage - $startPage + 1, 1)));
-            if($endPage < $totalPages - $eachSide) {
-                $pages[] = "...";
+
+            $pages = [...$pages, ...array_keys(array_fill($startPage, $endPage - $startPage + 1, 1))];
+            if ($endPage < $totalPages - static::PAGINATION_ITEMS_EACH_SIDE) {
+                $pages[] = '...';
             }
-            if($endPage < $totalPages - 1) {
-                $pages = array_merge($pages, array_keys(array_fill($totalPages - $eachSide, $eachSide, 1)));
+
+            if ($endPage < $totalPages - 1) {
+                $pages = [...$pages, ...array_keys(array_fill($totalPages - static::PAGINATION_ITEMS_EACH_SIDE, static::PAGINATION_ITEMS_EACH_SIDE, 1))];
             }
 
             $navigationBounds['pages'] = $pages;
