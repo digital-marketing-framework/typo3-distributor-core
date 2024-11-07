@@ -277,48 +277,10 @@ class DistributorListController extends AbstractDistributorController
         }
 
         if ($transformedNavigation['page'] >= $navigationBounds['numberOfPages']) {
-            //$transformedNavigation['page'] = $navigationBounds['numberOfPages'] - 1;
+            $transformedNavigation['page'] = $navigationBounds['numberOfPages'] - 1;
         }
 
-        $navigationBounds['numberOfPages'] = 99;
-
-        // Limit Pagination page links
-        $currentPage = $transformedNavigation['page'];
-        $totalPages = $navigationBounds['numberOfPages'];
-        if ($totalPages > (4 * static::PAGINATION_ITEMS_EACH_SIDE + 3)) {
-            $pages = [];
-            $startPage = $currentPage - static::PAGINATION_ITEMS_EACH_SIDE;
-            $endPage = $currentPage + static::PAGINATION_ITEMS_EACH_SIDE;
-
-            if ($currentPage <= 2 * static::PAGINATION_ITEMS_EACH_SIDE + 1) {
-                // Current page close to beginning
-                $startPage = 0;
-                $endPage = (3 * static::PAGINATION_ITEMS_EACH_SIDE) + 1;
-            } elseif ($currentPage >= $totalPages - (2 * static::PAGINATION_ITEMS_EACH_SIDE + 2)) {
-                // Current page close to end
-                $startPage = $totalPages - (3 * static::PAGINATION_ITEMS_EACH_SIDE) - 2;
-                $endPage = $totalPages - 1;
-            }
-
-            if ($startPage > 0) {
-                $pages = array_keys(array_fill(0, static::PAGINATION_ITEMS_EACH_SIDE, 1));
-            }
-
-            if ($startPage > 1) {
-                $pages[] = '...';
-            }
-
-            $pages = [...$pages, ...array_keys(array_fill($startPage, $endPage - $startPage + 1, 1))];
-            if ($endPage < $totalPages - static::PAGINATION_ITEMS_EACH_SIDE) {
-                $pages[] = '...';
-            }
-
-            if ($endPage < $totalPages - 1) {
-                $pages = [...$pages, ...array_keys(array_fill($totalPages - static::PAGINATION_ITEMS_EACH_SIDE, static::PAGINATION_ITEMS_EACH_SIDE, 1))];
-            }
-
-            $navigationBounds['pages'] = $pages;
-        }
+        $navigationBounds['pages'] = $this->getPagesForPagination($navigationBounds['pages'], $transformedNavigation['page'], $navigationBounds['numberOfPages']);
 
         $this->view->assign('current', $currentAction);
         $this->view->assign('expirationDate', $this->getExpirationDate());
@@ -370,5 +332,44 @@ class DistributorListController extends AbstractDistributorController
                 'status' => ['failed' => 1],
             ],
         ]);
+    }
+
+    protected function getPagesForPagination($pages, $currentPage, $totalPages): array
+    {
+        // Limit Pagination page links
+        if ($totalPages > (4 * static::PAGINATION_ITEMS_EACH_SIDE + 3)) {
+            $pages = [];
+            $startPage = $currentPage - static::PAGINATION_ITEMS_EACH_SIDE;
+            $endPage = $currentPage + static::PAGINATION_ITEMS_EACH_SIDE;
+
+            if ($currentPage <= 2 * static::PAGINATION_ITEMS_EACH_SIDE + 1) {
+                // Current page close to beginning
+                $startPage = 0;
+                $endPage = (3 * static::PAGINATION_ITEMS_EACH_SIDE) + 1;
+            } elseif ($currentPage >= $totalPages - (2 * static::PAGINATION_ITEMS_EACH_SIDE + 2)) {
+                // Current page close to end
+                $startPage = $totalPages - (3 * static::PAGINATION_ITEMS_EACH_SIDE) - 2;
+                $endPage = $totalPages - 1;
+            }
+
+            if ($startPage > 0) {
+                $pages = array_keys(array_fill(0, static::PAGINATION_ITEMS_EACH_SIDE, 1));
+            }
+
+            if ($startPage > 1) {
+                $pages[] = '...';
+            }
+
+            $pages = [...$pages, ...array_keys(array_fill($startPage, $endPage - $startPage + 1, 1))];
+            if ($endPage < $totalPages - static::PAGINATION_ITEMS_EACH_SIDE) {
+                $pages[] = '...';
+            }
+
+            if ($endPage < $totalPages - 1) {
+                $pages = [...$pages, ...array_keys(array_fill($totalPages - static::PAGINATION_ITEMS_EACH_SIDE, static::PAGINATION_ITEMS_EACH_SIDE, 1))];
+            }
+        }
+
+        return $pages;
     }
 }
