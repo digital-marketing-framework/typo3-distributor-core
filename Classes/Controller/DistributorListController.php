@@ -337,7 +337,7 @@ class DistributorListController extends AbstractDistributorController
     /**
      * @param array<int> $pages
      *
-     * @return array<string,int>
+     * @return array<string|int>
      */
     protected function getPagesForPagination(array $pages, int $currentPage, int $totalPages): array
     {
