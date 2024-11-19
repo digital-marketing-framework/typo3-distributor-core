@@ -49,11 +49,12 @@ class MetaDataHandler implements SingletonInterface
     public function processDatamap_preProcessFieldArray(array &$fieldArray, string $table, string $id, DataHandler $parentObj): void
     {
         if (($table === 'tx_dmfdistributorcore_domain_model_queue_job') && !$parentObj->isImporting) {
-            if ($this->registryCollection === null) {
+            if (!$this->registryCollection instanceof RegistryCollection) {
                 $this->registryCollection = GeneralUtility::makeInstance(RegistryCollection::class);
                 $this->registry = $this->registryCollection->getRegistryByClass(RegistryInterface::class);
                 $this->queueDataFactory = $this->registry->getQueueDataFactory();
             }
+
             $this->updateJobData($fieldArray);
         }
     }
