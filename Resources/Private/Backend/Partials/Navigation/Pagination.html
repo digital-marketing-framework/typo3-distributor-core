@@ -12,12 +12,19 @@
                 <div class="input-group">
                     <span class="btn btn-default disabled" style="min-width: 8rem">page</span>
                     <f:for each="{navigationBounds.pages}" as="index">
-                        <f:link.action
-                            action="{current}"
-                            arguments="{page:index,filters:filters,navigation:navigation}"
-                            class="btn btn-default {f:if(condition:'{navigation.page} == {index}',then:'active')}">
-                            {index + 1}
-                        </f:link.action>
+                        <f:if condition="{index} == '...'">
+                            <f:then>
+                                <span class="btn btn-default disabled">...</span>
+                            </f:then>
+                            <f:else>
+                                <f:link.action
+                                    action="{current}"
+                                    arguments="{page:index,filters:filters,navigation:navigation}"
+                                    class="btn btn-default {f:if(condition:'{navigation.page} == {index}',then:'active')}">
+                                    {index + 1}
+                                </f:link.action>
+                            </f:else>
+                        </f:if>
                     </f:for>
                 </div>
             </div>

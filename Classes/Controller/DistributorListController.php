@@ -13,6 +13,11 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 
 class DistributorListController extends AbstractDistributorController
 {
+    /**
+     * @var int
+     */
+    protected const PAGINATION_ITEMS_EACH_SIDE = 3;
+
     protected RegistryInterface $registry;
 
     public function __construct(
@@ -275,6 +280,8 @@ class DistributorListController extends AbstractDistributorController
             $transformedNavigation['page'] = $navigationBounds['numberOfPages'] - 1;
         }
 
+        $navigationBounds['pages'] = $this->getPagesForPagination($navigationBounds['pages'], $transformedNavigation['page'], $navigationBounds['numberOfPages']);
+
         $this->view->assign('current', $currentAction);
         $this->view->assign('expirationDate', $this->getExpirationDate());
         $this->view->assign('stuckDate', $this->getStuckDate());
@@ -325,5 +332,49 @@ class DistributorListController extends AbstractDistributorController
                 'status' => ['failed' => 1],
             ],
         ]);
+    }
+
+    /**
+     * @param array<int> $pages
+     *
+     * @return array<string|int>
+     */
+    protected function getPagesForPagination(array $pages, int $currentPage, int $totalPages): array
+    {
+        // Limit Pagination page links
+        if ($totalPages > (4 * static::PAGINATION_ITEMS_EACH_SIDE + 3)) {
+            $pages = [];
+            $startPage = $currentPage - static::PAGINATION_ITEMS_EACH_SIDE;
+            $endPage = $currentPage + static::PAGINATION_ITEMS_EACH_SIDE;
+
+            if ($currentPage <= 2 * static::PAGINATION_ITEMS_EACH_SIDE + 1) {
+                // Current page close to beginning
+                $startPage = 0;
+                $endPage = (3 * static::PAGINATION_ITEMS_EACH_SIDE) + 1;
+            } elseif ($currentPage >= $totalPages - (2 * static::PAGINATION_ITEMS_EACH_SIDE + 2)) {
+                // Current page close to end
+                $startPage = $totalPages - (3 * static::PAGINATION_ITEMS_EACH_SIDE) - 2;
+                $endPage = $totalPages - 1;
+            }
+
+            if ($startPage > 0) {
+                $pages = array_keys(array_fill(0, static::PAGINATION_ITEMS_EACH_SIDE, 1));
+            }
+
+            if ($startPage > 1) {
+                $pages[] = '...';
+            }
+
+            $pages = [...$pages, ...array_keys(array_fill($startPage, $endPage - $startPage + 1, 1))];
+            if ($endPage < $totalPages - static::PAGINATION_ITEMS_EACH_SIDE) {
+                $pages[] = '...';
+            }
+
+            if ($endPage < $totalPages - 1) {
+                $pages = [...$pages, ...array_keys(array_fill($totalPages - static::PAGINATION_ITEMS_EACH_SIDE, static::PAGINATION_ITEMS_EACH_SIDE, 1))];
+            }
+        }
+
+        return $pages;
     }
 }
