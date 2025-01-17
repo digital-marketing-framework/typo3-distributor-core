@@ -12,9 +12,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MetaDataHandler implements SingletonInterface
 {
-    protected RegistryInterface $registry;
-
-    protected QueueDataFactoryInterface $queueDataFactory;
+    protected ?QueueDataFactoryInterface $queueDataFactory = null;
 
     /**
      * @param array<string,mixed> $fieldArray
@@ -47,9 +45,12 @@ class MetaDataHandler implements SingletonInterface
     public function processDatamap_preProcessFieldArray(array &$fieldArray, string $table, string $id, DataHandler $parentObj): void
     {
         if (($table === 'tx_dmfdistributorcore_domain_model_queue_job') && !$parentObj->isImporting) {
-            $registryCollection = GeneralUtility::makeInstance(RegistryCollection::class);
-            $this->registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
-            $this->queueDataFactory = $this->registry->getQueueDataFactory();
+            if (!$this->queueDataFactory instanceof QueueDataFactoryInterface) {
+                $registryCollection = GeneralUtility::makeInstance(RegistryCollection::class);
+                $registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
+                $this->queueDataFactory = $registry->getQueueDataFactory();
+            }
+
             $this->updateJobData($fieldArray);
         }
     }
