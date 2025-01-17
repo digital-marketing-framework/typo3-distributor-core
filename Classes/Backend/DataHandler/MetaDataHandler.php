@@ -8,19 +8,13 @@ use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MetaDataHandler implements SingletonInterface
 {
     protected RegistryInterface $registry;
 
     protected QueueDataFactoryInterface $queueDataFactory;
-
-    public function __construct(
-        protected RegistryCollection $registryCollection,
-    ) {
-        $this->registry = $this->registryCollection->getRegistryByClass(RegistryInterface::class);
-        $this->queueDataFactory = $this->registry->getQueueDataFactory();
-    }
 
     /**
      * @param array<string,mixed> $fieldArray
@@ -53,6 +47,9 @@ class MetaDataHandler implements SingletonInterface
     public function processDatamap_preProcessFieldArray(array &$fieldArray, string $table, string $id, DataHandler $parentObj): void
     {
         if (($table === 'tx_dmfdistributorcore_domain_model_queue_job') && !$parentObj->isImporting) {
+            $registryCollection = GeneralUtility::makeInstance(RegistryCollection::class);
+            $this->registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
+            $this->queueDataFactory = $this->registry->getQueueDataFactory();
             $this->updateJobData($fieldArray);
         }
     }
