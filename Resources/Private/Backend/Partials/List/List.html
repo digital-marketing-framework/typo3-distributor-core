@@ -50,7 +50,7 @@
                                             <f:translate key="LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang.xlf:tag.status.id.{job.status}" default="{job.status}"/>
                                         </span>
                                         <f:if condition="{job.changed} < {stuckDate}">
-                                            <span class="badge badge-warning" title="not started in over an hour">
+                                            <span class="badge badge-warning" title="not started for more than {maxExecutionTime} seconds">
                                                 <f:translate key="LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang.xlf:tag.stuck" default="stuck"/>
                                             </span>
                                         </f:if>
@@ -60,7 +60,7 @@
                                             <f:translate key="LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang.xlf:tag.status.id.{job.status}" default="{job.status}"/>
                                         </span>
                                         <f:if condition="{job.changed} < {stuckDate}">
-                                            <span class="badge badge-danger" title="pending for over an hour">
+                                            <span class="badge badge-danger" title="pending for more than {maxExecutionTime} seconds">
                                                 <f:translate key="LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang.xlf:tag.stuck" default="stuck"/>
                                             </span>
                                         </f:if>
@@ -70,7 +70,7 @@
                                             <f:translate key="LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang.xlf:tag.status.id.{job.status}" default="{job.status}"/>
                                         </span>
                                         <f:if condition="{job.changed} < {stuckDate}">
-                                            <span class="badge badge-danger" title="running for over an hour">
+                                            <span class="badge badge-danger" title="running for more than {maxExecutionTime} seconds">
                                                 <f:translate key="LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang.xlf:tag.stuck" default="stuck"/>
                                             </span>
                                         </f:if>

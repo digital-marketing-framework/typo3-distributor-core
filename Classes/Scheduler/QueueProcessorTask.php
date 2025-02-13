@@ -16,13 +16,13 @@ class QueueProcessorTask extends QueueTask
 
     protected QueueProcessorInterface $queueProcessor;
 
-    protected DistributorInterface $relay;
+    protected DistributorInterface $distributor;
 
     protected function prepareTask(): void
     {
         parent::prepareTask();
-        $this->relay = $this->registry->getDistributor();
-        $this->queueProcessor = $this->registry->getQueueProcessor($this->queue, $this->relay);
+        $this->distributor = $this->registry->getDistributor();
+        $this->queueProcessor = $this->registry->getQueueProcessor($this->queue, $this->distributor);
     }
 
     public function getBatchSize(): int
@@ -38,7 +38,7 @@ class QueueProcessorTask extends QueueTask
     public function execute(): bool
     {
         $this->prepareTask();
-        $this->queueProcessor->processBatch($this->batchSize);
+        $this->queueProcessor->updateJobsAndProcessBatch($this->batchSize);
 
         return true;
     }

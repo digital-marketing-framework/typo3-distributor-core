@@ -21,6 +21,9 @@
       <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.status_message" xml:space="preserve">
         <source>Status Message</source>
       </trans-unit>
+      <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.retry_amount" xml:space="preserve">
+        <source>Amount of re-tries left</source>
+      </trans-unit>
       <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.serialized_data" xml:space="preserve">
         <source>Data</source>
       </trans-unit>
