@@ -2,6 +2,7 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler;
 
+use DigitalMarketingFramework\Core\Notification\NotificationManagerInterface;
 use DigitalMarketingFramework\Core\Queue\QueueProcessorInterface;
 use DigitalMarketingFramework\Distributor\Core\Service\DistributorInterface;
 
@@ -18,9 +19,12 @@ class QueueProcessorTask extends QueueTask
 
     protected DistributorInterface $distributor;
 
+    protected NotificationManagerInterface $notificationManager;
+
     protected function prepareTask(): void
     {
         parent::prepareTask();
+        $this->notificationManager = $this->registry->getNotificationManager();
         $this->distributor = $this->registry->getDistributor();
         $this->queueProcessor = $this->registry->getQueueProcessor($this->queue, $this->distributor);
     }
@@ -38,7 +42,10 @@ class QueueProcessorTask extends QueueTask
     public function execute(): bool
     {
         $this->prepareTask();
+
+        $componentLevel = $this->notificationManager->pushComponent('distributor');
         $this->queueProcessor->updateJobsAndProcessBatch($this->batchSize);
+        $this->notificationManager->popComponent($componentLevel);
 
         return true;
     }
