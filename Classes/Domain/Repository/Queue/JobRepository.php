@@ -606,6 +606,7 @@ class JobRepository extends Repository implements QueueInterface
         if ($message !== null) {
             $job->addStatusMessage($message);
         }
+
         $job->setSkipped($skipped);
         $this->update($job);
         $this->persistenceManager->persistAll();
