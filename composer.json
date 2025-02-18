@@ -24,8 +24,8 @@
     "homepage": "https://www.mediatis.de",
     "require": {
         "php": "^8.1",
-        "digital-marketing-framework/distributor-core": "dev-feature/error-handling",
-        "digital-marketing-framework/typo3-core": "dev-feature/error-handling",
+        "digital-marketing-framework/distributor-core": "^2.6.0",
+        "digital-marketing-framework/typo3-core": "^2.4.0",
         "digital-marketing-framework/typo3-template-engine-twig": "^2.1",
         "mediatis/form_fieldnames": "^3.5 || ^4.0",
         "typo3/cms-core": "^11.5 || ^12.4",
