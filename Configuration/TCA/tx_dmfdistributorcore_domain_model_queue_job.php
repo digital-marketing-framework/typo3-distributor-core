@@ -22,15 +22,15 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
         'default_sortby' => 'changed DESC',
     ],
     'interface' => [
-        'showRecordFieldList' => 'label,hash,type,created,changed,status,skipped,status_message,serialized_data',
+        'showRecordFieldList' => 'label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data',
     ],
     'types' => [
         '0' => [
-            'showitem' => 'label,hash,type,created,changed,status,skipped,status_message,serialized_data',
+            'showitem' => 'label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data',
         ],
     ],
     'palettes' => [
-        '0' => ['showitem' => 'label,hash,type,created,changed,status,skipped,status_message,serialized_data'],
+        '0' => ['showitem' => 'label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data'],
     ],
     'columns' => [
         'label' => [
@@ -108,6 +108,15 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
                 'type' => 'text',
                 'cols' => 40,
                 'rows' => 5,
+                'readOnly' => $readOnly,
+            ],
+        ],
+        'retry_amount' => [
+            'exclude' => 1,
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.retry_amount',
+            'config' => [
+                'type' => 'input',
+                'eval' => 'int',
                 'readOnly' => $readOnly,
             ],
         ],

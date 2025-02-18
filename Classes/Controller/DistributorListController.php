@@ -7,6 +7,7 @@ use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
 use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue\JobRepository;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Queue\GlobalConfiguration\Settings\QueueSettings;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -20,6 +21,8 @@ class DistributorListController extends AbstractDistributorController
 
     protected RegistryInterface $registry;
 
+    protected QueueSettings $queueSettings;
+
     public function __construct(
         ModuleTemplateFactory $moduleTemplateFactory,
         IconFactory $iconFactory,
@@ -27,12 +30,13 @@ class DistributorListController extends AbstractDistributorController
         RegistryCollection $registryCollection,
     ) {
         $this->registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
+        $this->queueSettings = $this->registry->getGlobalConfiguration()->getGlobalSettings(QueueSettings::class);
         parent::__construct($moduleTemplateFactory, $iconFactory, $queue);
     }
 
     protected function getExpirationDate(): DateTime
     {
-        $expirationTime = $this->registry->getGlobalConfiguration()->get('dmf_distributor_core')['queue']['expirationTime'] ?? 30;
+        $expirationTime = $this->queueSettings->getExpirationTime();
         $expirationDate = new DateTime();
         $expirationDate->modify('-' . $expirationTime . ' days');
 
@@ -41,8 +45,9 @@ class DistributorListController extends AbstractDistributorController
 
     protected function getStuckDate(): DateTime
     {
+        $maxExecutionTime = $this->queueSettings->getMaximumExecutionTime();
         $stuckDate = new DateTime();
-        $stuckDate->modify('-3600 seconds');
+        $stuckDate->modify('-' . $maxExecutionTime . ' seconds');
 
         return $stuckDate;
     }
@@ -284,6 +289,7 @@ class DistributorListController extends AbstractDistributorController
 
         $this->view->assign('current', $currentAction);
         $this->view->assign('expirationDate', $this->getExpirationDate());
+        $this->view->assign('maxExecutionTime', $this->queueSettings->getMaximumExecutionTime());
         $this->view->assign('stuckDate', $this->getStuckDate());
 
         $this->view->assign('filters', $filters);

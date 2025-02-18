@@ -20,6 +20,7 @@ class Job extends AbstractEntity implements JobInterface
         protected string $label = '',
         protected string $type = '',
         protected string $hash = '',
+        protected int $retryAmount = 0,
     ) {
     }
 
@@ -56,6 +57,16 @@ class Job extends AbstractEntity implements JobInterface
     public function setType(string $type): void
     {
         $this->type = $type;
+    }
+
+    public function getRetryAmount(): int
+    {
+        return $this->retryAmount;
+    }
+
+    public function setRetryAmount(int $amount): void
+    {
+        $this->retryAmount = $amount;
     }
 
     public function getCreated(): DateTime
@@ -103,9 +114,26 @@ class Job extends AbstractEntity implements JobInterface
         return $this->statusMessage;
     }
 
-    public function setStatusMessage(string $statusMessage): void
+    public function setStatusMessage(string $message): void
     {
-        $this->statusMessage = $statusMessage;
+        $this->statusMessage = $message;
+    }
+
+    public function addStatusMessage(string $message): void
+    {
+        if ($message === '') {
+            return;
+        }
+
+        $statusMessage = $this->getStatusMessage();
+        if ($statusMessage !== '') {
+            $statusMessage .= PHP_EOL . PHP_EOL;
+        }
+
+        $now = new DateTime();
+        $statusMessage .= $now->format('Y-m-d H:i:s: ') . $message;
+
+        $this->setStatusMessage($statusMessage);
     }
 
     public function getSerializedData(): string

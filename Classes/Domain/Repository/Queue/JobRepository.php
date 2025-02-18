@@ -7,6 +7,7 @@ use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
 use DigitalMarketingFramework\Core\Model\Queue\JobInterface;
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Queue\GlobalConfiguration\Schema\QueueSchema;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -44,7 +45,8 @@ class JobRepository extends Repository implements QueueInterface
     {
         if (!isset($this->pid)) {
             try {
-                $this->pid = $this->extensionConfiguration->get('dmf_distributor_core')['queue']['pid'] ?? 0;
+                $config = $this->extensionConfiguration->get('dmf_distributor_core');
+                $this->pid = $config[QueueSchema::KEY_QUEUE][QueueSchema::KEY_QUEUE_PID] ?? 0;
             } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
                 $this->pid = 0;
             }
@@ -593,7 +595,7 @@ class JobRepository extends Repository implements QueueInterface
         return $this->fetchWhere([QueueInterface::STATUS_FAILED], $limit, $offset);
     }
 
-    public function markAs(JobInterface $job, int $status, string $message = '', bool $skipped = false): void
+    public function markAs(JobInterface $job, int $status, ?string $message = null, bool $skipped = false): void
     {
         if (!$job instanceof Job) {
             throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be updated in this queue.', $job::class));
@@ -601,7 +603,10 @@ class JobRepository extends Repository implements QueueInterface
 
         $job->setStatus($status);
         $job->setChanged(new DateTime());
-        $job->setStatusMessage($message);
+        if ($message !== null) {
+            $job->addStatusMessage($message);
+        }
+
         $job->setSkipped($skipped);
         $this->update($job);
         $this->persistenceManager->persistAll();
