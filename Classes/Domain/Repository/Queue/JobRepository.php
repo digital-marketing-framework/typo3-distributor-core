@@ -595,19 +595,23 @@ class JobRepository extends Repository implements QueueInterface
         return $this->fetchWhere([QueueInterface::STATUS_FAILED], $limit, $offset);
     }
 
-    public function markAs(JobInterface $job, int $status, ?string $message = null, bool $skipped = false): void
+    public function markAs(JobInterface $job, int $status, ?string $message = null, bool $skipped = false, bool $preserveTimestamp = false): void
     {
         if (!$job instanceof Job) {
             throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be updated in this queue.', $job::class));
         }
 
         $job->setStatus($status);
-        $job->setChanged(new DateTime());
+        $job->setSkipped($skipped);
+
         if ($message !== null) {
             $job->addStatusMessage($message);
         }
 
-        $job->setSkipped($skipped);
+        if (!$preserveTimestamp) {
+            $job->setChanged(new DateTime());
+        }
+
         $this->update($job);
         $this->persistenceManager->persistAll();
     }
@@ -632,9 +636,9 @@ class JobRepository extends Repository implements QueueInterface
         $this->markAs($job, QueueInterface::STATUS_DONE, '', $skipped);
     }
 
-    public function markAsFailed(JobInterface $job, string $message = ''): void
+    public function markAsFailed(JobInterface $job, string $message = '', bool $preserveTimestamp = false): void
     {
-        $this->markAs($job, QueueInterface::STATUS_FAILED, $message);
+        $this->markAs($job, QueueInterface::STATUS_FAILED, $message, preserveTimestamp: $preserveTimestamp);
     }
 
     public function markListAsQueued(array $jobs): void
@@ -665,10 +669,10 @@ class JobRepository extends Repository implements QueueInterface
         }
     }
 
-    public function markListAsFailed(array $jobs, string $message = ''): void
+    public function markListAsFailed(array $jobs, string $message = '', bool $preserveTimestamp = false): void
     {
         foreach ($jobs as $job) {
-            $this->markAsFailed($job, $message);
+            $this->markAsFailed($job, $message, $preserveTimestamp);
         }
     }
 
