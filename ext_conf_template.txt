@@ -5,6 +5,21 @@ queue {
 
     # cat=Queue; type=integer; label=Expiration Time (days)
     expirationTime = 30
+
+    # cat=Queue; type=integer; label=Maximum execution time (in seconds)
+    maxExecutionTime = 600
+
+    # cat=Queue; type=boolean; label=Recognise stuck jobs and mark them as failed
+    recogniseStuckJobs = 0
+
+    # cat=Queue; type=boolean; label=Enable re-running failed jobs
+    rerunEnabled = 0
+
+    # cat=Queue; type=integer; label=Number of times to re-run failed jobs
+    rerunFailedJobsAmount = 3
+
+    # cat=Queue; type=integer; label=Delay before re-running failed jobs (in seconds)
+    rerunDelay = 300
 }
 
 fileUpload {
