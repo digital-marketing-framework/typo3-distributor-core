@@ -17,20 +17,20 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
         'crdate' => 'created',
         'title' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job',
         'origUid' => 't3_origuid',
-        'searchFields' => 'label,hash,type,created,status,skipped,status_message,changed',
+        'searchFields' => 'environment,label,hash,type,created,status,skipped,status_message,changed',
         'iconfile' => 'EXT:dmf_distributor_core/Resources/Public/Icons/QueueJob.svg',
         'default_sortby' => 'changed DESC',
     ],
     'interface' => [
-        'showRecordFieldList' => 'label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data',
+        'showRecordFieldList' => 'environment,label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data',
     ],
     'types' => [
         '0' => [
-            'showitem' => 'label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data',
+            'showitem' => 'environment,label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data',
         ],
     ],
     'palettes' => [
-        '0' => ['showitem' => 'label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data'],
+        '0' => ['showitem' => 'environment,label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data'],
     ],
     'columns' => [
         'label' => [
@@ -82,6 +82,14 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
                 'type' => 'input',
                 'renderType' => 'inputDateTime',
                 'eval' => 'datetime',
+                'readOnly' => $readOnly,
+            ],
+        ],
+        'environment' => [
+            'exclude' => 1,
+            'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.environment',
+            'config' => [
+                'type' => 'input',
                 'readOnly' => $readOnly,
             ],
         ],

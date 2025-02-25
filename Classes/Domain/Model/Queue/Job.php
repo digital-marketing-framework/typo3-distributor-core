@@ -11,6 +11,7 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 class Job extends AbstractEntity implements JobInterface
 {
     public function __construct(
+        protected string $environment = '',
         protected DateTime $created = new DateTime(),
         protected DateTime $changed = new DateTime(),
         protected int $status = QueueInterface::STATUS_QUEUED,
@@ -87,6 +88,16 @@ class Job extends AbstractEntity implements JobInterface
     public function setChanged(DateTime $changed): void
     {
         $this->changed = $changed;
+    }
+
+    public function getEnvironment(): string
+    {
+        return $this->environment;
+    }
+
+    public function setEnvironment(string $environment): void
+    {
+        $this->environment = $environment;
     }
 
     public function getStatus(): int

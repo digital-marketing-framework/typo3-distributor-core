@@ -680,11 +680,13 @@ class JobRepository extends Repository implements QueueInterface
     {
         if (!$job instanceof Job) {
             $newJob = new Job();
+            $newJob->setEnvironment($job->getEnvironment());
             $newJob->setData($job->getData());
             $newJob->setCreated($job->getCreated());
             $newJob->setChanged($job->getChanged());
             $newJob->setStatus($job->getStatus());
             $newJob->setStatusMessage($job->getStatusMessage());
+            $newJob->setRetryAmount($job->getRetryAmount());
             $newJob->setSkipped($job->getSkipped());
             $newJob->setHash($job->getHash());
             $newJob->setLabel($job->getLabel());
