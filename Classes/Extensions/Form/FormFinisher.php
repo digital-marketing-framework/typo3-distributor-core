@@ -8,6 +8,7 @@ use DigitalMarketingFramework\Core\Model\Data\Value\ValueInterface;
 use DigitalMarketingFramework\Distributor\Core\Model\DataSet\SubmissionDataSet;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
 use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\DataSource\Typo3FormDataSource;
 use Exception;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Form\Domain\Finishers\AbstractFinisher;
@@ -33,6 +34,11 @@ class FormFinisher extends AbstractFinisher
     ) {
         $this->registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
         $this->configurationDocumentManager = $this->registry->getConfigurationDocumentManager();
+    }
+
+    protected function getFormDataSourceId(): string
+    {
+        return Typo3FormDataSource::TYPE . ':' . $this->finisherContext->getFormRuntime()->getFormDefinition()->getPersistenceIdentifier();
     }
 
     /**
@@ -88,6 +94,9 @@ class FormFinisher extends AbstractFinisher
         // fetch form values
         $formValues = $this->getFormValues($globalConfiguration);
 
+        // compute data source ID
+        $dataSourceId = $this->getFormDataSourceId();
+
         // low level debug log, if configured
         if (isset($globalConfiguration['debug']['enabled']) && (bool)$globalConfiguration['debug']['enabled']) {
             $file = $globalConfiguration['debug']['file'] ?? 'digital-marketing-framework-distributor-submission.log';
@@ -95,7 +104,7 @@ class FormFinisher extends AbstractFinisher
         }
 
         // build and process submission
-        $submission = new SubmissionDataSet($formValues, $configurationStack);
+        $submission = new SubmissionDataSet($dataSourceId, $formValues, $configurationStack);
         $submission->getContext()->setResponsive(true);
         $relay = $this->registry->getDistributor();
         $relay->process($submission);
