@@ -10,7 +10,22 @@ class BackendControllerUpdateEventListener
 {
     public function __invoke(BackendControllerUpdateEvent $event): void
     {
-        $event->addControllerActions(DistributorStatisticsController::class, ['showStatistics', 'showErrors']);
-        $event->addControllerActions(DistributorListController::class, ['list', 'listExpired', 'listStuck', 'listFailed', 'preview', 'queue', 'run', 'delete']);
+        $event->addControllerActions(DistributorStatisticsController::class, [
+            'showStatistics',
+            'showErrors'
+        ]);
+
+        $event->addControllerActions(DistributorListController::class, [
+            'list',
+            'listExpired',
+            'listStuck',
+            'listFailed',
+            'preview',
+            'createTestCase',
+            'updateTestCase',
+            'queue',
+            'run',
+            'delete'
+        ]);
     }
 }

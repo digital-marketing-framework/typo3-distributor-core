@@ -3,14 +3,23 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Controller;
 
 use DateTime;
+use DigitalMarketingFramework\Core\Model\DataSource\DataSourceInterface;
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
+use DigitalMarketingFramework\Distributor\Core\TestCase\DistributorTestCaseProcessor;
+use DigitalMarketingFramework\Typo3\Core\Domain\Model\TestCase\TestCase;
+use DigitalMarketingFramework\Typo3\Core\Domain\Repository\TestCase\TestCaseRepository;
 use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue\JobRepository;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Queue\GlobalConfiguration\Settings\QueueSettings;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 class DistributorListController extends AbstractDistributorController
 {
@@ -28,6 +37,8 @@ class DistributorListController extends AbstractDistributorController
         IconFactory $iconFactory,
         JobRepository $queue,
         RegistryCollection $registryCollection,
+        protected TestCaseRepository $testCaseRepository,
+        protected PersistenceManager $persistenceManager,
     ) {
         $this->registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
         $this->queueSettings = $this->registry->getGlobalConfiguration()->getGlobalSettings(QueueSettings::class);
@@ -235,6 +246,21 @@ class DistributorListController extends AbstractDistributorController
             }
         }
 
+        $testCases = $this->testCaseRepository->getTypeSpecificTestCases(DistributorTestCaseProcessor::TEST_CASE_TYPE);
+        $distributorTestCases = [];
+        $testCaseMap = [];
+        if ($testCases !== []) {
+            $distributorTestCases[''] = '';
+            foreach ($testCases as $testCase) {
+                $testCaseMap[$testCase->getName()] = $testCase->getUid();
+                $distributorTestCases[$testCase->getUid()] = $testCase->getLabel() !== '' && $testCase->getLabel() !== $testCase->getName()
+                    ? sprintf('%s (%s)', $testCase->getLabel(), $testCase->getName())
+                    : $testCase->getName();
+            }
+        }
+        $this->view->assign('testCases', $distributorTestCases);
+        $this->view->assign('testCaseMap', $testCaseMap);
+
         $this->view->assign('records', $records);
 
         $this->view->assign('backParameters', [
@@ -244,6 +270,98 @@ class DistributorListController extends AbstractDistributorController
         ]);
 
         return $this->backendHtmlResponse();
+    }
+
+    protected function getTestCaseData(int $jobUid): array
+    {
+        $job = $this->queue->findByUid($jobUid);
+        $jobData = $job->getData();
+
+        $distributor = $this->registry->getDistributor();
+        $jobOutput = $distributor->getJobPreviewData($job);
+
+        $hash = '';
+        $dataSourceId = $jobData['submission']['dataSourceId'] ?? '';
+        if ($dataSourceId !== '') {
+            $dataSource = $this->registry->getDistributorDataSourceManager()->getDataSourceById($dataSourceId);
+            if ($dataSource instanceof DataSourceInterface) {
+                $hash = $dataSource->getHash();
+            }
+        }
+
+        return [
+            'name' => $job->getLabel(),
+            'input' => $jobData,
+            'expectedOutput' => $jobOutput,
+            'hash' => $hash,
+        ];
+    }
+
+    public function createTestCaseAction(int $jobUid): ResponseInterface
+    {
+        $testCaseData = $this->getTestCaseData($jobUid);
+
+        $testCase = null;
+        $testCases = $this->testCaseRepository->findByName($testCaseData['name']);
+        foreach ($testCases as $case) {
+            if ($job->getType() === DistributorTestCaseProcessor::TEST_CASE_TYPE) {
+                $testCase = $case;
+                break;
+            }
+        }
+        if (!$testCase instanceof TestCase) {
+            $testCase = new TestCase(
+                $testCaseData['name'],
+                $testCaseData['name'],
+                DistributorTestCaseProcessor::TEST_CASE_TYPE,
+                $testCaseData['hash']
+            );
+            $testCase->setPid($this->testCaseRepository->getPid());
+            $testCase->setInput($testCaseData['input']);
+            $testCase->setExpectedOutput($testCaseData['expectedOutput']);
+            $this->testCaseRepository->add($testCase);
+            $this->persistenceManager->persistAll();
+        } else {
+            if ($testCase->getLabel() === '') {
+                $testCase->setLabel($testCaseData['name']);
+            }
+            $testCase->setHash($testCaseData['hash']);
+            $testCase->setInput($testCaseData['input']);
+            $testCase->setExpectedOutput($testCaseData['expectedOutput']);
+            $this->testCaseRepository->update($testCase);
+        }
+
+        $params = [
+            'edit' => ['tx_dmfcore_domain_model_test_case' => [$testCase->getUid() => 'edit']],
+            // 'returnUrl' => '', // TODO
+        ];
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+        $uri = (string)$uriBuilder->buildUriFromRoute('record_edit', $params);
+
+        return new RedirectResponse($uri);
+    }
+
+    public function updateTestCaseAction(int $jobUid, int $testCaseUid): ResponseInterface
+    {
+        $testCaseData = $this->getTestCaseData($jobUid);
+
+        $testCase = $this->testCaseRepository->findByUid($testCaseUid);
+        if ($testCase->getLabel() === '') {
+            $testCase->setLabel($testCaseData['name']);
+        }
+        $testCase->setInput($testCaseData['input']);
+        $testCase->setExpectedOutput($testCaseData['expectedOutput']);
+        $testCase->setHash($testCaseData['hash']);
+        $this->testCaseRepository->update($testCase);
+
+        $params = [
+            'edit' => ['tx_dmfcore_domain_model_test_case' => [$testCase->getUid() => 'edit']],
+            // 'returnUrl' => '', // TODO
+        ];
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+        $uri = (string)$uriBuilder->buildUriFromRoute('record_edit', $params);
+
+        return new RedirectResponse($uri);
     }
 
     /**

@@ -22,6 +22,24 @@
     <f:for each="{records}" as="record">
         <div class="container">
             <h2>Preview: {record.job.label} ({record.job.uid})</h2>
+
+            <f:if condition="!{testCaseMap.{record.job.label}}">
+                <p>
+                    <f:link.action action="createTestCase" controller="DistributorList" arguments="{jobUid: record.job.uid}" class="btn btn-primary">Create Test Case</f:link.action>
+                </p>
+            </f:if>
+            <f:if condition="{testCases}">
+                <p>
+                    <f:form action="updateTestCase">
+                        <f:form.hidden name="jobUid" value="{record.job.uid}" />
+                        <div class="form-group form-group-sm">
+                            <f:form.select name="testCaseUid" options="{testCases}" class="form-select form-select-sm" value="{testCaseMap.{record.job.label}}" required="1"/>
+                        </div>
+                        <f:form.submit class="btn btn-primary" value="Update Test Case" />
+                    </f:form>
+                </p>
+            </f:if>
+
             <f:format.raw>{record.preview}</f:format.raw>
         </div>
     </f:for>
