@@ -4,9 +4,9 @@ TYPO3:
       prototypes:
         standard:
           formEditor:
-            dynamicRequireJsModules:
+            dynamicJavaScriptModules:
               additionalViewModelModules:
-                1684239317: 'TYPO3/CMS/DmfDistributorCore/Backend/FormEditor/DmfConfigTextareaEditorViewModel'
+                1684239317: '@digital-marketing-framework/distributor-core/Backend/FormEditor/DmfConfigTextareaEditorViewModel.js'
             formEditorFluidConfiguration:
               partialRootPaths:
                 1684239317: 'EXT:dmf_distributor_core/Resources/Private/Extensions/form/Backend/Partials/FormEditor/'
