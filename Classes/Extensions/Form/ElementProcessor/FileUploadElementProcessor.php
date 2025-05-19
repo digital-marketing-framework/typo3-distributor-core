@@ -66,7 +66,7 @@ class FileUploadElementProcessor extends ElementProcessor
         }
 
         if (!$element instanceof FileUpload) {
-            throw new DigitalMarketingFrameworkException(sprintf('Field type FileUpload expected, found "%s".', $element::class));
+            throw new DigitalMarketingFrameworkException(sprintf('Field type FileUpload expected, found "%s".', $element::class), 8544485185);
         }
 
         if ($elementValue instanceof ExtbaseFileReference) {

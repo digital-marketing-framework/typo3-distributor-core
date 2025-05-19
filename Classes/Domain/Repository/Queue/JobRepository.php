@@ -194,9 +194,7 @@ class JobRepository extends Repository implements QueueInterface
 
         $result = $query->executeQuery()->fetchAllAssociative();
 
-        return array_map(static function (array $row) {
-            return $row['type'];
-        }, $result);
+        return array_map(static fn (array $row) => $row['type'], $result);
     }
 
     /**
@@ -238,14 +236,14 @@ class JobRepository extends Repository implements QueueInterface
         foreach ($messages as $message) {
             $lastSeen = $this->findOneByErrorMessage($message, lastSeen: true, filters: $filters);
             if (!$lastSeen instanceof Job) {
-                throw new DigitalMarketingFrameworkException('cannot load job "lastSeen" for error statistics');
+                throw new DigitalMarketingFrameworkException('cannot load job "lastSeen" for error statistics', 8748465510);
             }
 
             $result[$message]['lastSeen'] = $lastSeen;
 
             $firstSeen = $this->findOneByErrorMessage($message, lastSeen: false, filters: $filters);
             if (!$firstSeen instanceof Job) {
-                throw new DigitalMarketingFrameworkException('cannot load job "firstSeen" for error statistics');
+                throw new DigitalMarketingFrameworkException('cannot load job "firstSeen" for error statistics', 4837789032);
             }
 
             $result[$message]['firstSeen'] = $firstSeen;
@@ -266,13 +264,13 @@ class JobRepository extends Repository implements QueueInterface
                     'count' => $row1['count'],
                     'lastSeen' => $row1['lastSeen']->getChanged()->getTimestamp(),
                     'firstSeen' => $row1['firstSeen']->getChanged()->getTimestamp(),
-                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort)),
+                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort), 6991592528),
                 };
                 $value2 = match ($sort) {
                     'count' => $row2['count'],
                     'lastSeen' => $row2['lastSeen']->getChanged()->getTimestamp(),
                     'firstSeen' => $row2['firstSeen']->getChanged()->getTimestamp(),
-                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort)),
+                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort), 8729504902),
                 };
                 if ($value1 !== $value2) {
                     break;
@@ -464,12 +462,10 @@ class JobRepository extends Repository implements QueueInterface
         $sorting = array_filter($navigation['sorting']);
         if ($sorting !== []) {
             $query->setOrderings(
-                array_map(static function (string $direction) {
-                    return match ($direction) {
-                        'ASC' => QueryInterface::ORDER_ASCENDING,
-                        'DESC' => QueryInterface::ORDER_DESCENDING,
-                        default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort direction "%s"', $direction)),
-                    };
+                array_map(static fn (string $direction) => match ($direction) {
+                    'ASC' => QueryInterface::ORDER_ASCENDING,
+                    'DESC' => QueryInterface::ORDER_DESCENDING,
+                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort direction "%s"', $direction), 4158621568),
                 }, $sorting)
             );
         }
@@ -593,7 +589,7 @@ class JobRepository extends Repository implements QueueInterface
     public function markAs(JobInterface $job, int $status, ?string $message = null, bool $skipped = false, bool $preserveTimestamp = false): void
     {
         if (!$job instanceof Job) {
-            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be updated in this queue.', $job::class));
+            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be updated in this queue.', $job::class), 2392968308);
         }
 
         $job->setStatus($status);
@@ -704,7 +700,7 @@ class JobRepository extends Repository implements QueueInterface
     public function removeJob(JobInterface $job): void
     {
         if (!$job instanceof Job) {
-            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be removed from this queue.', $job::class));
+            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be removed from this queue.', $job::class), 3702892151);
         }
 
         $this->remove($job);

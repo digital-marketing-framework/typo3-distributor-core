@@ -78,13 +78,13 @@ class UtmzCookieParser
     private function parseUtmz(): void
     {
         // Break cookie in half
-        if (str_starts_with($this->utmz, 'u')) {
+        if (str_starts_with((string)$this->utmz, 'u')) {
             // starts with a "u" means ther is no first half
             $utmz_a = '';
             $utmz_b = $this->utmz;
         } else {
-            $utmz_b = strstr($this->utmz, 'u');
-            $utmz_a = substr($this->utmz, 0, strpos($this->utmz, (string)$utmz_b) - 1);
+            $utmz_b = strstr((string)$this->utmz, 'u');
+            $utmz_a = substr((string)$this->utmz, 0, strpos((string)$this->utmz, (string)$utmz_b) - 1);
         }
 
         // assign variables to first half of cookie

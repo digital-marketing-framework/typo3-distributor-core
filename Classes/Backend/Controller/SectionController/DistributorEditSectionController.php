@@ -19,10 +19,10 @@ class DistributorEditSectionController extends SectionController
         parent::__construct($keyword, $registry, 'distributor', ['edit']);
     }
 
-    protected function editAction(Request $request): Response
+    protected function editAction(): Response
     {
-        $id = $this->getParameters($request)['id'] ?? '';
-        $returnUrl = $this->getReturnUrl($request);
+        $id = $this->getParameters()['id'] ?? '';
+        $returnUrl = $this->getReturnUrl();
 
         $typo3UriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $parameters = [
