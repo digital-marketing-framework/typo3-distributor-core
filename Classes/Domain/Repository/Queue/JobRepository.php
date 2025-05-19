@@ -192,7 +192,7 @@ class JobRepository extends Repository implements QueueInterface
             ->from('tx_dmfdistributorcore_domain_model_queue_job')
             ->groupBy('type');
 
-        $result = $query->execute()->fetchAllAssociative();
+        $result = $query->executeQuery()->fetchAllAssociative();
 
         return array_map(static function (array $row) {
             return $row['type'];
@@ -319,16 +319,11 @@ class JobRepository extends Repository implements QueueInterface
         return $results !== [] ? reset($results) : null;
     }
 
-    /**
-     * @param array<string> $uids
-     *
-     * @return array<Job>
-     */
-    public function findByUidList(array $uids): array
+    public function fetchByIdList(array $ids): array
     {
         $query = $this->createQuery();
         $query->getQuerySettings()->setRespectStoragePage(false);
-        $query->matching($query->in('uid', $uids));
+        $query->matching($query->in('uid', $ids));
 
         return $query->execute()->toArray();
     }
