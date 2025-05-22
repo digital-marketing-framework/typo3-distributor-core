@@ -3,7 +3,6 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Backend\Controller\SectionController;
 
 use DigitalMarketingFramework\Core\Backend\Controller\SectionController\SectionController;
-use DigitalMarketingFramework\Core\Backend\Request;
 use DigitalMarketingFramework\Core\Backend\Response\RedirectResponse;
 use DigitalMarketingFramework\Core\Backend\Response\Response;
 use DigitalMarketingFramework\Core\Registry\RegistryInterface;

@@ -23,7 +23,7 @@
     ],
     "homepage": "https://www.mediatis.de",
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "digital-marketing-framework/distributor-core": "dev-feature/MFR-136-t3-13",
         "digital-marketing-framework/typo3-core": "dev-feature/MFR-136-t3-13",
         "digital-marketing-framework/typo3-template-engine-twig": "dev-feature/MFR-136-t3-13",

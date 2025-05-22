@@ -459,7 +459,7 @@ class JobRepository extends Repository implements QueueInterface
             }
         }
 
-        $sorting = array_filter($navigation['sorting']);
+        $sorting = array_filter($navigation['sorting'], fn (string $sorting) => $sorting !== '');
         if ($sorting !== []) {
             $query->setOrderings(
                 array_map(static fn (string $direction) => match ($direction) {
