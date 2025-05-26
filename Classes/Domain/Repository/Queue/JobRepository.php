@@ -279,7 +279,7 @@ class JobRepository extends Repository implements QueueInterface
             $result = array_slice($result, $offset, $limit);
         }
 
-        return array_map(fn (array $data) => Error::fromDataRecord($data), $result);
+        return array_map(static fn (array $data) => Error::fromDataRecord($data), $result);
     }
 
     // QUERY BUILDER PART END
@@ -370,10 +370,11 @@ class JobRepository extends Repository implements QueueInterface
                     $subConditions[] = $searchCondition;
                 } else {
                     // status message will only be searched for failed jobs
-                    $subConditions[] = $query->logicalAnd(
+                    $searchStatusConditions = [
                         $query->equals('status', QueueInterface::STATUS_FAILED),
                         $searchCondition,
-                    );
+                    ];
+                    $subConditions[] = $query->logicalAnd(...$searchStatusConditions);
                 }
             }
 
@@ -406,10 +407,11 @@ class JobRepository extends Repository implements QueueInterface
 
         if ($filters['skipped'] !== null) {
             // skipped flag will only be checked for finished jobs
-            $conditions[] = $query->logicalOr(
+            $skippedFinishedConditions = [
                 $query->logicalNot($query->equals('status', QueueInterface::STATUS_DONE)),
                 $query->equals('skipped', $filters['skipped'] ? 1 : 0),
-            );
+            ];
+            $conditions[] = $query->logicalOr(...$skippedFinishedConditions);
         }
 
         if ($conditions !== []) {
