@@ -4,9 +4,9 @@ TYPO3:
       prototypes:
         standard:
           formEditor:
-            dynamicRequireJsModules:
+            dynamicJavaScriptModules:
               additionalViewModelModules:
-                1684239317: 'TYPO3/CMS/DmfDistributorCore/Backend/FormEditor/DmfConfigTextareaEditorViewModel'
+                1684239317: '@digital-marketing-framework/distributor-core/Backend/FormEditor/DmfConfigTextareaEditorViewModel.js'
             formEditorFluidConfiguration:
               partialRootPaths:
                 1684239317: 'EXT:dmf_distributor_core/Resources/Private/Extensions/form/Backend/Partials/FormEditor/'
@@ -16,7 +16,7 @@ TYPO3:
           finishersDefinition:
             Digitalmarketingframework:
               FormEngine:
-                label: 'Digital Marketing Framework'
+                label: 'Anyrel'
                 elements:
                   setup:
                     label: 'Setup'
@@ -24,7 +24,7 @@ TYPO3:
                       type: 'text'
               formEditor:
                 iconIdentifier: 'form-finisher'
-                label: 'Digital Marketing Framework'
+                label: 'Anyrel'
                 predefinedDefaults:
                   options:
                     setup: ''
@@ -37,7 +37,7 @@ TYPO3:
                     selectOptions:
                       101:
                         value: 'Digitalmarketingframework'
-                        label: 'Digital Marketing Framework'
+                        label: 'Anyrel'
                 propertyCollections:
                   finishers:
                     101:
@@ -46,9 +46,9 @@ TYPO3:
                         50:
                           identifier: 'header'
                           templateName: 'Inspector-CollectionElementHeaderEditor'
-                          label: 'Digital Marketing Framework'
+                          label: 'Anyrel'
                         100:
-                          label: 'Digital Marketing Framework'
+                          label: 'Anyrel'
                         200:
                           identifier: 'setup'
                           templateName: 'Inspector-DmfConfigTextareaEditor'

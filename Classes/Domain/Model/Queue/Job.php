@@ -25,6 +25,16 @@ class Job extends AbstractEntity implements JobInterface
     ) {
     }
 
+    public function getId(): ?int
+    {
+        return $this->getUid();
+    }
+
+    public function setId(int $id): void
+    {
+        $this->uid = $id;
+    }
+
     public function getHash(): string
     {
         return $this->hash;

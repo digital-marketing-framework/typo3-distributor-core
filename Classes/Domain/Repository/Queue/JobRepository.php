@@ -4,6 +4,7 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Que
 
 use DateTime;
 use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
+use DigitalMarketingFramework\Core\Model\Queue\Error;
 use DigitalMarketingFramework\Core\Model\Queue\JobInterface;
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
@@ -14,10 +15,6 @@ use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\Qom\ConstraintInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
@@ -32,13 +29,7 @@ class JobRepository extends Repository implements QueueInterface
         protected ExtensionConfiguration $extensionConfiguration,
         protected ConnectionPool $connectionPool,
     ) {
-        $typo3Version = new Typo3Version();
-        if ($typo3Version->getMajorVersion() <= 11) {
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class); // @phpstan-ignore-line TYPO3 version switch
-            parent::__construct($objectManager); // @phpstan-ignore-line TYPO3 version switch
-        } else {
-            parent::__construct(); // @phpstan-ignore-line TYPO3 version switch
-        }
+        parent::__construct();
     }
 
     protected function getPid(): int
@@ -192,18 +183,16 @@ class JobRepository extends Repository implements QueueInterface
             ->from('tx_dmfdistributorcore_domain_model_queue_job')
             ->groupBy('type');
 
-        $result = $query->execute()->fetchAllAssociative();
+        $result = $query->executeQuery()->fetchAllAssociative();
 
-        return array_map(static function (array $row) {
-            return $row['type'];
-        }, $result);
+        return array_map(static fn (array $row) => $row['type'], $result);
     }
 
     /**
      * @param array{minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime} $filters
-     * @param array{sorting:array<string,string>} $navigation
+     * @param array{page:int,itemsPerPage:int,sorting:array<string,string>} $navigation
      *
-     * @return array<array{message:string,count:int,lastSeen:Job,firstSeen:Job,types:array<string,int>}>
+     * @return array<Error>
      */
     public function getErrorMessages(array $filters, array $navigation): array
     {
@@ -238,51 +227,59 @@ class JobRepository extends Repository implements QueueInterface
         foreach ($messages as $message) {
             $lastSeen = $this->findOneByErrorMessage($message, lastSeen: true, filters: $filters);
             if (!$lastSeen instanceof Job) {
-                throw new DigitalMarketingFrameworkException('cannot load job "lastSeen" for error statistics');
+                throw new DigitalMarketingFrameworkException('cannot load job "lastSeen" for error statistics', 8748465510);
             }
 
             $result[$message]['lastSeen'] = $lastSeen;
 
             $firstSeen = $this->findOneByErrorMessage($message, lastSeen: false, filters: $filters);
             if (!$firstSeen instanceof Job) {
-                throw new DigitalMarketingFrameworkException('cannot load job "firstSeen" for error statistics');
+                throw new DigitalMarketingFrameworkException('cannot load job "firstSeen" for error statistics', 4837789032);
             }
 
             $result[$message]['firstSeen'] = $firstSeen;
         }
 
         $result = array_values($result);
-        usort($result, static function (array $row1, array $row2) use ($navigation) {
-            $sortDirection = 'DESC';
-            $value1 = 0;
-            $value2 = 0;
-            foreach ($navigation['sorting'] as $sort => $direction) {
-                if ($direction === '') {
-                    continue;
+        if ($navigation['sorting'] !== []) {
+            usort($result, static function (array $row1, array $row2) use ($navigation) {
+                $sortDirection = 'DESC';
+                $value1 = 0;
+                $value2 = 0;
+                foreach ($navigation['sorting'] as $sort => $direction) {
+                    if ($direction === '') {
+                        continue;
+                    }
+
+                    $sortDirection = $direction;
+                    $value1 = match ($sort) {
+                        'count' => $row1['count'],
+                        'lastSeen' => $row1['lastSeen']->getChanged()->getTimestamp(),
+                        'firstSeen' => $row1['firstSeen']->getChanged()->getTimestamp(),
+                        default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort attribute "%s"', $sort), 6991592528),
+                    };
+                    $value2 = match ($sort) {
+                        'count' => $row2['count'],
+                        'lastSeen' => $row2['lastSeen']->getChanged()->getTimestamp(),
+                        'firstSeen' => $row2['firstSeen']->getChanged()->getTimestamp(),
+                        default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort attribute "%s"', $sort), 8729504902),
+                    };
+                    if ($value1 !== $value2) {
+                        break;
+                    }
                 }
 
-                $sortDirection = $direction;
-                $value1 = match ($sort) {
-                    'count' => $row1['count'],
-                    'lastSeen' => $row1['lastSeen']->getChanged()->getTimestamp(),
-                    'firstSeen' => $row1['firstSeen']->getChanged()->getTimestamp(),
-                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort)),
-                };
-                $value2 = match ($sort) {
-                    'count' => $row2['count'],
-                    'lastSeen' => $row2['lastSeen']->getChanged()->getTimestamp(),
-                    'firstSeen' => $row2['firstSeen']->getChanged()->getTimestamp(),
-                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort atribute "%s"', $sort)),
-                };
-                if ($value1 !== $value2) {
-                    break;
-                }
-            }
+                return $sortDirection === 'ASC' ? $value1 <=> $value2 : $value2 <=> $value1;
+            });
+        }
 
-            return $sortDirection === 'ASC' ? $value1 <=> $value2 : $value2 <=> $value1;
-        });
+        if ($navigation['itemsPerPage'] > 0) {
+            $limit = $navigation['itemsPerPage'];
+            $offset = $navigation['itemsPerPage'] * $navigation['page'];
+            $result = array_slice($result, $offset, $limit);
+        }
 
-        return $result;
+        return array_map(static fn (array $data) => Error::fromDataRecord($data), $result);
     }
 
     // QUERY BUILDER PART END
@@ -319,16 +316,11 @@ class JobRepository extends Repository implements QueueInterface
         return $results !== [] ? reset($results) : null;
     }
 
-    /**
-     * @param array<string> $uids
-     *
-     * @return array<Job>
-     */
-    public function findByUidList(array $uids): array
+    public function fetchByIdList(array $ids): array
     {
         $query = $this->createQuery();
         $query->getQuerySettings()->setRespectStoragePage(false);
-        $query->matching($query->in('uid', $uids));
+        $query->matching($query->in('uid', $ids));
 
         return $query->execute()->toArray();
     }
@@ -349,34 +341,6 @@ class JobRepository extends Repository implements QueueInterface
         $search = str_replace('__CHAR_PERCENT__', '\\%', $search);
 
         return '%' . trim($search, '%') . '%';
-    }
-
-    /**
-     * @param QueryInterface<Job> $query
-     * @param array<ConstraintInterface> $conditions
-     */
-    protected function getLogicalOr(QueryInterface $query, array $conditions) // @phpstan-ignore-line TYPO3 v11 and v12 using different return types
-    {
-        $typo3Version = new Typo3Version();
-        if ($typo3Version->getMajorVersion() <= 11) {
-            return $query->logicalOr($conditions); // @phpstan-ignore-line TYPO3 version switch
-        }
-
-        return $query->logicalOr(...$conditions); // @phpstan-ignore-line TYPO3 version switch
-    }
-
-    /**
-     * @param QueryInterface<Job> $query
-     * @param array<ConstraintInterface> $conditions
-     */
-    protected function getLogicalAnd(QueryInterface $query, array $conditions) // @phpstan-ignore-line TYPO3 v11 and v12 using different return types
-    {
-        $typo3Version = new Typo3Version();
-        if ($typo3Version->getMajorVersion() <= 11) {
-            return $query->logicalAnd($conditions); // @phpstan-ignore-line TYPO3 version switch
-        }
-
-        return $query->logicalAnd(...$conditions); // @phpstan-ignore-line TYPO3 version switch
     }
 
     /**
@@ -406,14 +370,15 @@ class JobRepository extends Repository implements QueueInterface
                     $subConditions[] = $searchCondition;
                 } else {
                     // status message will only be searched for failed jobs
-                    $subConditions[] = $this->getLogicalAnd($query, [
+                    $searchStatusConditions = [
                         $query->equals('status', QueueInterface::STATUS_FAILED),
                         $searchCondition,
-                    ]);
+                    ];
+                    $subConditions[] = $query->logicalAnd(...$searchStatusConditions);
                 }
             }
 
-            $conditions[] = $this->getLogicalOr($query, $subConditions);
+            $conditions[] = $query->logicalOr(...$subConditions);
         }
 
         if ($filters['minCreated'] instanceof DateTime) {
@@ -442,14 +407,15 @@ class JobRepository extends Repository implements QueueInterface
 
         if ($filters['skipped'] !== null) {
             // skipped flag will only be checked for finished jobs
-            $conditions[] = $this->getLogicalOr($query, [
+            $skippedFinishedConditions = [
                 $query->logicalNot($query->equals('status', QueueInterface::STATUS_DONE)),
                 $query->equals('skipped', $filters['skipped'] ? 1 : 0),
-            ]);
+            ];
+            $conditions[] = $query->logicalOr(...$skippedFinishedConditions);
         }
 
         if ($conditions !== []) {
-            $query->matching($this->getLogicalAnd($query, $conditions));
+            $query->matching($query->logicalAnd(...$conditions));
         }
     }
 
@@ -466,15 +432,13 @@ class JobRepository extends Repository implements QueueInterface
             }
         }
 
-        $sorting = array_filter($navigation['sorting']);
+        $sorting = array_filter($navigation['sorting'], static fn (string $sorting) => $sorting !== '');
         if ($sorting !== []) {
             $query->setOrderings(
-                array_map(static function (string $direction) {
-                    return match ($direction) {
-                        'ASC' => QueryInterface::ORDER_ASCENDING,
-                        'DESC' => QueryInterface::ORDER_DESCENDING,
-                        default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort direction "%s"', $direction)),
-                    };
+                array_map(static fn (string $direction) => match ($direction) {
+                    'ASC' => QueryInterface::ORDER_ASCENDING,
+                    'DESC' => QueryInterface::ORDER_DESCENDING,
+                    default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort direction "%s"', $direction), 4158621568),
                 }, $sorting)
             );
         }
@@ -546,7 +510,7 @@ class JobRepository extends Repository implements QueueInterface
         }
 
         if ($conditions !== []) {
-            $query->matching($this->getLogicalAnd($query, $conditions));
+            $query->matching($query->logicalAnd(...$conditions));
         }
 
         if ($limit > 0) {
@@ -598,7 +562,7 @@ class JobRepository extends Repository implements QueueInterface
     public function markAs(JobInterface $job, int $status, ?string $message = null, bool $skipped = false, bool $preserveTimestamp = false): void
     {
         if (!$job instanceof Job) {
-            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be updated in this queue.', $job::class));
+            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be updated in this queue.', $job::class), 2392968308);
         }
 
         $job->setStatus($status);
@@ -709,7 +673,7 @@ class JobRepository extends Repository implements QueueInterface
     public function removeJob(JobInterface $job): void
     {
         if (!$job instanceof Job) {
-            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be removed from this queue.', $job::class));
+            throw new DigitalMarketingFrameworkException(sprintf('Foreign job object "%s" cannot be removed from this queue.', $job::class), 3702892151);
         }
 
         $this->remove($job);

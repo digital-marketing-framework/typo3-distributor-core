@@ -42,7 +42,7 @@ class QueueProcessorFieldProvider extends QueueFieldProvider
     public function saveAdditionalFields(array $submittedData, $task): void
     {
         if (!$task instanceof QueueProcessorTask) {
-            throw new DigitalMarketingFrameworkException(sprintf('Scheduler task QueueProcessorTask expected but "%s" found.', $task::class));
+            throw new DigitalMarketingFrameworkException(sprintf('Scheduler task QueueProcessorTask expected but "%s" found.', $task::class), 9531006422);
         }
 
         $task->setBatchSize((int)$submittedData['batchSize']);

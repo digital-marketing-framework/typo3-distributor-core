@@ -21,9 +21,6 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
         'iconfile' => 'EXT:dmf_distributor_core/Resources/Public/Icons/QueueJob.svg',
         'default_sortby' => 'changed DESC',
     ],
-    'interface' => [
-        'showRecordFieldList' => 'environment,label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data',
-    ],
     'types' => [
         '0' => [
             'showitem' => 'environment,label,hash,type,created,changed,status,skipped,status_message,retry_amount,serialized_data',
@@ -69,9 +66,7 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
             'exclude' => 1,
             'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.created',
             'config' => [
-                'type' => 'input',
-                'renderType' => 'inputDateTime',
-                'eval' => 'datetime',
+                'type' => 'datetime',
                 'readOnly' => $readOnly,
             ],
         ],
@@ -79,9 +74,7 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
             'exclude' => 1,
             'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.changed',
             'config' => [
-                'type' => 'input',
-                'renderType' => 'inputDateTime',
-                'eval' => 'datetime',
+                'type' => 'datetime',
                 'readOnly' => $readOnly,
             ],
         ],
@@ -100,11 +93,11 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Queued', QueueInterface::STATUS_QUEUED],
-                    ['Pending', QueueInterface::STATUS_PENDING],
-                    ['Running', QueueInterface::STATUS_RUNNING],
-                    ['Done', QueueInterface::STATUS_DONE],
-                    ['Failed', QueueInterface::STATUS_FAILED],
+                    ['label' => 'Queued', 'value' => QueueInterface::STATUS_QUEUED],
+                    ['label' => 'Pending', 'value' => QueueInterface::STATUS_PENDING],
+                    ['label' => 'Running', 'value' => QueueInterface::STATUS_RUNNING],
+                    ['label' => 'Done', 'value' => QueueInterface::STATUS_DONE],
+                    ['label' => 'Failed', 'value' => QueueInterface::STATUS_FAILED],
                 ],
                 'readOnly' => $readOnly,
             ],
@@ -123,8 +116,7 @@ $GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
             'exclude' => 1,
             'label' => $ll . 'tx_dmfdistributorcore_domain_model_queue_job.retry_amount',
             'config' => [
-                'type' => 'input',
-                'eval' => 'int',
+                'type' => 'number',
                 'readOnly' => $readOnly,
             ],
         ],

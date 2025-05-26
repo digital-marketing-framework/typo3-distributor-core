@@ -78,18 +78,18 @@ class UtmzCookieParser
     private function parseUtmz(): void
     {
         // Break cookie in half
-        if (str_starts_with($this->utmz, 'u')) {
-            // starts with a "u" means ther is no first half
+        if (str_starts_with((string)$this->utmz, 'u')) {
+            // starts with a "u" means there is no first half
             $utmz_a = '';
             $utmz_b = $this->utmz;
         } else {
-            $utmz_b = strstr($this->utmz, 'u');
-            $utmz_a = substr($this->utmz, 0, strpos($this->utmz, (string)$utmz_b) - 1);
+            $utmz_b = strstr((string)$this->utmz, 'u');
+            $utmz_a = substr((string)$this->utmz, 0, strpos((string)$this->utmz, (string)$utmz_b) - 1);
         }
 
         // assign variables to first half of cookie
         $utmz_a_list = explode('.', $utmz_a);
-        $this->utmz_domainHash = $utmz_a_list[0] ?? '';
+        $this->utmz_domainHash = $utmz_a_list[0];
         $this->utmz_timestamp = $utmz_a_list[1] ?? '';
         $this->utmz_sessionNumber = $utmz_a_list[2] ?? '';
         $this->utmz_campaignNumber = $utmz_a_list[3] ?? '';
@@ -99,7 +99,7 @@ class UtmzCookieParser
         $z = explode('|', (string)$utmz_b);
         foreach ($z as $value) {
             $v = explode('=', $value);
-            $pairKey = $v[0] ?? '';
+            $pairKey = $v[0];
             $pairValue = $v[1] ?? '';
             if ($pairKey !== '' && $pairValue !== '') {
                 $utmzPairs[$v[0]] = $v[1];
