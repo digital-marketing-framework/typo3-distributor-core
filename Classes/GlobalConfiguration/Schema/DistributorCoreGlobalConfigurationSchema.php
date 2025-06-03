@@ -9,8 +9,6 @@ class DistributorCoreGlobalConfigurationSchema extends OriginalDistributorCoreGl
 {
     public function __construct()
     {
-        parent::__construct();
-
-        $this->queueSchema = new QueueSchema();
+        parent::__construct(new QueueSchema());
     }
 }
