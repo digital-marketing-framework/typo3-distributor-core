@@ -3,3 +3,4 @@ Documentation-GENERATED-temp/
 /.Build/
 composer.lock
 /var/
+.DS_Store
