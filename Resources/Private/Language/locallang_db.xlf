@@ -4,7 +4,7 @@
     <header/>
     <body>
       <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job" xml:space="preserve">
-        <source>Digital Marketing Framework - Distributor - Queue Job</source>
+        <source>Anyrel - Distributor - Queue Job</source>
       </trans-unit>
       <trans-unit id="tx_dmfdistributorcore_domain_model_queue_job.created" xml:space="preserve">
         <source>Created</source>

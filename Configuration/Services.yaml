@@ -25,12 +25,6 @@ services:
       - name: event.listener
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryUpdateEvent
 
-  # backend module controllers
-  DigitalMarketingFramework\Typo3\Distributor\Core\Controller\EventListener\BackendControllerUpdateEventListener:
-    tags:
-      - name: event.listener
-        event: DigitalMarketingFramework\Typo3\Core\Controller\Event\BackendControllerUpdateEvent
-
   # sysext:form events
   DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\EventListener\DataStructureIdentifierListener:
     tags:

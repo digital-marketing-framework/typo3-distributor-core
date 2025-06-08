@@ -22,7 +22,7 @@ class DatePickerElementProcessor extends ElementProcessor
     protected function process(RenderableInterface $element, mixed $elementValue): mixed
     {
         if (!$element instanceof DatePicker) {
-            throw new DigitalMarketingFrameworkException(sprintf('Field type DatePicker expected, found "%s".', $element::class));
+            throw new DigitalMarketingFrameworkException(sprintf('Field type DatePicker expected, found "%s".', $element::class), 5663861319);
         }
 
         $value = '';

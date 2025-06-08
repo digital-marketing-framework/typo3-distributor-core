@@ -1,6 +1,2 @@
 includes:
 	- .Build/vendor/mediatis/typo3-coding-standards/phpstan.neon
-parameters:
-	ignoreErrors:
-		# TODO event AfterFlexFormDataStructureParsedEvent exists in TYPO3 12 but not in TYPO3 11
-		- '#TYPO3\\CMS\\Core\\Configuration\\Event\\AfterFlexFormDataStructureParsedEvent#'

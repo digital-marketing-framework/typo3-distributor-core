@@ -46,7 +46,7 @@ class QueueCleanupFieldProvider extends QueueFieldProvider
     public function saveAdditionalFields(array $submittedData, $task): void
     {
         if (!$task instanceof QueueCleanupTask) {
-            throw new DigitalMarketingFrameworkException(sprintf('Scheduler task QueueCleanupTask expected but "%s" found.', $task::class));
+            throw new DigitalMarketingFrameworkException(sprintf('Scheduler task QueueCleanupTask expected but "%s" found.', $task::class), 9468765688);
         }
 
         $task->setDoneOnly((bool)$submittedData['doneOnly']);
