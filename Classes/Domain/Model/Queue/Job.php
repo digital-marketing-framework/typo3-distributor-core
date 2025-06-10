@@ -8,6 +8,9 @@ use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use JsonException;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
+/**
+ * @implements JobInterface<int>
+ */
 class Job extends AbstractEntity implements JobInterface
 {
     public function __construct(
@@ -25,12 +28,12 @@ class Job extends AbstractEntity implements JobInterface
     ) {
     }
 
-    public function getId(): ?int
+    public function getId()
     {
-        return $this->getUid();
+        return $this->uid;
     }
 
-    public function setId(int $id): void
+    public function setId($id): void
     {
         $this->uid = $id;
     }

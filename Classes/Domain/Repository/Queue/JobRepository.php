@@ -316,6 +316,15 @@ class JobRepository extends Repository implements QueueInterface
         return $results !== [] ? reset($results) : null;
     }
 
+    public function fetchById(int $id): ?JobInterface
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        $query->matching($query->equals('uid', $id));
+
+        return $query->execute()->getFirst();
+    }
+
     public function fetchByIdList(array $ids): array
     {
         $query = $this->createQuery();
