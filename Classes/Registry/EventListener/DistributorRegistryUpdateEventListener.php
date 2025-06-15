@@ -10,9 +10,13 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\AdwordsDataPro
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\ContentElementDataProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataProvider\LanguageCodeDataProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormDataSourceStorage;
+use DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormService;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue\JobRepository;
 use DigitalMarketingFramework\Typo3\Distributor\Core\GlobalConfiguration\Schema\DistributorCoreGlobalConfigurationSchema;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface as ExtbaseConfigurationManagerInterface;
+use TYPO3\CMS\Form\Mvc\Configuration\ConfigurationManagerInterface as ExtFormConfigurationManagerInterface;
 use TYPO3\CMS\Form\Mvc\Persistence\FormPersistenceManagerInterface;
 
 class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistryUpdateEventListener
@@ -42,8 +46,13 @@ class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistry
         $registry->registerDataProvider(ContentElementDataProvider::class);
         $registry->registerDataProvider(LanguageCodeDataProvider::class);
 
-        $registry->registerDistributorSourceStorage(Typo3FormDataSourceStorage::class, [new ProxyArgument(function() {
-            return GeneralUtility::makeInstance(FormPersistenceManagerInterface::class);
-        })]);
+        $registry->registerDistributorSourceStorage(
+            Typo3FormDataSourceStorage::class,
+            [
+                new ProxyArgument(function() {
+                    return GeneralUtility::makeInstance(Typo3FormService::class);
+                }),
+            ]
+        );
     }
 }

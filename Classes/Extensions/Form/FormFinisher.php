@@ -8,6 +8,7 @@ use DigitalMarketingFramework\Core\Model\Data\Value\ValueInterface;
 use DigitalMarketingFramework\Distributor\Core\Model\DataSet\SubmissionDataSet;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
 use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
+use DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormService;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\DataSource\Typo3FormDataSource;
 use Exception;
 use TYPO3\CMS\Core\Core\Environment;
@@ -27,8 +28,9 @@ class FormFinisher extends AbstractFinisher
     ];
 
     public function __construct(
-        RegistryCollection $registryCollection,
+        protected Typo3FormService $formService,
         protected FormDataProcessor $formDataProcessor,
+        RegistryCollection $registryCollection,
     ) {
         $this->registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
         $this->configurationDocumentManager = $this->registry->getConfigurationDocumentManager();
@@ -95,6 +97,8 @@ class FormFinisher extends AbstractFinisher
         // compute data source ID
         $dataSourceId = $this->getFormDataSourceId();
 
+        $dataSourceContext = $this->formService->getFormDataSourceContext($this->finisherContext->getRequest());
+
         // low level debug log, if configured
         if (isset($globalConfiguration['debug']['enabled']) && (bool)$globalConfiguration['debug']['enabled']) {
             $file = $globalConfiguration['debug']['file'] ?? 'digital-marketing-framework-distributor-submission.log';
@@ -102,7 +106,7 @@ class FormFinisher extends AbstractFinisher
         }
 
         // build and process submission
-        $submission = new SubmissionDataSet($dataSourceId, $formValues, $configurationStack);
+        $submission = new SubmissionDataSet($dataSourceId, $dataSourceContext, $formValues, $configurationStack);
         $submission->getContext()->setResponsive(true);
         $relay = $this->registry->getDistributor();
         $relay->process($submission);

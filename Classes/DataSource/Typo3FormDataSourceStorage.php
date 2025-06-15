@@ -8,7 +8,6 @@ use DigitalMarketingFramework\Distributor\Core\DataSource\DistributorDataSourceS
 use DigitalMarketingFramework\Distributor\Core\Model\DataSource\DistributorDataSourceInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\DataSource\Typo3FormDataSource;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Registry;
-use TYPO3\CMS\Form\Mvc\Persistence\FormPersistenceManagerInterface;
 
 /**
  * @extends DistributorDataSourceStorage<Typo3FormDataSource>
@@ -18,7 +17,7 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
     public function __construct(
         string $keyword,
         Registry $registry,
-        protected FormPersistenceManagerInterface $formPersistenceManager,
+        protected Typo3FormService $formService,
     ) {
         parent::__construct($keyword, $registry);
     }
@@ -28,12 +27,15 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
         return Typo3FormDataSource::TYPE;
     }
 
-    public function getDataSourceById(string $id): ?DistributorDataSourceInterface
+    /**
+     * @param array<string,mixed> $dataSourceContext
+     */
+    public function getDataSourceById(string $id, array $dataSourceContext): ?DistributorDataSourceInterface
     {
         $formId = $this->getInnerIdentifier($id);
-        if ($this->formPersistenceManager->exists($formId)) {
-            $formDefinition = $this->formPersistenceManager->load($formId);
+        $formDefinition = $this->formService->getFormById($formId, $dataSourceContext);
 
+        if ($formDefinition !== null) {
             return new Typo3FormDataSource($formId, $formDefinition);
         }
 
