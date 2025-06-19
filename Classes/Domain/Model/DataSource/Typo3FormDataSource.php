@@ -5,15 +5,17 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\DataSour
 use DigitalMarketingFramework\Core\SchemaDocument\FieldDefinition\FieldListDefinition;
 use DigitalMarketingFramework\Core\Utility\GeneralUtility;
 use DigitalMarketingFramework\Distributor\Core\Model\DataSource\DistributorDataSource;
-use TYPO3\CMS\Form\Domain\Model\FormDefinition;
 
 class Typo3FormDataSource extends DistributorDataSource
 {
     public const TYPE = 'form';
 
+    /**
+     * @param array<sting,mixed> $formDefinition
+     */
     public function __construct(
         protected string $formId,
-        protected array $formDefinition
+        protected array $formDefinition,
     ) {
         $name = $this->formDefinition['label'] ?? '';
         $hash = GeneralUtility::calculateHash($this->formDefinition);
@@ -36,10 +38,8 @@ class Typo3FormDataSource extends DistributorDataSource
 
     public function getFieldListDefinition(): FieldListDefinition
     {
-        $fields = parent::getFieldListDefinition();
-
         // TODO read field definitions from form definition
 
-        return $fields;
+        return parent::getFieldListDefinition();
     }
 }

@@ -13,11 +13,7 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormDataSou
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormService;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue\JobRepository;
 use DigitalMarketingFramework\Typo3\Distributor\Core\GlobalConfiguration\Schema\DistributorCoreGlobalConfigurationSchema;
-use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface as ExtbaseConfigurationManagerInterface;
-use TYPO3\CMS\Form\Mvc\Configuration\ConfigurationManagerInterface as ExtFormConfigurationManagerInterface;
-use TYPO3\CMS\Form\Mvc\Persistence\FormPersistenceManagerInterface;
 
 class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistryUpdateEventListener
 {
@@ -35,6 +31,7 @@ class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistry
     protected function initServices(RegistryInterface $registry): void
     {
         parent::initServices($registry);
+        $this->queue->setGlobalConfiguration($registry->getGlobalConfiguration());
         $registry->setPersistentQueue($this->queue);
     }
 
@@ -49,9 +46,7 @@ class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistry
         $registry->registerDistributorSourceStorage(
             Typo3FormDataSourceStorage::class,
             [
-                new ProxyArgument(function() {
-                    return GeneralUtility::makeInstance(Typo3FormService::class);
-                }),
+                new ProxyArgument(fn () => GeneralUtility::makeInstance(Typo3FormService::class)),
             ]
         );
     }

@@ -36,11 +36,12 @@ class Typo3FormService implements SingletonInterface
         $queryBuilder->select('uid', 'pi_flexform')
             ->from('tt_content')
             ->where($queryBuilder->expr()->eq('uid', $uid))
-            ->getMaxResults(1);
+            ->setMaxResults(1);
+
         $rows = $queryBuilder->executeQuery()
             ->fetchAllAssociative();
 
-        if (count($rows) === 0) {
+        if ($rows === []) {
             return '';
         }
 
@@ -64,6 +65,12 @@ class Typo3FormService implements SingletonInterface
         );
     }
 
+    /**
+     * @param array<string,mixed> $formDefinition
+     * @param array<string,mixed> $dataSourceContext
+     *
+     * @return array<string,mixed>
+     */
     protected function overrideByFlexFormSettings(array $formDefinition, array $dataSourceContext): array
     {
         if (!isset($formDefinition['finishers'])) {
@@ -71,9 +78,10 @@ class Typo3FormService implements SingletonInterface
         }
 
         $flexFormData = $this->getPluginFlexForm($dataSourceContext);
-        if (is_string($flexFormData) && $flexFormData !== '') {
+        if ($flexFormData !== '') {
             $flexFormData = GeneralUtility::xml2array($flexFormData);
         }
+
         if (!is_array($flexFormData) || $flexFormData === []) {
             return $formDefinition;
         }
@@ -103,6 +111,9 @@ class Typo3FormService implements SingletonInterface
         return $formDefinition;
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getFormDataSourceContext(?Request $request = null): array
     {
         $typoScriptSettings = $this->extbaseConfigurationManager->getConfiguration(ExtbaseConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'form');
@@ -110,7 +121,7 @@ class Typo3FormService implements SingletonInterface
         $context = [
             'typoScriptSettings' => [
                 'persistenceManager' => [
-                    'allowedExtensionPaths' => $formSettings['persistenceManager']['allowedExtensionPaths'] ?? []
+                    'allowedExtensionPaths' => $formSettings['persistenceManager']['allowedExtensionPaths'] ?? [],
                 ],
             ],
             'formSettings' => [
@@ -119,7 +130,7 @@ class Typo3FormService implements SingletonInterface
         ];
 
         if ($request instanceof Request) {
-            $contentObjectData = $request->getAttribute('currentContentObject')?->data ?? [];
+            $contentObjectData = $request->getAttribute('currentContentObject')->data ?? [];
             $pluginId = $contentObjectData['_LOCALIZED_UID'] ?? ($contentObjectData['uid'] ?? null);
             if ($pluginId !== null) {
                 // TODO test and take into account:
@@ -133,29 +144,59 @@ class Typo3FormService implements SingletonInterface
         return $context;
     }
 
+    /**
+     * @param array<string,mixed> $dataSourceContext
+     *
+     * @return ?array<string,mixed>
+     */
     public function getFormById(string $formId, array $dataSourceContext): ?array
     {
         $typo3Version = new Typo3Version();
         if ($typo3Version->getMajorVersion() <= 12) {
+            // @phpstan-ignore-next-line TYPO3 version switch
             if (!$this->formPersistenceManager->exists($formId)) {
                 return null;
             }
 
+            // @phpstan-ignore-next-line TYPO3 version switch
             $formDefinition = $this->formPersistenceManager->load($formId);
         } else {
-            // try {
+            // @phpstan-ignore-next-line TYPO3 version switch
             $formDefinition = $this->formPersistenceManager->load(
                 $formId,
                 $dataSourceContext['formSettings'] ?? [],
                 $dataSourceContext['typoScriptSettings'] ?? []
             );
-            // } catch (?) {
-            //     return null;
-            // }
         }
 
-        $formDefinition = $this->overrideByFlexFormSettings($formDefinition, $dataSourceContext);
+        return $this->overrideByFlexFormSettings($formDefinition, $dataSourceContext);
+    }
 
-        return $formDefinition;
+    /**
+     * @param array<string,mixed> $dataSourceContext
+     *
+     * @return array<string,array<string,mixed>>
+     */
+    public function getAllForms(array $dataSourceContext): array
+    {
+        $typo3Version = new Typo3Version();
+        if ($typo3Version->getMajorVersion() <= 12) {
+            // @phpstan-ignore-next-line TYPO3 version switch
+            $forms = $this->formPersistenceManager->listForms();
+        } else {
+            // @phpstan-ignore-next-line TYPO3 version switch
+            $forms = $this->formPersistenceManager->listForms($dataSourceContext['formSettings'] ?? []);
+        }
+
+        $result = [];
+        foreach ($forms as $form) {
+            $id = $form['persistenceIdentifier'];
+            $formDefinition = $this->getFormById($id, []);
+            if ($formDefinition !== null) {
+                $result[$id] = $formDefinition;
+            }
+        }
+
+        return $result;
     }
 }

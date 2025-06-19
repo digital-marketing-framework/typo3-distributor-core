@@ -2,8 +2,6 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\DataSource;
 
-use DigitalMarketingFramework\Core\DataSource\DataSourceStorage;
-use DigitalMarketingFramework\Core\Model\DataSource\DataSourceInterface;
 use DigitalMarketingFramework\Distributor\Core\DataSource\DistributorDataSourceStorage;
 use DigitalMarketingFramework\Distributor\Core\Model\DataSource\DistributorDataSourceInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\DataSource\Typo3FormDataSource;
@@ -44,15 +42,15 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
 
     public function getAllDataSources(): array
     {
-        $forms = $this->formPersistenceManager->listForms();
-        $result = [];
+        // TODO is there a better way to fetch the request from here?
+        $dataSourceContext = $this->formService->getFormDataSourceContext($GLOBALS['TYPO3_REQUEST'] ?? null);
 
-        foreach ($forms as $form) {
-            $formDefinition = $this->formPersistenceManager->load($form['persistenceIdentifier']);
-            $result[] = new Typo3FormDataSource(
-                $this->getOuterIdentifier($form['persistenceIdentifier']),
-                $formDefinition
-            );
+        $result = [];
+        $forms = $this->formService->getAllForms($dataSourceContext);
+        foreach ($forms as $id => $formDefinition) {
+            $result[] = new Typo3FormDataSource($this->getOuterIdentifier($id), $formDefinition);
         }
+
+        return $result;
     }
 }
