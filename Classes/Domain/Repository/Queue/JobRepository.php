@@ -214,11 +214,30 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
     }
 
     /**
+     * @param array{uid?:int|array<int>} $filters
+     *
+     * @return array<string>
+     */
+    protected function getIdConditions(QueryBuilder $queryBuilder, array $filters): array
+    {
+        $ids = $filters['uid'] ?? [];
+
+        if ($ids === []) {
+            return [];
+        }
+
+        return [
+            $this->getFilterCondition($queryBuilder, 'uid', $ids),
+        ];
+    }
+
+    /**
      * @param array<string,mixed> $filters
      */
     protected function applyFilters(QueryBuilder $queryBuilder, array $filters): void
     {
         $conditions = [
+            ...$this->getIdConditions($queryBuilder, $filters),
             ...$this->getSearchConditions($queryBuilder, $filters),
             ...$this->getTimeframeConditions($queryBuilder, $filters),
             ...$this->getTypeConditions($queryBuilder, $filters),
