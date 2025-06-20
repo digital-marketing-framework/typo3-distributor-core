@@ -2,10 +2,10 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Backend\DataHandler;
 
+use DigitalMarketingFramework\Core\Model\Queue\Job;
 use DigitalMarketingFramework\Distributor\Core\Factory\QueueDataFactoryInterface;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
 use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\Queue\Job;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

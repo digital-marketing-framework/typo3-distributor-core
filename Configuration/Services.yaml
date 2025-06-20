@@ -8,6 +8,9 @@ services:
     resource: '../Classes/*'
     exclude: '../Classes/Domain/Model/*'
 
+  DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormService:
+    public: true
+
   # registry collection
   DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\RegistryCollectionEventListener:
     tags:
