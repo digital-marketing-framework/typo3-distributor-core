@@ -6,6 +6,9 @@ use DigitalMarketingFramework\Core\Notification\NotificationManagerInterface;
 use DigitalMarketingFramework\Core\Queue\QueueProcessorInterface;
 use DigitalMarketingFramework\Distributor\Core\Service\DistributorInterface;
 
+/**
+ * @deprecated
+ */
 class QueueProcessorTask extends QueueTask
 {
     /**
