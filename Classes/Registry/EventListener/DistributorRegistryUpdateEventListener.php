@@ -46,7 +46,7 @@ class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistry
         $registry->registerDistributorSourceStorage(
             Typo3FormDataSourceStorage::class,
             [
-                new ProxyArgument(fn () => GeneralUtility::makeInstance(Typo3FormService::class)),
+                new ProxyArgument(static fn () => GeneralUtility::makeInstance(Typo3FormService::class)),
             ]
         );
     }

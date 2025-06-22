@@ -52,6 +52,8 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
                 }
 
                 return $value;
+            case 'skipped':
+                return (bool)$value;
         }
 
         return parent::mapDataField($name, $value);
@@ -67,14 +69,12 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
                 }
 
                 return $value;
+            case 'skipped':
+                return (bool)$value ? 1 : 0;
         }
 
         return parent::mapItemField($name, $value);
     }
-
-    // QUERY BUILDER PART START
-    // the following query methods use the custom QueryBuilder so that they are able to execute COUNT(*) statements combined with GROUP BY statements
-    // the result is a custom row and cannot be converted into an extbase model
 
     protected function buildTextQueryString(string $phrase): string
     {
@@ -133,7 +133,6 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
      */
     protected function getSearchConditions(QueryBuilder $queryBuilder, array $filters): array
     {
-        // TODO searchExactMatch filter option removed
         $searchFields = $filters['searchFields'] ?? ['label', 'type', 'hash', 'status_message'];
         $search = $filters['search'] ?? '';
         $advancedSearch = $filters['advancedSearch'] ?? false;
@@ -453,9 +452,6 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
 
         return array_map(static fn (array $data) => Error::fromDataRecord($data), $result);
     }
-
-    // QUERY BUILDER PART END
-    // the rest of the query methods will use standard extbase queries again
 
     /**
      * @param array{minCreated:?DateTime,maxCreated:?DateTime,minChanged:?DateTime,maxChanged:?DateTime} $filters

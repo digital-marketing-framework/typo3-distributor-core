@@ -2,7 +2,6 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\DataSource;
 
-use DigitalMarketingFramework\Core\SchemaDocument\FieldDefinition\FieldListDefinition;
 use DigitalMarketingFramework\Core\Utility\GeneralUtility;
 use DigitalMarketingFramework\Distributor\Core\Model\DataSource\DistributorDataSource;
 
@@ -11,7 +10,7 @@ class Typo3FormDataSource extends DistributorDataSource
     public const TYPE = 'form';
 
     /**
-     * @param array<sting,mixed> $formDefinition
+     * @param array<string,mixed> $formDefinition
      */
     public function __construct(
         protected string $formId,
@@ -36,10 +35,5 @@ class Typo3FormDataSource extends DistributorDataSource
         );
     }
 
-    public function getFieldListDefinition(): FieldListDefinition
-    {
-        // TODO read field definitions from form definition
-
-        return parent::getFieldListDefinition();
-    }
+    // TODO read field definitions from form definition and implement getFieldListDefinition()
 }

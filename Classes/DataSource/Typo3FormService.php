@@ -116,18 +116,24 @@ class Typo3FormService implements SingletonInterface
      */
     public function getFormDataSourceContext(?Request $request = null): array
     {
-        $typoScriptSettings = $this->extbaseConfigurationManager->getConfiguration(ExtbaseConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'form');
-        $formSettings = $this->extFormConfigurationManager->getYamlConfiguration($typoScriptSettings, true);
-        $context = [
-            'typoScriptSettings' => [
-                'persistenceManager' => [
-                    'allowedExtensionPaths' => $formSettings['persistenceManager']['allowedExtensionPaths'] ?? [],
+        $typo3Version = new Typo3Version();
+        if ($typo3Version->getMajorVersion() <= 12) {
+            $context = [];
+        } else {
+            $typoScriptSettings = $this->extbaseConfigurationManager->getConfiguration(ExtbaseConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'form');
+            // @phpstan-ignore-next-line TYPO3 version switch
+            $formSettings = $this->extFormConfigurationManager->getYamlConfiguration($typoScriptSettings, true);
+            $context = [
+                'typoScriptSettings' => [
+                    'persistenceManager' => [
+                        'allowedExtensionPaths' => $formSettings['persistenceManager']['allowedExtensionPaths'] ?? [],
+                    ],
                 ],
-            ],
-            'formSettings' => [
-                'formDefinitionOverrides' => $typoScriptSettings['formDefinitionOverrides'] ?? [],
-            ],
-        ];
+                'formSettings' => [
+                    'formDefinitionOverrides' => $typoScriptSettings['formDefinitionOverrides'] ?? [],
+                ],
+            ];
+        }
 
         if ($request instanceof Request) {
             $contentObjectData = $request->getAttribute('currentContentObject')->data ?? [];
