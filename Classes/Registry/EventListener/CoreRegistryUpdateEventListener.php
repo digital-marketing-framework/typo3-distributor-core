@@ -12,9 +12,12 @@ class CoreRegistryUpdateEventListener extends AbstractCoreRegistryUpdateEventLis
 {
     public function __construct()
     {
-        $initialization = new DistributorCoreInitialization('dmf_distributor_core');
-        $initialization->setGlobalConfigurationSchema(new DistributorCoreGlobalConfigurationSchema());
-        parent::__construct($initialization);
+        parent::__construct(
+            new DistributorCoreInitialization(
+                'dmf_distributor_core',
+                new DistributorCoreGlobalConfigurationSchema()
+            )
+        );
     }
 
     protected function initPlugins(RegistryInterface $registry): void

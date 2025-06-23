@@ -8,6 +8,9 @@ services:
     resource: '../Classes/*'
     exclude: '../Classes/Domain/Model/*'
 
+  DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormService:
+    public: true
+
   # registry collection
   DigitalMarketingFramework\Typo3\Distributor\Core\Registry\EventListener\RegistryCollectionEventListener:
     tags:
@@ -72,3 +75,16 @@ services:
     tags:
       - name: event.listener
         event: DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent
+
+  # cli commands
+  DigitalMarketingFramework\Typo3\Distributor\Core\Command\QueueProcessorCommand:
+    tags:
+      - name: console.command
+        command: 'anyrel:distributor-work'
+        description: 'Process Anyrel distribution jobs.'
+
+  DigitalMarketingFramework\Typo3\Distributor\Core\Command\QueueCleanupCommand:
+    tags:
+      - name: console.command
+        command: 'anyrel:distributor-cleanup'
+        description: 'Cleanup Anyrel distribution jobs.'

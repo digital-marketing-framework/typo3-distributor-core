@@ -18,14 +18,14 @@ defined('TYPO3') || die();
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][QueueProcessorTask::class] = [
         'extension' => 'dmf_distributor_core',
-        'title' => 'Anyrel - Distributor - Queue Worker',
+        'title' => 'Anyrel - Distributor - Queue Worker (deprecated)',
         'description' => 'Processes the next batch of form submissions using the digital-marketing-framework/distributor',
         'additionalFields' => QueueProcessorFieldProvider::class,
     ];
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][QueueCleanupTask::class] = [
         'extension' => 'dmf_distributor_core',
-        'title' => 'Anyrel - Distributor - Queue Cleanup',
+        'title' => 'Anyrel - Distributor - Queue Cleanup (deprecated)',
         'description' => 'Removes old submissions from the database to be compliant with data protection regulations',
         'additionalFields' => QueueCleanupFieldProvider::class,
     ];

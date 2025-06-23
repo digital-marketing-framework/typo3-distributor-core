@@ -8,6 +8,9 @@ use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExis
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * @deprecated
+ */
 class QueueCleanupTask extends QueueTask
 {
     /**
