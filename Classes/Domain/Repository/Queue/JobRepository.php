@@ -3,7 +3,6 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue;
 
 use DateTime;
-use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
 use DigitalMarketingFramework\Core\GlobalConfiguration\GlobalConfigurationInterface;
 use DigitalMarketingFramework\Core\Model\Queue\Error;
 use DigitalMarketingFramework\Core\Model\Queue\Job;
