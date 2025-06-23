@@ -11,6 +11,7 @@ use DigitalMarketingFramework\Core\Model\Queue\JobInterface;
 use DigitalMarketingFramework\Core\Queue\JobSchema;
 use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\ContainerSchema;
+use DigitalMarketingFramework\Core\Utility\QueueUtility;
 use DigitalMarketingFramework\Typo3\Core\Domain\Repository\ItemStorageRepository;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Queue\GlobalConfiguration\Settings\QueueSettings;
 use TYPO3\CMS\Core\Database\Connection;
@@ -367,82 +368,9 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
      */
     public function getErrorMessages(array $filters, array $navigation): array
     {
-        // TODO filter by type?
-
-        $query = $this->connectionPool->getQueryBuilderForTable('tx_dmfdistributorcore_domain_model_queue_job');
-        $query->count('*')
-            ->addSelect('type', 'status_message')
-            ->from('tx_dmfdistributorcore_domain_model_queue_job')
-            ->groupBy('status_message', 'type');
-        $conditions = $this->getTimeframeConditions($query, $filters);
-        $conditions[] = $query->expr()->eq('status', $query->createNamedParameter(QueueInterface::STATUS_FAILED, Connection::PARAM_INT));
-        $query->where(...$conditions);
-        $queryResult = $query->executeQuery();
-
-        $result = [];
-        while ($row = $queryResult->fetchAssociative()) {
-            /** @var string */
-            $message = $row['status_message'];
-            /** @var int */
-            $count = $row['COUNT(*)'];
-            $result[$message] ??= [
-                'message' => $message,
-                'count' => 0,
-                'types' => [],
-            ];
-            $result[$message]['count'] += $count;
-            $result[$message]['types'][$row['type']] = $count;
-        }
-
-        $messages = array_keys($result);
-        foreach ($messages as $message) {
-            $lastSeen = $this->fetchOneByErrorMessage($message, lastSeen: true, filters: $filters);
-            if (!$lastSeen instanceof Job) {
-                throw new DigitalMarketingFrameworkException('cannot load job "lastSeen" for error statistics', 8748465510);
-            }
-
-            $result[$message]['lastSeen'] = $lastSeen;
-
-            $firstSeen = $this->fetchOneByErrorMessage($message, lastSeen: false, filters: $filters);
-            if (!$firstSeen instanceof Job) {
-                throw new DigitalMarketingFrameworkException('cannot load job "firstSeen" for error statistics', 4837789032);
-            }
-
-            $result[$message]['firstSeen'] = $firstSeen;
-        }
-
-        $result = array_values($result);
-        if ($navigation['sorting'] !== []) {
-            usort($result, static function (array $row1, array $row2) use ($navigation) {
-                $sortDirection = 'DESC';
-                $value1 = 0;
-                $value2 = 0;
-                foreach ($navigation['sorting'] as $sort => $direction) {
-                    if ($direction === '') {
-                        continue;
-                    }
-
-                    $sortDirection = $direction;
-                    $value1 = match ($sort) {
-                        'count' => $row1['count'],
-                        'lastSeen' => $row1['lastSeen']->getChanged()->getTimestamp(),
-                        'firstSeen' => $row1['firstSeen']->getChanged()->getTimestamp(),
-                        default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort attribute "%s"', $sort), 6991592528),
-                    };
-                    $value2 = match ($sort) {
-                        'count' => $row2['count'],
-                        'lastSeen' => $row2['lastSeen']->getChanged()->getTimestamp(),
-                        'firstSeen' => $row2['firstSeen']->getChanged()->getTimestamp(),
-                        default => throw new DigitalMarketingFrameworkException(sprintf('unknown sort attribute "%s"', $sort), 8729504902),
-                    };
-                    if ($value1 !== $value2) {
-                        break;
-                    }
-                }
-
-                return $sortDirection === 'ASC' ? $value1 <=> $value2 : $value2 <=> $value1;
-            });
-        }
+        $failedJobs = $this->fetchWhere(['status' => QueueInterface::STATUS_FAILED]);
+        $result = QueueUtility::getErrorStatistics($failedJobs, true);
+        QueueUtility::applyNavigationToErrorStatistics($result, $navigation);
 
         if ($navigation['itemsPerPage'] > 0) {
             $limit = $navigation['itemsPerPage'];
