@@ -233,8 +233,12 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
     /**
      * @param array<string,mixed> $filters
      */
-    protected function applyFilters(QueryBuilder $queryBuilder, array $filters): void
+    protected function applyFilters(QueryBuilder $queryBuilder, ?array $filters): void
     {
+        if ($filters === null) {
+            return;
+        }
+
         $conditions = [
             ...$this->getIdConditions($queryBuilder, $filters),
             ...$this->getSearchConditions($queryBuilder, $filters),
