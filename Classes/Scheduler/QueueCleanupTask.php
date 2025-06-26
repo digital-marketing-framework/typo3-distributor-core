@@ -2,8 +2,6 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler;
 
-use DigitalMarketingFramework\Typo3\Distributor\Core\Queue\GlobalConfiguration\Settings\QueueSettings;
-
 /**
  * @deprecated
  */

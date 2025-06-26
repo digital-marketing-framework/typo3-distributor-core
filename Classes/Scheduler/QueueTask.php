@@ -2,10 +2,8 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler;
 
-use DigitalMarketingFramework\Core\Queue\QueueInterface;
 use DigitalMarketingFramework\Core\Queue\QueueProcessorInterface;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
-use DigitalMarketingFramework\Distributor\Core\Service\DistributorInterface;
 use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
