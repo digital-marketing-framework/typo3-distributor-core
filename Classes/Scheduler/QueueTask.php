@@ -14,11 +14,7 @@ abstract class QueueTask extends AbstractTask
 {
     protected RegistryInterface $registry;
 
-    protected QueueInterface $queue;
-
     protected QueueProcessorInterface $queueProcessor;
-
-    protected DistributorInterface $distributor;
 
     protected function prepareTask(): void
     {
