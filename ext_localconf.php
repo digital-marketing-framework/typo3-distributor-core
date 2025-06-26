@@ -20,14 +20,12 @@ defined('TYPO3') || die();
         'extension' => 'dmf_distributor_core',
         'title' => 'Anyrel - Distributor - Queue Worker (deprecated)',
         'description' => 'Processes the next batch of form submissions using the digital-marketing-framework/distributor',
-        'additionalFields' => QueueProcessorFieldProvider::class,
     ];
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][QueueCleanupTask::class] = [
         'extension' => 'dmf_distributor_core',
         'title' => 'Anyrel - Distributor - Queue Cleanup (deprecated)',
         'description' => 'Removes old submissions from the database to be compliant with data protection regulations',
-        'additionalFields' => QueueCleanupFieldProvider::class,
     ];
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = MetaDataHandler::class;

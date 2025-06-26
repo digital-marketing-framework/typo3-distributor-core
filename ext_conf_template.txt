@@ -20,6 +20,12 @@ queue {
 
     # cat=Queue; type=integer; label=Delay before re-running failed jobs (in seconds)
     rerunDelay = 300
+
+    # cat=Queue; type=boolean; label=Remove only old jobs with status done
+    cleanupDoneOnly = 1
+
+    # cat=Queue; type=integer; label=Batch size for async processing
+    processorBatchSize = 10
 }
 
 fileUpload {

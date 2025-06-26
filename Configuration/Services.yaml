@@ -82,9 +82,3 @@ services:
       - name: console.command
         command: 'anyrel:distributor-work'
         description: 'Process Anyrel distribution jobs.'
-
-  DigitalMarketingFramework\Typo3\Distributor\Core\Command\QueueCleanupCommand:
-    tags:
-      - name: console.command
-        command: 'anyrel:distributor-cleanup'
-        description: 'Cleanup Anyrel distribution jobs.'
