@@ -13,41 +13,13 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormDataSou
 use DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormService;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Repository\Queue\JobRepository;
 use DigitalMarketingFramework\Typo3\Distributor\Core\GlobalConfiguration\Schema\DistributorCoreGlobalConfigurationSchema;
+use DigitalMarketingFramework\Typo3\Distributor\Core\Typo3DistributorCoreInitialization;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DistributorRegistryUpdateEventListener extends AbstractDistributorRegistryUpdateEventListener
 {
-    public function __construct(
-        protected JobRepository $queue,
-    ) {
-        parent::__construct(
-            new DistributorCoreInitialization(
-                'dmf_distributor_core',
-                new DistributorCoreGlobalConfigurationSchema()
-            )
-        );
-    }
-
-    protected function initServices(RegistryInterface $registry): void
+    public function __construct(Typo3DistributorCoreInitialization $initialization)
     {
-        parent::initServices($registry);
-        $this->queue->setGlobalConfiguration($registry->getGlobalConfiguration());
-        $registry->setPersistentQueue($this->queue);
-    }
-
-    protected function initPlugins(RegistryInterface $registry): void
-    {
-        parent::initPlugins($registry);
-        $registry->registerDataProvider(AdwordsCampaignsDataProvider::class);
-        $registry->registerDataProvider(AdwordsDataProvider::class);
-        $registry->registerDataProvider(ContentElementDataProvider::class);
-        $registry->registerDataProvider(LanguageCodeDataProvider::class);
-
-        $registry->registerDistributorSourceStorage(
-            Typo3FormDataSourceStorage::class,
-            [
-                new ProxyArgument(static fn () => GeneralUtility::makeInstance(Typo3FormService::class)),
-            ]
-        );
+        parent::__construct($initialization);
     }
 }
