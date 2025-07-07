@@ -38,7 +38,18 @@ class Typo3FormDataSource extends DistributorDataSource
     }
 
     /**
-     * @param array<array{identifier:string,type:string,label?:string,properties?:array{options?:array<string,string>,fluidAdditionalAttributes?:array{name?:string,required?:"required"}},renderables?:array<array<mixed>}> $renderables
+     * @param array<
+     *   array{
+     *     identifier:string,
+     *     type:string,
+     *     label?:string,
+     *     properties?:array{
+     *       options?:array<string,string>,
+     *       fluidAdditionalAttributes?:array{name?:string,required?:"required"}
+     *     },
+     *     renderables?:array<array<mixed>>
+     *   }
+     * > $renderables
      */
     protected function readFields(array $renderables, FieldListDefinition $fieldListDefinition): void
     {
