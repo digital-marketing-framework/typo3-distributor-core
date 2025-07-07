@@ -42,13 +42,12 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
 
     public function getAllDataSources(): array
     {
-        // TODO is there a better way to fetch the request from here?
-        $dataSourceContext = $this->formService->getFormDataSourceContext($GLOBALS['TYPO3_REQUEST'] ?? null);
+        $dataSourceContext = $this->formService->getFormDataSourceContext();
 
         $result = [];
         $forms = $this->formService->getAllForms($dataSourceContext);
         foreach ($forms as $id => $formDefinition) {
-            $result[] = new Typo3FormDataSource($this->getOuterIdentifier($id), $formDefinition);
+            $result[] = new Typo3FormDataSource($id, $formDefinition);
         }
 
         return $result;

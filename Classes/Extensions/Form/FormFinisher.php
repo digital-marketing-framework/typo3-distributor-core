@@ -68,6 +68,8 @@ class FormFinisher extends AbstractFinisher
     }
 
     /**
+     * @deprecated
+     *
      * @param array<mixed> $data
      */
     protected function debugLog(string $file, array $data): void

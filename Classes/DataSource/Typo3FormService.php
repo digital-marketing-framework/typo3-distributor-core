@@ -125,12 +125,13 @@ class Typo3FormService implements SingletonInterface
             $formSettings = $this->extFormConfigurationManager->getYamlConfiguration($typoScriptSettings, true);
             $context = [
                 'typoScriptSettings' => [
-                    'persistenceManager' => [
-                        'allowedExtensionPaths' => $formSettings['persistenceManager']['allowedExtensionPaths'] ?? [],
-                    ],
+                    'formDefinitionOverrides' => $typoScriptSettings['formDefinitionOverrides'] ?? [],
                 ],
                 'formSettings' => [
-                    'formDefinitionOverrides' => $typoScriptSettings['formDefinitionOverrides'] ?? [],
+                    'persistenceManager' => [
+                        'allowedExtensionPaths' => $formSettings['persistenceManager']['allowedExtensionPaths'] ?? [],
+                        'allowedFileMounts' => $formSettings['persistenceManager']['allowedFileMounts'] ?? [],
+                    ],
                 ],
             ];
         }
