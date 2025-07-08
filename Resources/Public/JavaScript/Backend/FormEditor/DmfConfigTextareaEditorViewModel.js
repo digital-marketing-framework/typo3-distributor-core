@@ -57,7 +57,9 @@ function handleDmfConfigEditor(editorConfiguration, editorHtml, collectionElemen
       collectionName
     );
     const textarea = $('textarea', $(editorHtml))[0];
-    textarea.dataset.contextIdentifier = getFormIdentifier();
+    const formId = getFormIdentifier();
+    textarea.dataset.contextIdentifier = formId;
+    textarea.dataset.uid = formId;
     textarea.dataset.app="true";
     document.dispatchEvent(new Event('dmf-configuration-editor-init'));
   }
