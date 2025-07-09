@@ -24,8 +24,8 @@
     "homepage": "https://www.mediatis.de",
     "require": {
         "php": "^8.2",
-        "digital-marketing-framework/distributor-core": "^3.2",
-        "digital-marketing-framework/typo3-core": "^3.3",
+        "digital-marketing-framework/distributor-core": "^3.3",
+        "digital-marketing-framework/typo3-core": "^3.5",
         "digital-marketing-framework/typo3-template-engine-twig": "^3.0",
         "mediatis/form_fieldnames": "^3.5 || ^4.0",
         "typo3/cms-core": "^12.4 || ^13.4",

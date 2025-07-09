@@ -29,6 +29,18 @@ function getPublisherSubscriber() {
 /**
  * @private
  *
+ * @return string
+ */
+function getFormIdentifier() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const identifier = urlParams.get('formPersistenceIdentifier') || '';
+
+  return identifier !== '' ? 'form:' + identifier : '';
+}
+
+/**
+ * @private
+ *
  * @param array editorConfiguration
  * @param HTMLElement editorHtml
  * @param string collectionElementIdentifier
@@ -44,7 +56,11 @@ function handleDmfConfigEditor(editorConfiguration, editorHtml, collectionElemen
       collectionElementIdentifier,
       collectionName
     );
-    $('textarea', $(editorHtml))[0].dataset.app="true";
+    const textarea = $('textarea', $(editorHtml))[0];
+    const formId = getFormIdentifier();
+    textarea.dataset.contextIdentifier = formId;
+    textarea.dataset.uid = formId;
+    textarea.dataset.app="true";
     document.dispatchEvent(new Event('dmf-configuration-editor-init'));
   }
 }
