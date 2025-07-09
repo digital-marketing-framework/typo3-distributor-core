@@ -80,19 +80,20 @@ class Typo3FormDataSource extends DistributorDataSource
 
                 $required = isset($renderable['properties']['fluidAdditionalAttributes']['required']);
 
+                // TODO implement an entry point for external (typo3) plugins to identify their custom fields
                 switch ($renderable['type']) {
-                    case 'Email':
-                    case 'Text':
-                    case 'Telephone':
+                    case 'AdvancedPassword':
                     case 'Date':
-                    case 'Password':
-                    case 'Textarea':
-                    case 'SingleSelect':
-                    case 'RadioButton':
-                    case 'Url':
                     case 'DatePicker':
+                    case 'Email':
                     case 'Hidden':
-                    case 'AdvanedPassword':
+                    case 'Password':
+                    case 'RadioButton':
+                    case 'SingleSelect':
+                    case 'Telephone':
+                    case 'Text':
+                    case 'Textarea':
+                    case 'Url':
                         $type = FieldDefinition::TYPE_STRING;
                         $multiValue = false;
                         break;
@@ -108,8 +109,8 @@ class Typo3FormDataSource extends DistributorDataSource
                         $type = FieldDefinition::TYPE_BOOLEAN;
                         $multiValue = false;
                         break;
-                    case 'MultiSelect':
                     case 'MultiCheckbox':
+                    case 'MultiSelect':
                         $type = FieldDefinition::TYPE_STRING;
                         $multiValue = true;
                         break;
