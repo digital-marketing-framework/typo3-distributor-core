@@ -4,7 +4,6 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\DataSource;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface as ExtbaseConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Request;
@@ -12,7 +11,7 @@ use TYPO3\CMS\Form\Controller\FormFrontendController;
 use TYPO3\CMS\Form\Mvc\Configuration\ConfigurationManagerInterface as ExtFormConfigurationManagerInterface;
 use TYPO3\CMS\Form\Mvc\Persistence\FormPersistenceManagerInterface;
 
-class Typo3FormService implements SingletonInterface
+class Typo3FormService
 {
     public function __construct(
         protected ConnectionPool $connectionPool,
@@ -128,10 +127,7 @@ class Typo3FormService implements SingletonInterface
                     'formDefinitionOverrides' => $typoScriptSettings['formDefinitionOverrides'] ?? [],
                 ],
                 'formSettings' => [
-                    'persistenceManager' => [
-                        'allowedExtensionPaths' => $formSettings['persistenceManager']['allowedExtensionPaths'] ?? [],
-                        'allowedFileMounts' => $formSettings['persistenceManager']['allowedFileMounts'] ?? [],
-                    ],
+                    'persistenceManager' => $formSettings['persistenceManager'] ?? [],
                 ],
             ];
         }
