@@ -7,6 +7,8 @@ use DigitalMarketingFramework\Core\SchemaDocument\Schema\ContainerSchema;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\SchemaInterface;
 use DigitalMarketingFramework\Core\SchemaDocument\Schema\StringSchema;
 use DigitalMarketingFramework\Distributor\Core\DataProvider\DataProvider;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 
 class LanguageCodeDataProvider extends DataProvider
 {
@@ -25,13 +27,33 @@ class LanguageCodeDataProvider extends DataProvider
      */
     public const DEFAULT_FIELD = 'language';
 
+    protected function getRequest(): ?ServerRequestInterface
+    {
+        return $GLOBALS['TYPO3_REQUEST'] ?? null;
+    }
+
+    protected function getLanguageCode(): string
+    {
+        $request = $this->getRequest();
+        if ($request instanceof ServerRequestInterface) {
+            /** @var SiteLanguage $siteLanguage */
+            $siteLanguage = $request->getAttribute('language') ?? $request->getAttribute('site')->getDefaultLanguage();
+
+            return $siteLanguage->getLocale()->getLanguageCode();
+        }
+
+        return '';
+    }
+
     protected function processContext(WriteableContextInterface $context): void
     {
-        if (isset($context['language'])) {
-            $language = $context['language'];
-        } elseif (isset($GLOBALS['TSFE'])) {
-            $language = $GLOBALS['TSFE']->getLanguage()->getTwoLetterIsoCode();
-        } else {
+        if (isset($context['language']) && $context['language'] !== '') {
+            return;
+        }
+
+        $language = $this->getLanguageCode();
+
+        if ($language === '') {
             $language = $this->getConfig(static::KEY_DEFAULT_LANGUAGE);
         }
 
