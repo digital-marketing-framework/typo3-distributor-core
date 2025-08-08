@@ -3,6 +3,7 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor;
 
 use DateTime;
+use DigitalMarketingFramework\Core\Model\Data\Value\DateTimeValue;
 use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
 
 class DateElementProcessor extends ElementProcessor
@@ -26,7 +27,7 @@ class DateElementProcessor extends ElementProcessor
     {
         $value = '';
         if ($elementValue instanceof DateTime) {
-            $value = $elementValue->format(static::DATE_FORMAT);
+            $value = new DateTimeValue($elementValue, static::DATE_FORMAT);
         }
 
         return $value;

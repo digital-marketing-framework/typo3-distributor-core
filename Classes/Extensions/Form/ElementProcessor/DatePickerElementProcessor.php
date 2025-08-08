@@ -4,6 +4,7 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\Eleme
 
 use DateTime;
 use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
+use DigitalMarketingFramework\Core\Model\Data\Value\DateTimeValue;
 use TYPO3\CMS\Form\Domain\Model\FormElements\DatePicker;
 use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
 
@@ -37,7 +38,7 @@ class DatePickerElementProcessor extends ElementProcessor
                 $dateFormat = DateTime::W3C;
             }
 
-            $value = $elementValue->format($dateFormat);
+            $value = new DateTimeValue($elementValue, $dateFormat);
         }
 
         return $value;
