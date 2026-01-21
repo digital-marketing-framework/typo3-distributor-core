@@ -32,9 +32,6 @@ class MetaDataHandler implements SingletonInterface
         $job->setLabel($label);
         if ($label !== 'undefined') {
             $fieldArray['label'] = $job->getLabel();
-        }
-
-        if ($label !== 'undefined') {
             $fieldArray['type'] = $job->getType();
         }
     }

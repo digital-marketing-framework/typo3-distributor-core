@@ -381,7 +381,7 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
             $result = array_slice($result, $offset, $limit);
         }
 
-        return array_map(static fn (array $data) => Error::fromDataRecord($data), $result);
+        return array_map(Error::fromDataRecord(...), $result);
     }
 
     /**
