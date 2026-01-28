@@ -4,7 +4,9 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form;
 
 use DateTime;
 use DigitalMarketingFramework\Core\ConfigurationDocument\ConfigurationDocumentManagerInterface;
+use DigitalMarketingFramework\Core\GlobalConfiguration\GlobalConfigurationInterface;
 use DigitalMarketingFramework\Core\Model\Data\Value\ValueInterface;
+use DigitalMarketingFramework\Distributor\Core\GlobalConfiguration\Settings\DistributorDebugSettings;
 use DigitalMarketingFramework\Distributor\Core\Model\DataSet\SubmissionDataSet;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
 use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
@@ -42,11 +44,9 @@ class FormFinisher extends AbstractFinisher
     }
 
     /**
-     * @param array<string,mixed> $configuration
-     *
      * @return array<string,string|ValueInterface>
      */
-    protected function getFormValues(array $configuration): array
+    protected function getFormValues(GlobalConfigurationInterface $globalConfiguration): array
     {
         $elements = $this->finisherContext
             ->getFormRuntime()
@@ -54,7 +54,7 @@ class FormFinisher extends AbstractFinisher
             ->getRenderablesRecursively();
         $elementValues = $this->finisherContext->getFormValues();
 
-        return $this->formDataProcessor->process($elements, $elementValues, $configuration);
+        return $this->formDataProcessor->process($elements, $elementValues, $globalConfiguration);
     }
 
     /**
@@ -88,7 +88,7 @@ class FormFinisher extends AbstractFinisher
     protected function executeInternal(): ?string
     {
         // fetch global configuration
-        $globalConfiguration = $this->registry->getGlobalConfiguration()->get('dmf_distributor_core') ?? [];
+        $globalConfiguration = $this->registry->getGlobalConfiguration();
 
         // fetch configuration
         $configurationStack = $this->getConfigurationStack();
@@ -102,9 +102,9 @@ class FormFinisher extends AbstractFinisher
         $dataSourceContext = $this->formService->getFormDataSourceContext($this->finisherContext->getRequest());
 
         // low level debug log, if configured
-        if (isset($globalConfiguration['debug']['enabled']) && (bool)$globalConfiguration['debug']['enabled']) {
-            $file = $globalConfiguration['debug']['file'] ?? 'digital-marketing-framework-distributor-submission.log';
-            $this->debugLog($file, $formValues);
+        $debugSettings = $globalConfiguration->getGlobalSettings(DistributorDebugSettings::class);
+        if ($debugSettings->isEnabled()) {
+            $this->debugLog($debugSettings->getFile(), $formValues);
         }
 
         // build and process submission

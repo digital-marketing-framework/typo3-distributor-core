@@ -2,6 +2,7 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor;
 
+use DigitalMarketingFramework\Core\GlobalConfiguration\GlobalConfigurationInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormElementProcessorEvent;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManagerInterface;
@@ -11,10 +12,7 @@ abstract class ElementProcessor
 {
     protected LoggerInterface $logger;
 
-    /**
-     * @var array<string,mixed>
-     */
-    protected array $configuration = [];
+    protected GlobalConfigurationInterface $globalConfiguration;
 
     public function __construct(LogManagerInterface $logManager)
     {
@@ -63,7 +61,7 @@ abstract class ElementProcessor
 
     public function __invoke(FormElementProcessorEvent $event): void
     {
-        $this->configuration = $event->getConfiguration();
+        $this->globalConfiguration = $event->getGlobalConfiguration();
         $element = $event->getElement();
         $elementValue = $event->getElementValue();
         if ((!$event->getProcessed() || $this->override()) && $this->match($element, $elementValue)) {

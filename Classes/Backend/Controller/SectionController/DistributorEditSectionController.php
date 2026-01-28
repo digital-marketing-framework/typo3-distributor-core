@@ -7,6 +7,9 @@ use DigitalMarketingFramework\Typo3\Core\Backend\Controller\SectionController\Ed
 
 class DistributorEditSectionController extends EditSectionController
 {
+    /**
+     * @var int
+     */
     public const WEIGHT = 0;
 
     public function __construct(string $keyword, RegistryInterface $registry)

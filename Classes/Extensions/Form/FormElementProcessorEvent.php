@@ -2,6 +2,7 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form;
 
+use DigitalMarketingFramework\Core\GlobalConfiguration\GlobalConfigurationInterface;
 use DigitalMarketingFramework\Core\Model\Data\Value\ValueInterface;
 use TYPO3\CMS\Form\Domain\Model\FormElements\FormElementInterface;
 use TYPO3\CMS\Form\Domain\Model\Renderable\RenderableInterface;
@@ -14,13 +15,10 @@ class FormElementProcessorEvent
 
     protected ?string $name = null;
 
-    /**
-     * @param array<string,mixed> $configuration
-     */
     public function __construct(
         protected RenderableInterface $element,
         protected mixed $value,
-        protected array $configuration,
+        protected GlobalConfigurationInterface $globalConfiguration,
     ) {
     }
 
@@ -56,12 +54,9 @@ class FormElementProcessorEvent
         return $this->value;
     }
 
-    /**
-     * @return array<string,mixed>
-     */
-    public function getConfiguration(): array
+    public function getGlobalConfiguration(): GlobalConfigurationInterface
     {
-        return $this->configuration;
+        return $this->globalConfiguration;
     }
 
     public function setProcessed(bool $processed): void

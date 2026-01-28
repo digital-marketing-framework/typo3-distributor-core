@@ -9,6 +9,9 @@ use DigitalMarketingFramework\Distributor\Core\Model\DataSource\DistributorDataS
 
 class Typo3FormDataSource extends DistributorDataSource
 {
+    /**
+     * @var string
+     */
     public const TYPE = 'form';
 
     /**
