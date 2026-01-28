@@ -7,8 +7,14 @@ use DigitalMarketingFramework\Core\SchemaDocument\Schema\IntegerSchema;
 
 class QueueSchema extends CoreQueueSchema
 {
+    /**
+     * @var string
+     */
     public const KEY_QUEUE_PID = 'pid';
 
+    /**
+     * @var int
+     */
     public const DEFAULT_QUEUE_PID = 0;
 
     public function __construct()

@@ -95,9 +95,9 @@ class FileUploadElementProcessor extends ElementProcessor
             $fileValue->setFileName($elementValue->getName());
 
             return $fileValue;
-        } catch (DigitalMarketingFrameworkException $e) {
+        } catch (DigitalMarketingFrameworkException $digitalMarketingFrameworkException) {
             $this->logger->error(
-                'Failed to copy uploaded file: "' . $e->getMessage() . '"',
+                'Failed to copy uploaded file: "' . $digitalMarketingFrameworkException->getMessage() . '"',
                 [
                     'file' => $fileIdentifier,
                     'folder' => $folderIdentifier,
