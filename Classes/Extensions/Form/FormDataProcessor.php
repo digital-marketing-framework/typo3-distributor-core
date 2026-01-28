@@ -2,6 +2,7 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form;
 
+use DigitalMarketingFramework\Core\GlobalConfiguration\GlobalConfigurationInterface;
 use DigitalMarketingFramework\Core\Model\Data\Value\ValueInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
@@ -23,11 +24,10 @@ class FormDataProcessor
     /**
      * @param array<RenderableInterface> $elements
      * @param array<string,mixed> $values
-     * @param array<string,mixed> $configuration
      *
      * @return array<string,string|ValueInterface>
      */
-    public function process(array $elements, array $values, array $configuration): array
+    public function process(array $elements, array $values, GlobalConfigurationInterface $globalConfiguration): array
     {
         $result = [];
         foreach ($elements as $element) {
@@ -37,7 +37,7 @@ class FormDataProcessor
 
             // default element processors are within the namespace
             // \DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\ElementProcessor
-            $event = new FormElementProcessorEvent($element, $value, $configuration);
+            $event = new FormElementProcessorEvent($element, $value, $globalConfiguration);
             $this->eventDispatcher->dispatch($event);
             if (!$event->getProcessed()) {
                 $this->logger->error('Ignoring unknown form field type.', [

@@ -5,7 +5,7 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\Eleme
 use DigitalMarketingFramework\Core\Exception\DigitalMarketingFrameworkException;
 use DigitalMarketingFramework\Core\FileStorage\FileStorageInterface;
 use DigitalMarketingFramework\Core\Registry\RegistryInterface;
-use DigitalMarketingFramework\Core\Utility\GeneralUtility as DmfGeneralUtility;
+use DigitalMarketingFramework\Distributor\Core\GlobalConfiguration\Settings\DistributorFileUploadSettings;
 use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use TYPO3\CMS\Core\Log\LogManagerInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
@@ -31,33 +31,22 @@ class FileUploadElementProcessor extends ElementProcessor
         return FileUpload::class;
     }
 
-    protected function disabled(): bool
+    protected function getFileUploadSettings(): DistributorFileUploadSettings
     {
-        return $this->configuration['fileUpload']['disableProcessing'] ?? false;
-    }
-
-    /**
-     * @return array<string>
-     */
-    protected function prohibitedFileExtensions(): array
-    {
-        return DmfGeneralUtility::castValueToArray(strtolower($this->configuration['fileUpload']['prohibitedExtension'] ?? 'php,exe'));
-    }
-
-    protected function baseUploadPath(): string
-    {
-        return $this->configuration['fileUpload']['baseUploadPath'] ?? 'uploads/digital_marketing_framework/form_uploads/';
+        return $this->globalConfiguration->getGlobalSettings(DistributorFileUploadSettings::class);
     }
 
     protected function override(): bool
     {
         // we want to override everything (with a null value) if file upload processing is disabled
-        return $this->disabled();
+        return $this->getFileUploadSettings()->disableProcessing();
     }
 
     protected function process(RenderableInterface $element, mixed $elementValue): mixed
     {
-        if ($this->disabled()) {
+        $settings = $this->getFileUploadSettings();
+
+        if ($settings->disableProcessing()) {
             return null;
         }
 
@@ -77,7 +66,8 @@ class FileUploadElementProcessor extends ElementProcessor
             $elementValue = $elementValue->getOriginalFile();
         }
 
-        if ($this->prohibitedFileExtensions() !== [] && in_array(strtolower((string)$elementValue->getExtension()), $this->prohibitedFileExtensions(), true)) {
+        $prohibitedExtensions = $settings->getProhibitedExtensions();
+        if ($prohibitedExtensions !== [] && in_array(strtolower((string)$elementValue->getExtension()), $prohibitedExtensions, true)) {
             $this->logger->error(
                 'Uploaded file did not pass safety checks, discarded',
                 ['extension' => $elementValue->getExtension()]
@@ -86,7 +76,7 @@ class FileUploadElementProcessor extends ElementProcessor
             return null;
         }
 
-        $baseUploadPath = $this->baseUploadPath();
+        $baseUploadPath = $settings->getBaseUploadPath();
         $folderIdentifier = rtrim($baseUploadPath, '/')
                 . '/' . $element->getRootForm()->getIdentifier() . '/'
                 . $elementValue->getSha1() . random_int(10000, 99999) . '/';
