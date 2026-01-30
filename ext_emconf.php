@@ -13,7 +13,7 @@ $EM_CONF[$_EXTKEY] = [
             'typo3' => '12.4.0-13.4.99',
             'form' => '12.4.0-13.4.99',
             'form_fieldnames' => '3.5.0-4.99.99',
-            'dmf_core' => '3.6.0-3.99.99',
+            'dmf_core' => '3.7.0-3.99.99',
             'dmf_template_engine_twig' => '3.0.0-3.99.99',
         ],
         'conflicts' => [

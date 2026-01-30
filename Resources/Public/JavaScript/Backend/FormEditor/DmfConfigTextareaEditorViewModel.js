@@ -41,6 +41,29 @@ function getFormIdentifier() {
 /**
  * @private
  *
+ * @return string
+ */
+function getFormName() {
+  try {
+    const label = getFormEditorApp().configuration.formDefinition.label;
+    if (label) {
+      return label;
+    }
+  } catch (e) {
+    // Fall back to extracting name from persistence identifier
+  }
+
+  // Extract name from persistence identifier (e.g., "1:/form_definitions/contact.form.yaml" -> "contact")
+  const urlParams = new URLSearchParams(window.location.search);
+  const identifier = urlParams.get('formPersistenceIdentifier') || '';
+  const match = identifier.match(/\/([^\/]+)\.form\.yaml$/);
+
+  return match ? match[1] : '';
+}
+
+/**
+ * @private
+ *
  * @param array editorConfiguration
  * @param HTMLElement editorHtml
  * @param string collectionElementIdentifier
@@ -58,9 +81,12 @@ function handleDmfConfigEditor(editorConfiguration, editorHtml, collectionElemen
     );
     const textarea = $('textarea', $(editorHtml))[0];
     const formId = getFormIdentifier();
+    const formName = getFormName();
     textarea.dataset.contextIdentifier = formId;
     textarea.dataset.uid = formId;
-    textarea.dataset.app="true";
+    textarea.dataset.contextType = 'form';
+    textarea.dataset.documentName = formName;
+    textarea.dataset.app = 'true';
     document.dispatchEvent(new Event('dmf-configuration-editor-init'));
   }
 }
