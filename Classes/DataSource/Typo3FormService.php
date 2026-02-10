@@ -19,6 +19,11 @@ use TYPO3\CMS\Form\Mvc\Persistence\FormPersistenceManagerInterface;
 
 class Typo3FormService
 {
+    /**
+     * @var ?array{formSettings:array<string,mixed>,typoScriptSettings:array<string,mixed>}
+     */
+    private ?array $formSettings = null;
+
     public function __construct(
         protected ConnectionPool $connectionPool,
         protected FormPersistenceManagerInterface $formPersistenceManager,
@@ -29,19 +34,68 @@ class Typo3FormService
     }
 
     /**
-     * @param array{pluginId?:int} $dataSourceContext
+     * Lazily loads and returns the form persistence settings needed by FormPersistenceManager.
+     * On TYPO3 12 returns empty arrays. On TYPO3 13+ loads from Extbase/Form YAML configuration.
+     *
+     * @return array{formSettings:array<string,mixed>,typoScriptSettings:array<string,mixed>}
      */
-    protected function getPluginFlexForm(array $dataSourceContext): string
+    protected function getFormSettings(): array
     {
-        if (!isset($dataSourceContext['pluginId'])) {
+        if ($this->formSettings === null) {
+            $typo3Version = new Typo3Version();
+            if ($typo3Version->getMajorVersion() <= 12) {
+                $this->formSettings = [
+                    'formSettings' => [],
+                    'typoScriptSettings' => [],
+                ];
+            } else {
+                $typoScriptSettings = CliEnvironmentUtility::ensureBackendRequest(
+                    fn () => $this->extbaseConfigurationManager->getConfiguration(
+                        ExtbaseConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+                        'form'
+                    )
+                );
+                // @phpstan-ignore-next-line TYPO3 version switch
+                $formSettings = $this->extFormConfigurationManager->getYamlConfiguration($typoScriptSettings, false);
+                $this->formSettings = [
+                    'formSettings' => [
+                        'persistenceManager' => $formSettings['persistenceManager'] ?? [],
+                    ],
+                    'typoScriptSettings' => [
+                        'formDefinitionOverrides' => $typoScriptSettings['formDefinitionOverrides'] ?? [],
+                    ],
+                ];
+            }
+        }
+
+        return $this->formSettings;
+    }
+
+    /**
+     * Parses the FlexForm XML string in a plugin record into an array.
+     *
+     * @param array{uid:int,pid:int,sys_language_uid:int,l18n_parent:int,t3ver_wsid:int,t3ver_oid:int,pi_flexform:string} $plugin
+     *
+     * @return array{uid:int,pid:int,sys_language_uid:int,l18n_parent:int,t3ver_wsid:int,t3ver_oid:int,pi_flexform:array<string,mixed>}
+     */
+    protected function preparePluginRecord(array $plugin): array
+    {
+        $flexFormData = GeneralUtility::xml2array($plugin['pi_flexform']);
+        $plugin['pi_flexform'] = is_array($flexFormData) ? $flexFormData : [];
+
+        return $plugin;
+    }
+
+    protected function getPluginFlexForm(?int $pluginId): string
+    {
+        if ($pluginId === null) {
             return '';
         }
 
-        $uid = $dataSourceContext['pluginId'];
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
         $queryBuilder->select('uid', 'pi_flexform')
             ->from('tt_content')
-            ->where($queryBuilder->expr()->eq('uid', $uid))
+            ->where($queryBuilder->expr()->eq('uid', $pluginId))
             ->setMaxResults(1);
 
         $rows = $queryBuilder->executeQuery()
@@ -73,17 +127,16 @@ class Typo3FormService
 
     /**
      * @param array<string,mixed> $formDefinition
-     * @param array<string,mixed> $dataSourceContext
      *
      * @return array<string,mixed>
      */
-    protected function overrideByFlexFormSettings(array $formDefinition, array $dataSourceContext): array
+    protected function overrideByFlexFormSettings(array $formDefinition, ?int $pluginId = null): array
     {
         if (!isset($formDefinition['finishers'])) {
             return $formDefinition;
         }
 
-        $flexFormData = $this->getPluginFlexForm($dataSourceContext);
+        $flexFormData = $this->getPluginFlexForm($pluginId);
         if ($flexFormData !== '') {
             $flexFormData = GeneralUtility::xml2array($flexFormData);
         }
@@ -121,27 +174,9 @@ class Typo3FormService
      */
     public function getFormDataSourceContext(?Request $request = null): array
     {
-        $isFrontend = $request instanceof Request;
-        $typo3Version = new Typo3Version();
-        if ($typo3Version->getMajorVersion() <= 12) {
-            $context = [];
-        } else {
-            $typoScriptSettings = CliEnvironmentUtility::ensureBackendRequest(
-                fn () => $this->extbaseConfigurationManager->getConfiguration(ExtbaseConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'form')
-            );
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $formSettings = $this->extFormConfigurationManager->getYamlConfiguration($typoScriptSettings, $isFrontend);
-            $context = [
-                'typoScriptSettings' => [
-                    'formDefinitionOverrides' => $typoScriptSettings['formDefinitionOverrides'] ?? [],
-                ],
-                'formSettings' => [
-                    'persistenceManager' => $formSettings['persistenceManager'] ?? [],
-                ],
-            ];
-        }
+        $context = [];
 
-        if ($isFrontend) {
+        if ($request instanceof Request) {
             $contentObjectData = $request->getAttribute('currentContentObject')->data ?? [];
             $pluginId = $contentObjectData['_LOCALIZED_UID'] ?? ($contentObjectData['uid'] ?? null);
             if ($pluginId !== null) {
@@ -157,11 +192,9 @@ class Typo3FormService
     }
 
     /**
-     * @param array<string,mixed> $dataSourceContext
-     *
      * @return ?array<string,mixed>
      */
-    public function getFormById(string $formId, array $dataSourceContext): ?array
+    public function getFormById(string $formId, ?int $pluginId = null): ?array
     {
         $typo3Version = new Typo3Version();
         if ($typo3Version->getMajorVersion() <= 12) {
@@ -173,37 +206,37 @@ class Typo3FormService
             // @phpstan-ignore-next-line TYPO3 version switch
             $formDefinition = $this->formPersistenceManager->load($formId);
         } else {
+            $settings = $this->getFormSettings();
             // @phpstan-ignore-next-line TYPO3 version switch
             $formDefinition = $this->formPersistenceManager->load(
                 $formId,
-                $dataSourceContext['formSettings'] ?? [],
-                $dataSourceContext['typoScriptSettings'] ?? []
+                $settings['formSettings'],
+                $settings['typoScriptSettings']
             );
         }
 
-        return $this->overrideByFlexFormSettings($formDefinition, $dataSourceContext);
+        return $this->overrideByFlexFormSettings($formDefinition, $pluginId);
     }
 
     /**
-     * @param array<string,mixed> $dataSourceContext
-     *
      * @return array<string,array<string,mixed>>
      */
-    public function getAllForms(array $dataSourceContext): array
+    public function getAllForms(): array
     {
         $typo3Version = new Typo3Version();
         if ($typo3Version->getMajorVersion() <= 12) {
             // @phpstan-ignore-next-line TYPO3 version switch
             $forms = $this->formPersistenceManager->listForms();
         } else {
+            $settings = $this->getFormSettings();
             // @phpstan-ignore-next-line TYPO3 version switch
-            $forms = $this->formPersistenceManager->listForms($dataSourceContext['formSettings'] ?? []);
+            $forms = $this->formPersistenceManager->listForms($settings['formSettings']);
         }
 
         $result = [];
         foreach ($forms as $form) {
             $id = $form['persistenceIdentifier'];
-            $formDefinition = $this->getFormById($id, []);
+            $formDefinition = $this->getFormById($id);
             if ($formDefinition === null) {
                 continue;
             }
@@ -251,8 +284,9 @@ class Typo3FormService
 
     /**
      * Fetches all tt_content records that are form plugins with non-empty FlexForm data.
+     * FlexForm XML is parsed into arrays via preparePluginRecord().
      *
-     * @return array<array{uid:int,pid:int,sys_language_uid:int,l18n_parent:int,t3ver_wsid:int,t3ver_oid:int,pi_flexform:string}>
+     * @return array<array{uid:int,pid:int,sys_language_uid:int,l18n_parent:int,t3ver_wsid:int,t3ver_oid:int,pi_flexform:array<string,mixed>}>
      */
     protected function fetchAllFormPlugins(): array
     {
@@ -264,7 +298,7 @@ class Typo3FormService
             ->removeAll()
             ->add(new DeletedRestriction());
 
-        return $queryBuilder
+        $rows = $queryBuilder
             ->select('uid', 'pid', 'sys_language_uid', 'l18n_parent', 't3ver_wsid', 't3ver_oid', 'pi_flexform')
             ->from('tt_content')
             ->where(
@@ -273,12 +307,15 @@ class Typo3FormService
             )
             ->executeQuery()
             ->fetchAllAssociative();
+
+        return array_map($this->preparePluginRecord(...), $rows);
     }
 
     /**
      * Fetches a single tt_content record by UID with all fields needed for variant context.
+     * FlexForm XML is parsed into an array via preparePluginRecord().
      *
-     * @return ?array{uid:int,pid:int,sys_language_uid:int,l18n_parent:int,t3ver_wsid:int,t3ver_oid:int,pi_flexform:string}
+     * @return ?array{uid:int,pid:int,sys_language_uid:int,l18n_parent:int,t3ver_wsid:int,t3ver_oid:int,pi_flexform:array<string,mixed>}
      */
     protected function fetchFormPluginRecord(int $uid): ?array
     {
@@ -292,7 +329,11 @@ class Typo3FormService
             ->executeQuery()
             ->fetchAllAssociative();
 
-        return $rows[0] ?? null;
+        if ($rows === []) {
+            return null;
+        }
+
+        return $this->preparePluginRecord($rows[0]);
     }
 
     /**
@@ -313,7 +354,7 @@ class Typo3FormService
     /**
      * Builds the dataSourceContext array for a form plugin variant.
      *
-     * @param array{uid:int,pid:int,sys_language_uid:int,l18n_parent:int,t3ver_wsid:int,t3ver_oid:int,pi_flexform:string} $plugin
+     * @param array{uid:int,pid:int,sys_language_uid:int,l18n_parent:int,t3ver_wsid:int,t3ver_oid:int,pi_flexform:array<string,mixed>} $plugin
      *
      * @return array<string,mixed>
      */
@@ -328,6 +369,10 @@ class Typo3FormService
             $canonicalId = $plugin['t3ver_oid'];
         }
 
+        $flexFormData = $plugin['pi_flexform'];
+        $selectedFormId = $flexFormData['data']['sDEF']['lDEF']['settings.persistenceIdentifier']['vDEF'] ?? '';
+        $overrideFinishers = (bool)($flexFormData['data']['sDEF']['lDEF']['settings.overrideFinishers']['vDEF'] ?? false);
+
         $context = [
             'pluginId' => $plugin['uid'],
             'sheetIdentifier' => $sheetIdentifier,
@@ -335,6 +380,8 @@ class Typo3FormService
             'contentId' => $canonicalId,
             'languageId' => $plugin['sys_language_uid'],
             'languageName' => $this->resolveLanguageName($plugin['pid'], $plugin['sys_language_uid']),
+            'selectedFormId' => $selectedFormId,
+            'overrideFinishers' => $overrideFinishers,
         ];
 
         if ($plugin['t3ver_wsid'] !== 0) {
@@ -353,19 +400,17 @@ class Typo3FormService
      *
      * Each sheet is matched to its form definition via MD5 hash lookup.
      *
-     * @param array<string,mixed> $dataSourceContext
-     *
      * @return array<array{formId:string,formDefinition:array<string,mixed>,dataSourceContext:array<string,mixed>}>
      */
-    public function getAllFormPluginVariants(array $dataSourceContext): array
+    public function getAllFormPluginVariants(): array
     {
-        $forms = $this->getAllForms($dataSourceContext);
+        $forms = $this->getAllForms();
         $hashMap = $this->buildSheetHashMap($forms);
 
         $variants = [];
         foreach ($this->fetchAllFormPlugins() as $plugin) {
-            $flexFormData = GeneralUtility::xml2array($plugin['pi_flexform']);
-            if (!is_array($flexFormData) || !isset($flexFormData['data'])) {
+            $flexFormData = $plugin['pi_flexform'];
+            if ($flexFormData === [] || !isset($flexFormData['data'])) {
                 continue;
             }
 
@@ -407,13 +452,11 @@ class Typo3FormService
      * Loads the plugin's FlexForm, computes the expected sheet hash for the form,
      * and extracts the DMF setup from that sheet.
      *
-     * @param array<string,mixed> $dataSourceContext
-     *
      * @return ?array{formId:string,formDefinition:array<string,mixed>,dataSourceContext:array<string,mixed>}
      */
-    public function getFormPluginVariant(string $formId, int $pluginId, array $dataSourceContext): ?array
+    public function getFormPluginVariant(string $formId, int $pluginId): ?array
     {
-        $formDefinition = $this->getFormById($formId, $dataSourceContext);
+        $formDefinition = $this->getFormById($formId);
         if ($formDefinition === null) {
             return null;
         }
@@ -427,8 +470,8 @@ class Typo3FormService
             return null;
         }
 
-        $flexFormData = GeneralUtility::xml2array($plugin['pi_flexform']);
-        if (!is_array($flexFormData) || !isset($flexFormData['data'][$sheetIdentifier])) {
+        $flexFormData = $plugin['pi_flexform'];
+        if ($flexFormData === [] || !isset($flexFormData['data'][$sheetIdentifier])) {
             return null;
         }
 
@@ -450,12 +493,10 @@ class Typo3FormService
 
     /**
      * Updates the DMF finisher configuration document in a form definition YAML file.
-     *
-     * @param array<string,mixed> $dataSourceContext
      */
-    public function updateFormFinisherDocument(string $formId, string $document, array $dataSourceContext): void
+    public function updateFormFinisherDocument(string $formId, string $document): void
     {
-        $formDefinition = $this->getFormById($formId, []);
+        $formDefinition = $this->getFormById($formId);
         if ($formDefinition === null) {
             return;
         }
@@ -472,26 +513,22 @@ class Typo3FormService
             // @phpstan-ignore-next-line TYPO3 version switch
             $this->formPersistenceManager->save($formId, $formDefinition);
         } else {
+            $settings = $this->getFormSettings();
             // @phpstan-ignore-next-line TYPO3 version switch
             $this->formPersistenceManager->save(
                 $formId,
                 $formDefinition,
-                $dataSourceContext['formSettings'] ?? []
+                $settings['formSettings']
             );
         }
     }
 
     /**
      * Updates the DMF finisher configuration document in a form plugin's FlexForm data.
-     *
-     * @param array{pluginId:int,sheetIdentifier:string} $dataSourceContext
      */
-    public function updateFormPluginDocument(string $document, array $dataSourceContext): void
+    public function updateFormPluginDocument(string $document, int $pluginId, string $sheetIdentifier): void
     {
-        $pluginId = $dataSourceContext['pluginId'];
-        $sheetIdentifier = $dataSourceContext['sheetIdentifier'];
-
-        $flexFormXml = $this->getPluginFlexForm($dataSourceContext);
+        $flexFormXml = $this->getPluginFlexForm($pluginId);
         if ($flexFormXml === '') {
             return;
         }

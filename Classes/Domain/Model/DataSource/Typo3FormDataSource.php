@@ -77,7 +77,11 @@ class Typo3FormDataSource extends DistributorDataSource
         $pluginId = $this->dataSourceContext['pluginId'];
         $contentId = $this->dataSourceContext['contentId'] ?? $pluginId;
 
-        $parts = ['Page #' . ($this->dataSourceContext['pageId'] ?? '?')];
+        $parts = [];
+
+        if (isset($this->dataSourceContext['pageId'])) {
+            $parts[] = 'Page #' . $this->dataSourceContext['pageId'];
+        }
 
         // Content element: canonical ID, with actual record UID in brackets if different
         $contentPart = 'Content #' . $contentId;
@@ -98,6 +102,14 @@ class Typo3FormDataSource extends DistributorDataSource
 
         if (isset($this->dataSourceContext['workspaceId'])) {
             $parts[] = 'Workspace #' . $this->dataSourceContext['workspaceId'];
+        }
+
+        if (isset($this->dataSourceContext['selectedFormId']) && $this->dataSourceContext['selectedFormId'] !== $this->formId) {
+            $parts[] = 'Form Not Selected';
+        }
+
+        if (isset($this->dataSourceContext['overrideFinishers']) && !(bool)$this->dataSourceContext['overrideFinishers']) {
+            $parts[] = 'Overrides Disabled';
         }
 
         return implode(', ', $parts);
