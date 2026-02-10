@@ -16,28 +16,96 @@ class Typo3FormDataSource extends DistributorDataSource
 
     /**
      * @param array<string,mixed> $formDefinition
+     * @param array<string,mixed> $dataSourceContext
      */
     public function __construct(
         protected string $formId,
         protected array $formDefinition,
+        protected array $dataSourceContext = [],
     ) {
         $name = $this->formDefinition['label'] ?? '';
+        if (isset($this->dataSourceContext['pluginId'])) {
+            $name .= ' (Plugin #' . $this->dataSourceContext['pluginId'] . ')';
+        }
+
         $hash = GeneralUtility::calculateHash($this->formDefinition);
         $configurationDocument = '';
         foreach ($this->formDefinition['finishers'] ?? [] as $finisher) {
             if ($finisher['identifier'] === 'Digitalmarketingframework') {
-                $configurationDocument = $finisher['options']['setup'];
+                $configurationDocument = $finisher['options']['setup'] ?? '';
                 break;
             }
         }
 
+        $identifier = $formId;
+        if (isset($this->dataSourceContext['pluginId'])) {
+            $identifier .= ':' . $this->dataSourceContext['pluginId'];
+        }
+
         parent::__construct(
             static::TYPE,
-            static::TYPE . ':' . $formId,
+            static::TYPE . ':' . $identifier,
             $name,
             $hash,
             $configurationDocument
         );
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getDataSourceContext(): array
+    {
+        return $this->dataSourceContext;
+    }
+
+    public function getBaseDataSourceIdentifier(): ?string
+    {
+        if (isset($this->dataSourceContext['pluginId'])) {
+            return static::TYPE . ':' . $this->formId;
+        }
+
+        return null;
+    }
+
+    public function getDescription(): string
+    {
+        if (!isset($this->dataSourceContext['pluginId'])) {
+            return '';
+        }
+
+        $pluginId = $this->dataSourceContext['pluginId'];
+        $contentId = $this->dataSourceContext['contentId'] ?? $pluginId;
+
+        $parts = ['Page #' . ($this->dataSourceContext['pageId'] ?? '?')];
+
+        // Content element: canonical ID, with actual record UID in brackets if different
+        $contentPart = 'Content #' . $contentId;
+        if ($pluginId !== $contentId) {
+            $contentPart .= ' [#' . $pluginId . ']';
+        }
+
+        $parts[] = $contentPart;
+
+        if (isset($this->dataSourceContext['languageName'])) {
+            $contentPart = $this->dataSourceContext['languageName'];
+            if (($this->dataSourceContext['languageId'] ?? 0) !== 0) {
+                $contentPart .= ' [#' . $this->dataSourceContext['languageId'] . ']';
+            }
+
+            $parts[] = $contentPart;
+        }
+
+        if (isset($this->dataSourceContext['workspaceId'])) {
+            $parts[] = 'Workspace #' . $this->dataSourceContext['workspaceId'];
+        }
+
+        return implode(', ', $parts);
+    }
+
+    public function canHaveVariants(): bool
+    {
+        return true;
     }
 
     /**

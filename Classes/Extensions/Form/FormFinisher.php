@@ -63,8 +63,9 @@ class FormFinisher extends AbstractFinisher
     protected function getConfigurationStack(): array
     {
         $configurationDocument = $this->parseOption('setup');
+        $schemaDocument = $this->registry->getConfigurationSchemaDocument();
 
-        return $this->configurationDocumentManager->getConfigurationStackFromDocument($configurationDocument);
+        return $this->configurationDocumentManager->getConfigurationStackFromDocument($configurationDocument, $schemaDocument);
     }
 
     /**
