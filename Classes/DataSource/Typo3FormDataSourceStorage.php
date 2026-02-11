@@ -32,7 +32,8 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
     public function getDataSourceById(string $id, array $dataSourceContext): ?DistributorDataSourceInterface
     {
         $formId = $this->getInnerIdentifier($id);
-        $formDefinition = $this->formService->getFormById($formId, $dataSourceContext);
+        $pluginId = isset($dataSourceContext['pluginId']) ? (int)$dataSourceContext['pluginId'] : null;
+        $formDefinition = $this->formService->getFormById($formId, $pluginId);
 
         if ($formDefinition !== null) {
             return new Typo3FormDataSource($formId, $formDefinition, $dataSourceContext);
@@ -43,10 +44,8 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
 
     public function getAllDataSources(): array
     {
-        $dataSourceContext = $this->formService->getFormDataSourceContext();
-
         $result = [];
-        $forms = $this->formService->getAllForms($dataSourceContext);
+        $forms = $this->formService->getAllForms();
         foreach ($forms as $id => $formDefinition) {
             $result[] = new Typo3FormDataSource($id, $formDefinition);
         }
@@ -56,17 +55,15 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
 
     public function getAllDataSourceVariants(): array
     {
-        $dataSourceContext = $this->formService->getFormDataSourceContext();
-
         // Base form definitions (finisher config from form YAML)
         $result = [];
-        $forms = $this->formService->getAllForms($dataSourceContext);
+        $forms = $this->formService->getAllForms();
         foreach ($forms as $id => $formDefinition) {
             $result[] = new Typo3FormDataSource($id, $formDefinition);
         }
 
         // Form plugin variants (finisher config from FlexForm overrides)
-        foreach ($this->formService->getAllFormPluginVariants($dataSourceContext) as $variant) {
+        foreach ($this->formService->getAllFormPluginVariants() as $variant) {
             $result[] = new Typo3FormDataSource(
                 $variant['formId'],
                 $variant['formDefinition'],
@@ -79,18 +76,16 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
 
     public function getAllDataSourceVariantIdentifiers(): array
     {
-        $dataSourceContext = $this->formService->getFormDataSourceContext();
-
         $identifiers = [];
 
         // Base form identifiers
-        $forms = $this->formService->getAllForms($dataSourceContext);
+        $forms = $this->formService->getAllForms();
         foreach (array_keys($forms) as $id) {
             $identifiers[] = $this->getOuterIdentifier($id);
         }
 
         // Form plugin variant identifiers
-        foreach ($this->formService->getAllFormPluginVariants($dataSourceContext) as $variant) {
+        foreach ($this->formService->getAllFormPluginVariants() as $variant) {
             $identifiers[] = $this->getOuterIdentifier($variant['formId'] . ':' . $variant['dataSourceContext']['pluginId']);
         }
 
@@ -116,10 +111,8 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
             $pluginId = null;
         }
 
-        $dataSourceContext = $this->formService->getFormDataSourceContext();
-
         if ($pluginId !== null) {
-            $variant = $this->formService->getFormPluginVariant($formId, (int)$pluginId, $dataSourceContext);
+            $variant = $this->formService->getFormPluginVariant($formId, (int)$pluginId);
             if ($variant === null) {
                 return null;
             }
@@ -132,7 +125,7 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
         }
 
         // Base form
-        $formDefinition = $this->formService->getFormById($formId, $dataSourceContext);
+        $formDefinition = $this->formService->getFormById($formId);
         if ($formDefinition === null) {
             return null;
         }
@@ -147,17 +140,16 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
         }
 
         $context = $dataSource->getDataSourceContext();
-        $dataSourceContext = $this->formService->getFormDataSourceContext();
 
         if (isset($context['pluginId'], $context['sheetIdentifier'])) {
             // Form plugin variant: update FlexForm sheet
-            $this->formService->updateFormPluginDocument($document, $context);
+            $this->formService->updateFormPluginDocument($document, (int)$context['pluginId'], $context['sheetIdentifier']);
         } else {
             // Base form: update form definition YAML
             $formId = $dataSource->getIdentifier();
             // Strip the type prefix to get the persistence identifier
             $formId = $this->getInnerIdentifier($formId);
-            $this->formService->updateFormFinisherDocument($formId, $document, $dataSourceContext);
+            $this->formService->updateFormFinisherDocument($formId, $document);
         }
     }
 }
