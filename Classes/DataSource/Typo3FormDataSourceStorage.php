@@ -26,20 +26,19 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
         return Typo3FormDataSource::TYPE;
     }
 
-    /**
-     * @param array<string,mixed> $dataSourceContext
-     */
-    public function getDataSourceById(string $id, array $dataSourceContext): ?DistributorDataSourceInterface
+    public function getDataSourceByIdentifier(string $identifier): ?DistributorDataSourceInterface
     {
-        $formId = $this->getInnerIdentifier($id);
-        $pluginId = isset($dataSourceContext['pluginId']) ? (int)$dataSourceContext['pluginId'] : null;
-        $formDefinition = $this->formService->getFormById($formId, $pluginId);
-
-        if ($formDefinition !== null) {
-            return new Typo3FormDataSource($formId, $formDefinition, $dataSourceContext);
+        if (!$this->matches($identifier)) {
+            return null;
         }
 
-        return null;
+        $formId = $this->getInnerIdentifier($identifier);
+        $formDefinition = $this->formService->getFormById($formId);
+        if ($formDefinition === null) {
+            return null;
+        }
+
+        return new Typo3FormDataSource($formId, $formDefinition);
     }
 
     public function getAllDataSources(): array
@@ -55,19 +54,19 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
 
     public function getAllDataSourceVariants(): array
     {
-        // Base form definitions (finisher config from form YAML)
         $result = [];
         $forms = $this->formService->getAllForms();
         foreach ($forms as $id => $formDefinition) {
             $result[] = new Typo3FormDataSource($id, $formDefinition);
         }
 
-        // Form plugin variants (finisher config from FlexForm overrides)
         foreach ($this->formService->getAllFormPluginVariants() as $variant) {
             $result[] = new Typo3FormDataSource(
                 $variant['formId'],
                 $variant['formDefinition'],
                 $variant['dataSourceContext'],
+                $variant['overrideDocument'],
+                applyOverride: true,
             );
         }
 
@@ -92,7 +91,7 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
         return $identifiers;
     }
 
-    public function getDataSourceVariantByIdentifier(string $identifier): ?DataSourceInterface
+    public function getDataSourceVariantByIdentifier(string $identifier, bool $maintenanceMode = false): ?DataSourceInterface
     {
         if (!$this->matches($identifier)) {
             return null;
@@ -117,10 +116,14 @@ class Typo3FormDataSourceStorage extends DistributorDataSourceStorage
                 return null;
             }
 
+            $overrideFinishers = (bool)($variant['dataSourceContext']['overrideFinishers'] ?? false);
+
             return new Typo3FormDataSource(
                 $variant['formId'],
                 $variant['formDefinition'],
                 $variant['dataSourceContext'],
+                $variant['overrideDocument'],
+                applyOverride: $maintenanceMode || $overrideFinishers,
             );
         }
 

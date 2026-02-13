@@ -170,6 +170,8 @@ class Typo3FormService
     }
 
     /**
+     * @deprecated Use getCurrentFormDataSourceVariantIdentifier() instead
+     *
      * @return array<string,mixed>
      */
     public function getFormDataSourceContext(?Request $request = null): array
@@ -180,15 +182,30 @@ class Typo3FormService
             $contentObjectData = $request->getAttribute('currentContentObject')->data ?? [];
             $pluginId = $contentObjectData['_LOCALIZED_UID'] ?? ($contentObjectData['uid'] ?? null);
             if ($pluginId !== null) {
-                // TODO test and take into account:
-                //      - workspace version
-                //      - field-specific language fallback?
-                //      - what if the form plugin was a reference?
                 $context['pluginId'] = $pluginId;
             }
         }
 
         return $context;
+    }
+
+    /**
+     * Builds the full data source variant identifier for the current form submission context.
+     * Includes the plugin ID suffix when a content element override is present.
+     */
+    public function getCurrentFormDataSourceVariantIdentifier(string $dataSourceId, ?Request $request = null): string
+    {
+        $identifier = $dataSourceId;
+
+        if ($request instanceof Request) {
+            $contentObjectData = $request->getAttribute('currentContentObject')->data ?? [];
+            $pluginId = $contentObjectData['_LOCALIZED_UID'] ?? ($contentObjectData['uid'] ?? null);
+            if ($pluginId !== null) {
+                $identifier .= ':' . $pluginId;
+            }
+        }
+
+        return $identifier;
     }
 
     /**
@@ -400,7 +417,7 @@ class Typo3FormService
      *
      * Each sheet is matched to its form definition via MD5 hash lookup.
      *
-     * @return array<array{formId:string,formDefinition:array<string,mixed>,dataSourceContext:array<string,mixed>}>
+     * @return array<array{formId:string,formDefinition:array<string,mixed>,dataSourceContext:array<string,mixed>,overrideDocument:string}>
      */
     public function getAllFormPluginVariants(): array
     {
@@ -425,20 +442,13 @@ class Typo3FormService
                     continue;
                 }
 
-                // Build form definition with this FlexForm override applied
-                $setup = $sheetData['lDEF']['settings.finishers.Digitalmarketingframework.setup']['vDEF'] ?? '';
-                $formDefinition = $forms[$formId];
-                foreach ($formDefinition['finishers'] ?? [] as $index => $finisher) {
-                    if ($finisher['identifier'] === 'Digitalmarketingframework') {
-                        $formDefinition['finishers'][$index]['options']['setup'] = $setup;
-                        break;
-                    }
-                }
+                $overrideDocument = $sheetData['lDEF']['settings.finishers.Digitalmarketingframework.setup']['vDEF'] ?? '';
 
                 $variants[] = [
                     'formId' => $formId,
-                    'formDefinition' => $formDefinition,
+                    'formDefinition' => $forms[$formId],
                     'dataSourceContext' => $this->buildVariantContext($plugin, $sheetKey),
+                    'overrideDocument' => $overrideDocument,
                 ];
             }
         }
@@ -452,7 +462,7 @@ class Typo3FormService
      * Loads the plugin's FlexForm, computes the expected sheet hash for the form,
      * and extracts the DMF setup from that sheet.
      *
-     * @return ?array{formId:string,formDefinition:array<string,mixed>,dataSourceContext:array<string,mixed>}
+     * @return ?array{formId:string,formDefinition:array<string,mixed>,dataSourceContext:array<string,mixed>,overrideDocument:?string}
      */
     public function getFormPluginVariant(string $formId, int $pluginId): ?array
     {
@@ -472,22 +482,16 @@ class Typo3FormService
 
         $flexFormData = $plugin['pi_flexform'];
         if ($flexFormData === [] || !isset($flexFormData['data'][$sheetIdentifier])) {
-            return null;
-        }
-
-        // Apply FlexForm override to form definition
-        $setup = $flexFormData['data'][$sheetIdentifier]['lDEF']['settings.finishers.Digitalmarketingframework.setup']['vDEF'] ?? '';
-        foreach ($formDefinition['finishers'] ?? [] as $index => $finisher) {
-            if ($finisher['identifier'] === 'Digitalmarketingframework') {
-                $formDefinition['finishers'][$index]['options']['setup'] = $setup;
-                break;
-            }
+            $overrideDocument = null;
+        } else {
+            $overrideDocument = $flexFormData['data'][$sheetIdentifier]['lDEF']['settings.finishers.Digitalmarketingframework.setup']['vDEF'] ?? '';
         }
 
         return [
             'formId' => $formId,
             'formDefinition' => $formDefinition,
             'dataSourceContext' => $this->buildVariantContext($plugin, $sheetIdentifier),
+            'overrideDocument' => $overrideDocument,
         ];
     }
 

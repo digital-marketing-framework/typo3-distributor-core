@@ -97,10 +97,12 @@ class FormFinisher extends AbstractFinisher
         // fetch form values
         $formValues = $this->getFormValues($globalConfiguration);
 
-        // compute data source ID
+        // compute data source identifier (includes plugin ID for variants)
         $dataSourceId = $this->getFormDataSourceId();
-
-        $dataSourceContext = $this->formService->getFormDataSourceContext($this->finisherContext->getRequest());
+        $dataSourceIdentifier = $this->formService->getCurrentFormDataSourceVariantIdentifier(
+            $dataSourceId,
+            $this->finisherContext->getRequest()
+        );
 
         // low level debug log, if configured
         $debugSettings = $globalConfiguration->getGlobalSettings(DistributorDebugSettings::class);
@@ -109,7 +111,7 @@ class FormFinisher extends AbstractFinisher
         }
 
         // build and process submission
-        $submission = new SubmissionDataSet($dataSourceId, $dataSourceContext, $formValues, $configurationStack);
+        $submission = new SubmissionDataSet($dataSourceIdentifier, $formValues, $configurationStack);
         $submission->getContext()->setResponsive(true);
         $relay = $this->registry->getDistributor();
         $relay->process($submission);

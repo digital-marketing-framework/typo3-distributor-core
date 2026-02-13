@@ -15,27 +15,31 @@ class Typo3FormDataSource extends DistributorDataSource
     public const TYPE = 'form';
 
     /**
-     * @param array<string,mixed> $formDefinition
-     * @param array<string,mixed> $dataSourceContext
+     * @param array<string,mixed> $formDefinition The base form definition (never contains overrides)
+     * @param array<string,mixed> $dataSourceContext Metadata about where the variant lives
+     * @param ?string $overrideDocument The variant's override document from FlexForm, null for base data sources
+     * @param bool $applyOverride Whether to use the override document in getConfigurationDocument()
      */
     public function __construct(
         protected string $formId,
         protected array $formDefinition,
         protected array $dataSourceContext = [],
+        protected ?string $overrideDocument = null,
+        protected bool $applyOverride = false,
     ) {
         $name = $this->formDefinition['label'] ?? '';
         if (isset($this->dataSourceContext['pluginId'])) {
             $name .= ' (Plugin #' . $this->dataSourceContext['pluginId'] . ')';
         }
 
-        $hash = GeneralUtility::calculateHash($this->formDefinition);
-        $configurationDocument = '';
-        foreach ($this->formDefinition['finishers'] ?? [] as $finisher) {
-            if ($finisher['identifier'] === 'Digitalmarketingframework') {
-                $configurationDocument = $finisher['options']['setup'] ?? '';
-                break;
-            }
-        }
+        $hash = GeneralUtility::calculateHash($this->overrideDocument !== null
+            ? [$this->formDefinition, $this->overrideDocument]
+            : $this->formDefinition
+        );
+
+        $configurationDocument = $this->applyOverride && $this->overrideDocument !== null
+            ? $this->overrideDocument
+            : $this->getBaseConfigurationDocument();
 
         $identifier = $formId;
         if (isset($this->dataSourceContext['pluginId'])) {
@@ -49,6 +53,29 @@ class Typo3FormDataSource extends DistributorDataSource
             $hash,
             $configurationDocument
         );
+    }
+
+    /**
+     * Extracts the configuration document from the base form definition's finisher.
+     */
+    protected function getBaseConfigurationDocument(): string
+    {
+        foreach ($this->formDefinition['finishers'] ?? [] as $finisher) {
+            if ($finisher['identifier'] === 'Digitalmarketingframework') {
+                return $finisher['options']['setup'] ?? '';
+            }
+        }
+
+        return '';
+    }
+
+    public function isIdenticalToBase(): bool
+    {
+        if ($this->overrideDocument === null) {
+            return false;
+        }
+
+        return $this->overrideDocument === $this->getBaseConfigurationDocument();
     }
 
     /**
