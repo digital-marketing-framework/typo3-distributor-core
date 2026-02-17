@@ -15,17 +15,17 @@ class LanguageCodeDataProvider extends DataProvider
     /**
      * @var string
      */
-    public const KEY_FIELD = 'field';
+    final public const KEY_FIELD = 'field';
 
     /**
      * @var string
      */
-    public const KEY_DEFAULT_LANGUAGE = 'defaultLanguage';
+    final public const KEY_DEFAULT_LANGUAGE = 'defaultLanguage';
 
     /**
      * @var string
      */
-    public const DEFAULT_FIELD = 'language';
+    final public const DEFAULT_FIELD = 'language';
 
     protected function getRequest(): ?ServerRequestInterface
     {

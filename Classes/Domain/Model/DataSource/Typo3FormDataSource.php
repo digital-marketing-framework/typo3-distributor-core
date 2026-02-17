@@ -15,27 +15,31 @@ class Typo3FormDataSource extends DistributorDataSource
     public const TYPE = 'form';
 
     /**
-     * @param array<string,mixed> $formDefinition
-     * @param array<string,mixed> $dataSourceContext
+     * @param array<string,mixed> $formDefinition The base form definition (never contains overrides)
+     * @param array<string,mixed> $dataSourceContext Metadata about where the variant lives
+     * @param ?string $overrideDocument The variant's override document from FlexForm, null for base data sources
+     * @param bool $applyOverride Whether to use the override document in getConfigurationDocument()
      */
     public function __construct(
         protected string $formId,
         protected array $formDefinition,
         protected array $dataSourceContext = [],
+        protected ?string $overrideDocument = null,
+        protected bool $applyOverride = false,
     ) {
         $name = $this->formDefinition['label'] ?? '';
         if (isset($this->dataSourceContext['pluginId'])) {
             $name .= ' (Plugin #' . $this->dataSourceContext['pluginId'] . ')';
         }
 
-        $hash = GeneralUtility::calculateHash($this->formDefinition);
-        $configurationDocument = '';
-        foreach ($this->formDefinition['finishers'] ?? [] as $finisher) {
-            if ($finisher['identifier'] === 'Digitalmarketingframework') {
-                $configurationDocument = $finisher['options']['setup'] ?? '';
-                break;
-            }
-        }
+        $hash = GeneralUtility::calculateHash($this->overrideDocument !== null
+            ? [$this->formDefinition, $this->overrideDocument]
+            : $this->formDefinition
+        );
+
+        $configurationDocument = $this->applyOverride && $this->overrideDocument !== null
+            ? $this->overrideDocument
+            : $this->getBaseConfigurationDocument();
 
         $identifier = $formId;
         if (isset($this->dataSourceContext['pluginId'])) {
@@ -49,6 +53,33 @@ class Typo3FormDataSource extends DistributorDataSource
             $hash,
             $configurationDocument
         );
+    }
+
+    /**
+     * Extracts the configuration document from the base form definition's finisher.
+     */
+    protected function getBaseConfigurationDocument(): string
+    {
+        foreach ($this->formDefinition['finishers'] ?? [] as $finisher) {
+            if ($finisher['identifier'] === 'Digitalmarketingframework') {
+                return $finisher['options']['setup'] ?? '';
+            }
+        }
+
+        return '';
+    }
+
+    public function isIdenticalToBase(): bool
+    {
+        if ($this->overrideDocument === null) {
+            return false;
+        }
+
+        // Normalize line endings before comparing: browser textareas submit \r\n,
+        // but XML parsing (FlexForm round-trip) normalizes to \n per the XML spec.
+        $normalize = static fn (string $s): string => preg_replace('/\r\n?/', "\n", $s);
+
+        return $normalize($this->overrideDocument) === $normalize($this->getBaseConfigurationDocument());
     }
 
     /**
@@ -118,6 +149,43 @@ class Typo3FormDataSource extends DistributorDataSource
     public function canHaveVariants(): bool
     {
         return true;
+    }
+
+    public function getFormId(): string
+    {
+        return $this->formId;
+    }
+
+    public function canLinkToEmbeddingRecord(): bool
+    {
+        return $this->getEmbeddingRecordLinkUnavailableReason() === null;
+    }
+
+    public function getEmbeddingRecordLinkUnavailableReason(): ?string
+    {
+        if (!isset($this->dataSourceContext['pluginId'])) {
+            return null; // Base form — always linkable
+        }
+
+        $reasons = [];
+
+        if (isset($this->dataSourceContext['selectedFormId'])
+            && $this->dataSourceContext['selectedFormId'] !== $this->formId
+        ) {
+            $reasons[] = 'different form is currently selected';
+        }
+
+        if (isset($this->dataSourceContext['overrideFinishers'])
+            && !(bool)$this->dataSourceContext['overrideFinishers']
+        ) {
+            $reasons[] = 'finisher overrides are disabled';
+        }
+
+        if ($reasons === []) {
+            return null;
+        }
+
+        return 'Edit not available: ' . implode(' and ', $reasons);
     }
 
     /**

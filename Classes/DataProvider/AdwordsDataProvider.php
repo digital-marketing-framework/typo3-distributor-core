@@ -10,12 +10,12 @@ class AdwordsDataProvider extends DataProvider
     /**
      * @var string
      */
-    public const COOKIE_KEYWORDS = 'adwords_keywords';
+    final public const COOKIE_KEYWORDS = 'adwords_keywords';
 
     /**
      * @var string
      */
-    public const COOKIE_EVENTCODE = 'adwords_eventcode';
+    final public const COOKIE_EVENTCODE = 'adwords_eventcode';
 
     protected function processContext(WriteableContextInterface $context): void
     {
