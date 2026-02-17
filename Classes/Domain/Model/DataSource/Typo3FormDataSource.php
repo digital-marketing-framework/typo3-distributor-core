@@ -75,7 +75,11 @@ class Typo3FormDataSource extends DistributorDataSource
             return false;
         }
 
-        return $this->overrideDocument === $this->getBaseConfigurationDocument();
+        // Normalize line endings before comparing: browser textareas submit \r\n,
+        // but XML parsing (FlexForm round-trip) normalizes to \n per the XML spec.
+        $normalize = static fn (string $s): string => preg_replace('/\r\n?/', "\n", $s);
+
+        return $normalize($this->overrideDocument) === $normalize($this->getBaseConfigurationDocument());
     }
 
     /**
@@ -145,6 +149,43 @@ class Typo3FormDataSource extends DistributorDataSource
     public function canHaveVariants(): bool
     {
         return true;
+    }
+
+    public function getFormId(): string
+    {
+        return $this->formId;
+    }
+
+    public function canLinkToEmbeddingRecord(): bool
+    {
+        return $this->getEmbeddingRecordLinkUnavailableReason() === null;
+    }
+
+    public function getEmbeddingRecordLinkUnavailableReason(): ?string
+    {
+        if (!isset($this->dataSourceContext['pluginId'])) {
+            return null; // Base form — always linkable
+        }
+
+        $reasons = [];
+
+        if (isset($this->dataSourceContext['selectedFormId'])
+            && $this->dataSourceContext['selectedFormId'] !== $this->formId
+        ) {
+            $reasons[] = 'different form is currently selected';
+        }
+
+        if (isset($this->dataSourceContext['overrideFinishers'])
+            && !(bool)$this->dataSourceContext['overrideFinishers']
+        ) {
+            $reasons[] = 'finisher overrides are disabled';
+        }
+
+        if ($reasons === []) {
+            return null;
+        }
+
+        return 'Edit not available: ' . implode(' and ', $reasons);
     }
 
     /**
