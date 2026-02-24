@@ -3,20 +3,21 @@
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\Command;
 
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
+use DigitalMarketingFramework\Typo3\Core\Command\AbstractCommand;
 use DigitalMarketingFramework\Typo3\Core\Registry\RegistryCollection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class QueueProcessorCommand extends Command
+class QueueProcessorCommand extends AbstractCommand
 {
     protected function configure(): void
     {
         $this->setHelp('Process queued Anyrel distribution jobs.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function executeCommand(InputInterface $input, OutputInterface $output): int
     {
         $registryCollection = GeneralUtility::makeInstance(RegistryCollection::class);
         $registry = $registryCollection->getRegistryByClass(RegistryInterface::class);
