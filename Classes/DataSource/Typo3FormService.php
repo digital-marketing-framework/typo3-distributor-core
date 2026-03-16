@@ -6,6 +6,7 @@ use DigitalMarketingFramework\Typo3\Core\Utility\CliEnvironmentUtility;
 use InvalidArgumentException;
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Information\Typo3Version;
@@ -86,13 +87,31 @@ class Typo3FormService
         return $plugin;
     }
 
+    /**
+     * Creates a query builder for tt_content with only the deleted restriction.
+     *
+     * Form plugin records must be accessible regardless of visibility state
+     * (hidden, time-restricted) because they are queried during migration,
+     * async job processing, and maintenance — not just during frontend rendering.
+     */
+    protected function getContentElementQueryBuilder(): QueryBuilder
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(new DeletedRestriction());
+
+        return $queryBuilder;
+    }
+
     protected function getPluginFlexForm(?int $pluginId): string
     {
         if ($pluginId === null) {
             return '';
         }
 
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
+        $queryBuilder = $this->getContentElementQueryBuilder();
+
         $queryBuilder->select('uid', 'pi_flexform')
             ->from('tt_content')
             ->where($queryBuilder->expr()->eq('uid', $pluginId))
@@ -307,13 +326,7 @@ class Typo3FormService
      */
     protected function fetchAllFormPlugins(): array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
-
-        // For migration purposes, include hidden and time-restricted records.
-        // Only exclude deleted records.
-        $queryBuilder->getRestrictions()
-            ->removeAll()
-            ->add(new DeletedRestriction());
+        $queryBuilder = $this->getContentElementQueryBuilder();
 
         $rows = $queryBuilder
             ->select('uid', 'pid', 'sys_language_uid', 'l18n_parent', 't3ver_wsid', 't3ver_oid', 'pi_flexform')
@@ -336,7 +349,7 @@ class Typo3FormService
      */
     protected function fetchFormPluginRecord(int $uid): ?array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
+        $queryBuilder = $this->getContentElementQueryBuilder();
 
         $rows = $queryBuilder
             ->select('uid', 'pid', 'sys_language_uid', 'l18n_parent', 't3ver_wsid', 't3ver_oid', 'pi_flexform')
@@ -358,6 +371,10 @@ class Typo3FormService
      */
     protected function resolveLanguageName(int $pageId, int $languageId): string
     {
+        if ($languageId === -1) {
+            return 'All Languages';
+        }
+
         try {
             $site = $this->siteFinder->getSiteByPageId($pageId);
             $language = $site->getLanguageById($languageId);

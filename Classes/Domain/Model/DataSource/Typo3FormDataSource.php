@@ -69,19 +69,6 @@ class Typo3FormDataSource extends DistributorDataSource
         return '';
     }
 
-    public function isIdenticalToBase(): bool
-    {
-        if ($this->overrideDocument === null) {
-            return false;
-        }
-
-        // Normalize line endings before comparing: browser textareas submit \r\n,
-        // but XML parsing (FlexForm round-trip) normalizes to \n per the XML spec.
-        $normalize = static fn (string $s): string => preg_replace('/\r\n?/', "\n", $s);
-
-        return $normalize($this->overrideDocument) === $normalize($this->getBaseConfigurationDocument());
-    }
-
     /**
      * @return array<string,mixed>
      */
