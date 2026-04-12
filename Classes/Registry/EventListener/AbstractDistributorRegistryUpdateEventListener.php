@@ -6,13 +6,22 @@ use DigitalMarketingFramework\Core\InitializationInterface;
 use DigitalMarketingFramework\Core\Registry\RegistryDomain;
 use DigitalMarketingFramework\Core\Registry\RegistryUpdateType;
 use DigitalMarketingFramework\Distributor\Core\Registry\RegistryInterface;
+use DigitalMarketingFramework\Typo3\Core\Typo3Initialization;
+use DigitalMarketingFramework\Typo3\Core\Typo3InitializationInterface;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Registry\Event\DistributorRegistryUpdateEvent;
 
 abstract class AbstractDistributorRegistryUpdateEventListener
 {
+    protected Typo3InitializationInterface $initialization;
+
     public function __construct(
-        protected InitializationInterface $initialization,
+        InitializationInterface $initialization,
     ) {
+        if ($initialization instanceof Typo3InitializationInterface) {
+            $this->initialization = $initialization;
+        } else {
+            $this->initialization = new Typo3Initialization(inner: $initialization);
+        }
     }
 
     protected function initGlobalConfiguration(RegistryInterface $registry): void
