@@ -14,6 +14,8 @@ use DigitalMarketingFramework\Typo3\Distributor\Core\DataSource\Typo3FormService
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\DataSource\Typo3FormDataSource;
 use Exception;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Http\PropagateResponseException;
+use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Form\Domain\Finishers\AbstractFinisher;
 
 class FormFinisher extends AbstractFinisher
@@ -116,6 +118,23 @@ class FormFinisher extends AbstractFinisher
         $relay = $this->registry->getDistributor();
         $relay->process($submission);
         $submission->getContext()->applyResponseData();
+
+        $redirectUrl = $submission->getContext()->getResponseRedirect();
+        if ($redirectUrl !== null && $redirectUrl !== '') {
+            // The TYPO3 Form framework appends the form element ID as a
+            // fragment to the form action URL (for scroll-to-form on
+            // validation errors). Per RFC 7231 §7.1.2, browsers inherit that
+            // fragment when the redirect Location has none of its own,
+            // leaking a meaningless TYPO3-internal ID into the destination
+            // URL. Appending an empty fragment suppresses the inheritance;
+            // modern browsers don't show the trailing # in the address bar.
+            if (!str_contains($redirectUrl, '#')) {
+                $redirectUrl .= '#';
+            }
+
+            $this->finisherContext->cancel();
+            throw new PropagateResponseException(new RedirectResponse($redirectUrl, 303), 1761900000);
+        }
 
         return null;
     }
