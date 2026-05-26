@@ -8,7 +8,7 @@ defined('TYPO3') || exit;
 $ll = 'LLL:EXT:dmf_distributor_core/Resources/Private/Language/locallang_db.xlf:';
 $readOnly = false;
 
-$GLOBALS['TCA']['tx_dmfdistributorcore_domain_model_queue_job'] = [
+return [
     'ctrl' => [
         'label' => 'created',
         'label_alt' => 'label',

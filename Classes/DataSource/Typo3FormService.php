@@ -15,6 +15,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface as ExtbaseConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Form\Controller\FormFrontendController;
+use TYPO3\CMS\Form\Domain\DTO\SearchCriteria;
 use TYPO3\CMS\Form\Mvc\Configuration\ConfigurationManagerInterface as ExtFormConfigurationManagerInterface;
 use TYPO3\CMS\Form\Mvc\Persistence\FormPersistenceManagerInterface;
 
@@ -232,8 +233,8 @@ class Typo3FormService
      */
     public function getFormById(string $formId, ?int $pluginId = null): ?array
     {
-        $typo3Version = new Typo3Version();
-        if ($typo3Version->getMajorVersion() <= 12) {
+        $major = (new Typo3Version())->getMajorVersion();
+        if ($major <= 12) {
             // @phpstan-ignore-next-line TYPO3 version switch
             if (!$this->formPersistenceManager->exists($formId)) {
                 return null;
@@ -241,14 +242,15 @@ class Typo3FormService
 
             // @phpstan-ignore-next-line TYPO3 version switch
             $formDefinition = $this->formPersistenceManager->load($formId);
-        } else {
+        } elseif ($major === 13) {
             $settings = $this->getFormSettings();
             // @phpstan-ignore-next-line TYPO3 version switch
-            $formDefinition = $this->formPersistenceManager->load(
-                $formId,
-                $settings['formSettings'],
-                $settings['typoScriptSettings']
-            );
+            $formDefinition = $this->formPersistenceManager->load($formId, $settings['formSettings'], $settings['typoScriptSettings']);
+        } else {
+            // v14+: load($id, ?$typoScriptSettings, ?$request). formSettings parameter removed.
+            $settings = $this->getFormSettings();
+            // @phpstan-ignore-next-line TYPO3 version switch
+            $formDefinition = $this->formPersistenceManager->load($formId, $settings['typoScriptSettings']);
         }
 
         return $this->overrideByFlexFormSettings($formDefinition, $pluginId);
@@ -259,14 +261,38 @@ class Typo3FormService
      */
     public function getAllForms(): array
     {
-        $typo3Version = new Typo3Version();
-        if ($typo3Version->getMajorVersion() <= 12) {
+        $major = (new Typo3Version())->getMajorVersion();
+        if ($major <= 12) {
             // @phpstan-ignore-next-line TYPO3 version switch
             $forms = $this->formPersistenceManager->listForms();
-        } else {
+        } elseif ($major === 13) {
             $settings = $this->getFormSettings();
             // @phpstan-ignore-next-line TYPO3 version switch
             $forms = $this->formPersistenceManager->listForms($settings['formSettings']);
+        } else {
+            // v14+: listForms requires SearchCriteria; returns FormMetadata objects, not arrays.
+            // Normalise to the v12/v13 array shape we consume below.
+            //
+            // FormMetadata::persistenceIdentifier is set by all known storage adapters
+            // (file path for YAML forms, UID string for DB-stored forms). The null case
+            // is defensive — we skip rather than crash on an unexpected adapter.
+            $settings = $this->getFormSettings();
+            // @phpstan-ignore-next-line TYPO3 version switch — class only exists on v14+
+            $searchCriteriaClass = SearchCriteria::class;
+            // @phpstan-ignore-next-line TYPO3 version switch
+            $searchCriteria = new $searchCriteriaClass();
+            // @phpstan-ignore-next-line TYPO3 version switch
+            $formMetadataList = $this->formPersistenceManager->listForms($settings['formSettings'], $searchCriteria);
+            $forms = [];
+            foreach ($formMetadataList as $formMetadata) {
+                // @phpstan-ignore-next-line TYPO3 version switch — FormMetadata only on v14+
+                $persistenceIdentifier = $formMetadata->persistenceIdentifier;
+                if ($persistenceIdentifier === null) {
+                    continue;
+                }
+
+                $forms[] = ['persistenceIdentifier' => $persistenceIdentifier];
+            }
         }
 
         $result = [];

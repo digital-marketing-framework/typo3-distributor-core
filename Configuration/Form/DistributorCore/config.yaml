@@ -1,0 +1,59 @@
+TYPO3:
+  CMS:
+    Form:
+      prototypes:
+        standard:
+          formEditor:
+            dynamicJavaScriptModules:
+              additionalViewModelModules:
+                1684239317: '@digital-marketing-framework/distributor-core/Backend/FormEditor/DmfConfigTextareaEditorViewModel.js'
+            formEditorFluidConfiguration:
+              partialRootPaths:
+                1684239317: 'EXT:dmf_distributor_core/Resources/Private/Extensions/form/Backend/Partials/FormEditor/'
+                1684773503: 'EXT:dmf_core/Resources/Private/Backend/Partials/'
+            formEditorPartials:
+              Inspector-DmfConfigTextareaEditor: Inspector/DmfConfigTextareaEditor
+          finishersDefinition:
+            Digitalmarketingframework:
+              FormEngine:
+                label: 'Anyrel'
+                elements:
+                  setup:
+                    label: 'Setup'
+                    config:
+                      type: 'text'
+              formEditor:
+                iconIdentifier: 'form-finisher'
+                label: 'Anyrel'
+                predefinedDefaults:
+                  options:
+                    setup: ''
+              implementationClassName: 'DigitalMarketingFramework\Typo3\Distributor\Core\Extensions\Form\FormFinisher'
+          formElementsDefinition:
+            Form:
+              formEditor:
+                editors:
+                  900:
+                    selectOptions:
+                      101:
+                        value: 'Digitalmarketingframework'
+                        label: 'Anyrel'
+                propertyCollections:
+                  finishers:
+                    101:
+                      identifier: 'Digitalmarketingframework'
+                      editors:
+                        50:
+                          identifier: 'header'
+                          templateName: 'Inspector-CollectionElementHeaderEditor'
+                          label: 'Anyrel'
+                        100:
+                          label: 'Anyrel'
+                        200:
+                          identifier: 'setup'
+                          templateName: 'Inspector-DmfConfigTextareaEditor'
+                          label: 'Setup'
+                          propertyPath: 'options.setup'
+                        9999:
+                          identifier: 'removeButton'
+                          templateName: 'Inspector-RemoveElementEditor'
