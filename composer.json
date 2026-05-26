@@ -25,12 +25,12 @@
     "require": {
         "php": "^8.2",
         "digital-marketing-framework/distributor-core": "^3.7",
-        "digital-marketing-framework/typo3-core": "^3.10",
-        "digital-marketing-framework/typo3-template-engine-twig": "^3.0",
+        "digital-marketing-framework/typo3-core": "^4.0",
+        "digital-marketing-framework/typo3-template-engine-twig": "^4.0",
         "mediatis/form_fieldnames": "^3.5 || ^4.0",
-        "typo3/cms-core": "^12.4 || ^13.4",
-        "typo3/cms-form": "^12.4 || ^13.4",
-        "typo3/cms-scheduler": "^12.4 || ^13.4"
+        "typo3/cms-core": "^12.4 || ^13.4 || ^14.3",
+        "typo3/cms-form": "^12.4 || ^13.4 || ^14.3",
+        "typo3/cms-scheduler": "^12.4 || ^13.4 || ^14.3"
     },
     "require-dev": {
         "mediatis/typo3-coding-standards": "^2.1 || ^3.1"

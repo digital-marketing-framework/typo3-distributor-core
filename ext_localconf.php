@@ -1,9 +1,7 @@
 <?php
 
 use DigitalMarketingFramework\Typo3\Distributor\Core\Backend\DataHandler\MetaDataHandler;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueCleanupFieldProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueCleanupTask;
-use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueProcessorFieldProvider;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Scheduler\QueueProcessorTask;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 

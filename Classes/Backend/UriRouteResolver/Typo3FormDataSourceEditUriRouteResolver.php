@@ -5,9 +5,22 @@ namespace DigitalMarketingFramework\Typo3\Distributor\Core\Backend\UriRouteResol
 use DigitalMarketingFramework\Core\Model\ConfigurationDocument\DataSourceMigratable;
 use DigitalMarketingFramework\Typo3\Core\Backend\UriRouteResolver\Typo3UriRouteResolver;
 use DigitalMarketingFramework\Typo3\Distributor\Core\Domain\Model\DataSource\Typo3FormDataSource;
+use TYPO3\CMS\Core\Information\Typo3Version;
 
 class Typo3FormDataSourceEditUriRouteResolver extends Typo3UriRouteResolver
 {
+    /**
+     * TYPO3 14 split the form module into separate manager/editor modules.
+     * v13: combined module hosts the editor's index action at this route name.
+     * v14: editor is its own module with route name 'form_editor'.
+     */
+    protected function getFormEditorRouteName(): string
+    {
+        return (new Typo3Version())->getMajorVersion() >= 14
+            ? 'form_editor'
+            : 'web_FormFormbuilder.FormEditor_index';
+    }
+
     /**
      * @var int
      */
@@ -44,8 +57,10 @@ class Typo3FormDataSourceEditUriRouteResolver extends Typo3UriRouteResolver
                     return $this->buildRecordEditUrl('tt_content', $context['pluginId'], $returnUrl);
                 }
 
-                // Base form — form editor does not support returnUrl
-                return (string)$this->getTypo3UriBuilder()->buildUriFromRoute('web_FormFormbuilder.FormEditor_index', [
+                // Base form — form editor does not honour returnUrl in a way that
+                // updates the backend chrome (sidebar stays stale on close in v14).
+                // Hoping for a fix in a later v14 patch or v15.
+                return (string)$this->getTypo3UriBuilder()->buildUriFromRoute($this->getFormEditorRouteName(), [
                     'formPersistenceIdentifier' => $dataSource->getFormId(),
                 ]);
             }
@@ -61,8 +76,8 @@ class Typo3FormDataSourceEditUriRouteResolver extends Typo3UriRouteResolver
             }
         }
 
-        // Base form — use form editor
-        return (string)$this->getTypo3UriBuilder()->buildUriFromRoute('web_FormFormbuilder.FormEditor_index', [
+        // Base form — see returnUrl comment above
+        return (string)$this->getTypo3UriBuilder()->buildUriFromRoute($this->getFormEditorRouteName(), [
             'formPersistenceIdentifier' => $rest,
         ]);
     }
