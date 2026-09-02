@@ -48,7 +48,7 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
             case 'created':
             case 'changed':
                 if (!$value instanceof DateTime) {
-                    $value = new DateTime('@' . $value);
+                    return new DateTime('@' . $value);
                 }
 
                 return $value;
@@ -65,7 +65,7 @@ class JobRepository extends ItemStorageRepository implements QueueInterface
             case 'created':
             case 'changed':
                 if ($value instanceof DateTime) {
-                    $value = $value->getTimestamp();
+                    return $value->getTimestamp();
                 }
 
                 return $value;

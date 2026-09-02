@@ -42,16 +42,9 @@ abstract class ElementProcessor
         $elementType = $this->getElementType();
         $valueClass = $this->getValueClass();
 
-        $result = false;
-        if (
-            ($elementClass !== '' && $element instanceof $elementClass)
-            || ($elementType !== '' && $element->getType() === $elementType)
-            || ($valueClass !== '' && is_a($elementValue, $valueClass))
-        ) {
-            $result = true;
-        }
-
-        return $result;
+        return ($elementClass !== '' && $element instanceof $elementClass)
+        || ($elementType !== '' && $element->getType() === $elementType)
+        || ($valueClass !== '' && is_a($elementValue, $valueClass));
     }
 
     protected function override(): bool
