@@ -31,12 +31,11 @@ class DateElementProcessor extends ElementProcessor
 
     protected function process(RenderableInterface $element, mixed $elementValue): mixed
     {
-        $value = '';
         if ($elementValue instanceof DateTime) {
             // Extract date string and create DateTimeValue, preserving the date as entered
-            $value = new DateTimeValue($elementValue->format('Y-m-d'), static::DATE_FORMAT, $this->getDefaultTimezone());
+            return new DateTimeValue($elementValue->format('Y-m-d'), static::DATE_FORMAT, $this->getDefaultTimezone());
         }
 
-        return $value;
+        return '';
     }
 }
