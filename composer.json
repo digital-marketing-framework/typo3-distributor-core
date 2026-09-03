@@ -28,7 +28,7 @@
         "digital-marketing-framework/typo3-core": "^4.0",
         "digital-marketing-framework/typo3-form-fieldnames": "^1.0",
         "digital-marketing-framework/typo3-template-engine-twig": "^4.0",
-        "mediatis/form_fieldnames": "^3.5 || ^4.0",
+        "mediatis/form_fieldnames": "^4.3",
         "typo3/cms-core": "^12.4 || ^13.4 || ^14.3",
         "typo3/cms-form": "^12.4 || ^13.4 || ^14.3",
         "typo3/cms-scheduler": "^12.4 || ^13.4 || ^14.3"
