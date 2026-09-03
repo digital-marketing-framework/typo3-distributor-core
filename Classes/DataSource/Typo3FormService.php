@@ -2,75 +2,25 @@
 
 namespace DigitalMarketingFramework\Typo3\Distributor\Core\DataSource;
 
-use DigitalMarketingFramework\Typo3\Core\Utility\CliEnvironmentUtility;
 use InvalidArgumentException;
+use Mediatis\FormFieldnames\Service\FormDefinitionService;
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface as ExtbaseConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Form\Controller\FormFrontendController;
-use TYPO3\CMS\Form\Domain\DTO\SearchCriteria;
-use TYPO3\CMS\Form\Mvc\Configuration\ConfigurationManagerInterface as ExtFormConfigurationManagerInterface;
-use TYPO3\CMS\Form\Mvc\Persistence\FormPersistenceManagerInterface;
 
 class Typo3FormService
 {
-    /**
-     * @var ?array{formSettings:array<string,mixed>,typoScriptSettings:array<string,mixed>}
-     */
-    private ?array $formSettings = null;
-
     public function __construct(
         protected ConnectionPool $connectionPool,
-        protected FormPersistenceManagerInterface $formPersistenceManager,
-        protected ExtbaseConfigurationManagerInterface $extbaseConfigurationManager,
-        protected ExtFormConfigurationManagerInterface $extFormConfigurationManager,
+        protected FormDefinitionService $formDefinitionService,
         protected SiteFinder $siteFinder,
     ) {
-    }
-
-    /**
-     * Lazily loads and returns the form persistence settings needed by FormPersistenceManager.
-     * On TYPO3 12 returns empty arrays. On TYPO3 13+ loads from Extbase/Form YAML configuration.
-     *
-     * @return array{formSettings:array<string,mixed>,typoScriptSettings:array<string,mixed>}
-     */
-    protected function getFormSettings(): array
-    {
-        if ($this->formSettings === null) {
-            $typo3Version = new Typo3Version();
-            if ($typo3Version->getMajorVersion() <= 12) {
-                $this->formSettings = [
-                    'formSettings' => [],
-                    'typoScriptSettings' => [],
-                ];
-            } else {
-                $typoScriptSettings = CliEnvironmentUtility::ensureBackendRequest(
-                    fn () => $this->extbaseConfigurationManager->getConfiguration(
-                        ExtbaseConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-                        'form'
-                    )
-                );
-                // @phpstan-ignore-next-line TYPO3 version switch
-                $formSettings = $this->extFormConfigurationManager->getYamlConfiguration($typoScriptSettings, false);
-                $this->formSettings = [
-                    'formSettings' => [
-                        'persistenceManager' => $formSettings['persistenceManager'] ?? [],
-                    ],
-                    'typoScriptSettings' => [
-                        'formDefinitionOverrides' => $typoScriptSettings['formDefinitionOverrides'] ?? [],
-                    ],
-                ];
-            }
-        }
-
-        return $this->formSettings;
     }
 
     /**
@@ -229,28 +179,19 @@ class Typo3FormService
     }
 
     /**
+     * Loads a form definition, with the settings of a form plugin merged in when one is given.
+     *
+     * TypoScript formDefinitionOverrides are not applied. They are resolved per page, and the
+     * contexts this runs in - backend module and job processing - have no page to resolve them
+     * against. The form module in TYPO3 core reads definitions the same way.
+     *
      * @return ?array<string,mixed>
      */
     public function getFormById(string $formId, ?int $pluginId = null): ?array
     {
-        $major = (new Typo3Version())->getMajorVersion();
-        if ($major <= 12) {
-            // @phpstan-ignore-next-line TYPO3 version switch
-            if (!$this->formPersistenceManager->exists($formId)) {
-                return null;
-            }
-
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $formDefinition = $this->formPersistenceManager->load($formId);
-        } elseif ($major === 13) {
-            $settings = $this->getFormSettings();
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $formDefinition = $this->formPersistenceManager->load($formId, $settings['formSettings'], $settings['typoScriptSettings']);
-        } else {
-            // v14+: load($id, ?$typoScriptSettings, ?$request). formSettings parameter removed.
-            $settings = $this->getFormSettings();
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $formDefinition = $this->formPersistenceManager->load($formId, $settings['typoScriptSettings']);
+        $formDefinition = $this->formDefinitionService->load($formId);
+        if ($formDefinition === null) {
+            return null;
         }
 
         return $this->overrideByFlexFormSettings($formDefinition, $pluginId);
@@ -261,43 +202,9 @@ class Typo3FormService
      */
     public function getAllForms(): array
     {
-        $major = (new Typo3Version())->getMajorVersion();
-        if ($major <= 12) {
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $forms = $this->formPersistenceManager->listForms();
-        } elseif ($major === 13) {
-            $settings = $this->getFormSettings();
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $forms = $this->formPersistenceManager->listForms($settings['formSettings']);
-        } else {
-            // v14+: listForms requires SearchCriteria; returns FormMetadata objects, not arrays.
-            // Normalise to the v12/v13 array shape we consume below.
-            //
-            // FormMetadata::persistenceIdentifier is set by all known storage adapters
-            // (file path for YAML forms, UID string for DB-stored forms). The null case
-            // is defensive — we skip rather than crash on an unexpected adapter.
-            $settings = $this->getFormSettings();
-            // @phpstan-ignore-next-line TYPO3 version switch — class only exists on v14+
-            $searchCriteriaClass = SearchCriteria::class;
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $searchCriteria = new $searchCriteriaClass();
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $formMetadataList = $this->formPersistenceManager->listForms($settings['formSettings'], $searchCriteria);
-            $forms = [];
-            foreach ($formMetadataList as $formMetadata) {
-                // @phpstan-ignore-next-line TYPO3 version switch — FormMetadata only on v14+
-                $persistenceIdentifier = $formMetadata->persistenceIdentifier;
-                if ($persistenceIdentifier === null) {
-                    continue;
-                }
-
-                $forms[] = ['persistenceIdentifier' => $persistenceIdentifier];
-            }
-        }
-
         $result = [];
-        foreach ($forms as $form) {
-            $id = $form['persistenceIdentifier'];
+        foreach ($this->formDefinitionService->listForms() as $form) {
+            $id = $form->persistenceIdentifier;
             $formDefinition = $this->getFormById($id);
             if ($formDefinition === null) {
                 continue;
@@ -555,19 +462,7 @@ class Typo3FormService
             }
         }
 
-        $typo3Version = new Typo3Version();
-        if ($typo3Version->getMajorVersion() <= 12) {
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $this->formPersistenceManager->save($formId, $formDefinition);
-        } else {
-            $settings = $this->getFormSettings();
-            // @phpstan-ignore-next-line TYPO3 version switch
-            $this->formPersistenceManager->save(
-                $formId,
-                $formDefinition,
-                $settings['formSettings']
-            );
-        }
+        $this->formDefinitionService->save($formId, $formDefinition);
     }
 
     /**
